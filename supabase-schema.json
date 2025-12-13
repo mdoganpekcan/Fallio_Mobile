@@ -1,0 +1,872 @@
+{
+  "version": "1.0.0",
+  "database": "falio",
+  "description": "Complete Supabase schema for Falio fortune telling app",
+  "tables": [
+    {
+      "name": "profiles",
+      "description": "User profile information extended from auth.users",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "nullable": false,
+          "references": "auth.users.id",
+          "description": "User ID from Supabase Auth"
+        },
+        {
+          "name": "email",
+          "type": "text",
+          "nullable": false,
+          "unique": true,
+          "description": "User email address"
+        },
+        {
+          "name": "full_name",
+          "type": "text",
+          "nullable": false,
+          "description": "User's full name"
+        },
+        {
+          "name": "avatar_url",
+          "type": "text",
+          "nullable": true,
+          "description": "URL to user's avatar image in storage"
+        },
+        {
+          "name": "birth_date",
+          "type": "date",
+          "nullable": false,
+          "description": "User's date of birth"
+        },
+        {
+          "name": "zodiac_sign",
+          "type": "text",
+          "nullable": false,
+          "description": "Zodiac sign calculated from birth date"
+        },
+        {
+          "name": "gender",
+          "type": "text",
+          "nullable": false,
+          "description": "User's gender: male, female, other"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "now()",
+          "description": "Account creation timestamp"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "now()",
+          "description": "Last profile update timestamp"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "profiles_email_idx",
+          "columns": ["email"]
+        }
+      ],
+      "rls": {
+        "enabled": true,
+        "policies": [
+          {
+            "name": "Users can view own profile",
+            "operation": "SELECT",
+            "using": "auth.uid() = id"
+          },
+          {
+            "name": "Users can update own profile",
+            "operation": "UPDATE",
+            "using": "auth.uid() = id"
+          }
+        ]
+      }
+    },
+    {
+      "name": "user_wallet",
+      "description": "User's credits, diamonds, and subscription status",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "nullable": false,
+          "default": "gen_random_uuid()",
+          "description": "Wallet ID"
+        },
+        {
+          "name": "user_id",
+          "type": "uuid",
+          "nullable": false,
+          "references": "profiles.id",
+          "description": "User ID"
+        },
+        {
+          "name": "credits",
+          "type": "integer",
+          "nullable": false,
+          "default": 0,
+          "description": "Available credits for fortune readings"
+        },
+        {
+          "name": "diamonds",
+          "type": "integer",
+          "nullable": false,
+          "default": 0,
+          "description": "Premium currency (diamonds)"
+        },
+        {
+          "name": "subscription_type",
+          "type": "text",
+          "nullable": true,
+          "description": "Current subscription: weekly, monthly, yearly, or null"
+        },
+        {
+          "name": "subscription_valid_until",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "description": "Subscription expiration date"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "now()"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "now()"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "user_wallet_user_id_idx",
+          "columns": ["user_id"],
+          "unique": true
+        }
+      ],
+      "rls": {
+        "enabled": true,
+        "policies": [
+          {
+            "name": "Users can view own wallet",
+            "operation": "SELECT",
+            "using": "auth.uid() = user_id"
+          },
+          {
+            "name": "Users can update own wallet",
+            "operation": "UPDATE",
+            "using": "auth.uid() = user_id"
+          }
+        ]
+      }
+    },
+    {
+      "name": "fortune_tellers",
+      "description": "Fortune teller profiles and information",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "nullable": false,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "name",
+          "type": "text",
+          "nullable": false,
+          "description": "Fortune teller's name"
+        },
+        {
+          "name": "avatar_url",
+          "type": "text",
+          "nullable": true,
+          "description": "URL to fortune teller's avatar"
+        },
+        {
+          "name": "bio",
+          "type": "text",
+          "nullable": true,
+          "description": "Biography or description"
+        },
+        {
+          "name": "expertise",
+          "type": "text[]",
+          "nullable": false,
+          "description": "Array of specialties: coffee, tarot, palm, dream, love, card, color"
+        },
+        {
+          "name": "price",
+          "type": "integer",
+          "nullable": false,
+          "description": "Credit cost per reading"
+        },
+        {
+          "name": "rating",
+          "type": "numeric",
+          "nullable": false,
+          "default": 5.0,
+          "description": "Average rating (0-5)"
+        },
+        {
+          "name": "total_ratings",
+          "type": "integer",
+          "nullable": false,
+          "default": 0,
+          "description": "Total number of ratings received"
+        },
+        {
+          "name": "is_online",
+          "type": "boolean",
+          "nullable": false,
+          "default": false,
+          "description": "Current online status"
+        },
+        {
+          "name": "is_recommended",
+          "type": "boolean",
+          "nullable": false,
+          "default": false,
+          "description": "Featured/recommended status"
+        },
+        {
+          "name": "is_active",
+          "type": "boolean",
+          "nullable": false,
+          "default": true,
+          "description": "Account active status"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "now()"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "now()"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "fortune_tellers_rating_idx",
+          "columns": ["rating"]
+        },
+        {
+          "name": "fortune_tellers_price_idx",
+          "columns": ["price"]
+        }
+      ],
+      "rls": {
+        "enabled": true,
+        "policies": [
+          {
+            "name": "Anyone can view active fortune tellers",
+            "operation": "SELECT",
+            "using": "is_active = true"
+          }
+        ]
+      }
+    },
+    {
+      "name": "fortunes",
+      "description": "Fortune reading requests submitted by users",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "nullable": false,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "user_id",
+          "type": "uuid",
+          "nullable": false,
+          "references": "profiles.id",
+          "description": "User who requested the fortune"
+        },
+        {
+          "name": "fortune_teller_id",
+          "type": "uuid",
+          "nullable": true,
+          "references": "fortune_tellers.id",
+          "description": "Assigned fortune teller"
+        },
+        {
+          "name": "type",
+          "type": "text",
+          "nullable": false,
+          "description": "Fortune type: coffee, tarot, palm, dream, love, card, color"
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "nullable": false,
+          "default": "'pending'",
+          "description": "Status: pending, in_progress, completed, cancelled"
+        },
+        {
+          "name": "images",
+          "type": "text[]",
+          "nullable": true,
+          "description": "Array of image URLs from storage"
+        },
+        {
+          "name": "note",
+          "type": "text",
+          "nullable": true,
+          "description": "User's note or question"
+        },
+        {
+          "name": "selected_cards",
+          "type": "integer[]",
+          "nullable": true,
+          "description": "Selected tarot card indices (for tarot readings)"
+        },
+        {
+          "name": "selected_color",
+          "type": "text",
+          "nullable": true,
+          "description": "Selected color (for color readings)"
+        },
+        {
+          "name": "category",
+          "type": "text",
+          "nullable": true,
+          "description": "Category: love, money, family, work, health"
+        },
+        {
+          "name": "credits_cost",
+          "type": "integer",
+          "nullable": false,
+          "description": "Credits deducted for this reading"
+        },
+        {
+          "name": "is_read",
+          "type": "boolean",
+          "nullable": false,
+          "default": false,
+          "description": "Whether user has read the response"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "now()"
+        },
+        {
+          "name": "completed_at",
+          "type": "timestamp with time zone",
+          "nullable": true,
+          "description": "When fortune was completed"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "fortunes_user_id_idx",
+          "columns": ["user_id"]
+        },
+        {
+          "name": "fortunes_fortune_teller_id_idx",
+          "columns": ["fortune_teller_id"]
+        },
+        {
+          "name": "fortunes_status_idx",
+          "columns": ["status"]
+        }
+      ],
+      "rls": {
+        "enabled": true,
+        "policies": [
+          {
+            "name": "Users can view own fortunes",
+            "operation": "SELECT",
+            "using": "auth.uid() = user_id"
+          },
+          {
+            "name": "Users can insert own fortunes",
+            "operation": "INSERT",
+            "check": "auth.uid() = user_id"
+          },
+          {
+            "name": "Users can update own fortunes",
+            "operation": "UPDATE",
+            "using": "auth.uid() = user_id"
+          }
+        ]
+      }
+    },
+    {
+      "name": "fortune_responses",
+      "description": "Fortune teller responses to user requests",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "nullable": false,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "fortune_id",
+          "type": "uuid",
+          "nullable": false,
+          "references": "fortunes.id",
+          "description": "Fortune request ID"
+        },
+        {
+          "name": "fortune_teller_id",
+          "type": "uuid",
+          "nullable": false,
+          "references": "fortune_tellers.id",
+          "description": "Fortune teller who responded"
+        },
+        {
+          "name": "text",
+          "type": "text",
+          "nullable": false,
+          "description": "Fortune reading response"
+        },
+        {
+          "name": "rating",
+          "type": "integer",
+          "nullable": true,
+          "description": "User rating: 1 (thumbs down) or 5 (thumbs up)"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "now()"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "fortune_responses_fortune_id_idx",
+          "columns": ["fortune_id"],
+          "unique": true
+        },
+        {
+          "name": "fortune_responses_fortune_teller_id_idx",
+          "columns": ["fortune_teller_id"]
+        }
+      ],
+      "rls": {
+        "enabled": true,
+        "policies": [
+          {
+            "name": "Users can view responses to their fortunes",
+            "operation": "SELECT",
+            "using": "EXISTS (SELECT 1 FROM fortunes WHERE fortunes.id = fortune_id AND fortunes.user_id = auth.uid())"
+          },
+          {
+            "name": "Users can update ratings on their fortune responses",
+            "operation": "UPDATE",
+            "using": "EXISTS (SELECT 1 FROM fortunes WHERE fortunes.id = fortune_id AND fortunes.user_id = auth.uid())"
+          }
+        ]
+      }
+    },
+    {
+      "name": "user_devices",
+      "description": "User device information for push notifications",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "nullable": false,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "user_id",
+          "type": "uuid",
+          "nullable": false,
+          "references": "profiles.id",
+          "description": "User ID"
+        },
+        {
+          "name": "push_token",
+          "type": "text",
+          "nullable": false,
+          "unique": true,
+          "description": "Expo push notification token"
+        },
+        {
+          "name": "platform",
+          "type": "text",
+          "nullable": false,
+          "description": "Platform: ios, android, web"
+        },
+        {
+          "name": "is_active",
+          "type": "boolean",
+          "nullable": false,
+          "default": true,
+          "description": "Whether this device should receive notifications"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "now()"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "now()"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "user_devices_user_id_idx",
+          "columns": ["user_id"]
+        },
+        {
+          "name": "user_devices_push_token_idx",
+          "columns": ["push_token"]
+        }
+      ],
+      "rls": {
+        "enabled": true,
+        "policies": [
+          {
+            "name": "Users can manage own devices",
+            "operation": "ALL",
+            "using": "auth.uid() = user_id"
+          }
+        ]
+      }
+    },
+    {
+      "name": "horoscope_daily",
+      "description": "Daily horoscope readings for all zodiac signs",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "nullable": false,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "zodiac_sign",
+          "type": "text",
+          "nullable": false,
+          "description": "Zodiac sign name"
+        },
+        {
+          "name": "date",
+          "type": "date",
+          "nullable": false,
+          "description": "Reading date"
+        },
+        {
+          "name": "general",
+          "type": "text",
+          "nullable": false,
+          "description": "General horoscope text"
+        },
+        {
+          "name": "love",
+          "type": "text",
+          "nullable": true,
+          "description": "Love horoscope"
+        },
+        {
+          "name": "career",
+          "type": "text",
+          "nullable": true,
+          "description": "Career horoscope"
+        },
+        {
+          "name": "health",
+          "type": "text",
+          "nullable": true,
+          "description": "Health horoscope"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "now()"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "horoscope_daily_zodiac_date_idx",
+          "columns": ["zodiac_sign", "date"],
+          "unique": true
+        }
+      ],
+      "rls": {
+        "enabled": true,
+        "policies": [
+          {
+            "name": "Anyone can view horoscopes",
+            "operation": "SELECT",
+            "using": "true"
+          }
+        ]
+      }
+    },
+    {
+      "name": "horoscope_weekly",
+      "description": "Weekly horoscope readings for all zodiac signs",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "nullable": false,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "zodiac_sign",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "week_start",
+          "type": "date",
+          "nullable": false,
+          "description": "Start date of the week (Monday)"
+        },
+        {
+          "name": "general",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "love",
+          "type": "text",
+          "nullable": true
+        },
+        {
+          "name": "career",
+          "type": "text",
+          "nullable": true
+        },
+        {
+          "name": "health",
+          "type": "text",
+          "nullable": true
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "now()"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "horoscope_weekly_zodiac_week_idx",
+          "columns": ["zodiac_sign", "week_start"],
+          "unique": true
+        }
+      ],
+      "rls": {
+        "enabled": true,
+        "policies": [
+          {
+            "name": "Anyone can view horoscopes",
+            "operation": "SELECT",
+            "using": "true"
+          }
+        ]
+      }
+    },
+    {
+      "name": "horoscope_monthly",
+      "description": "Monthly horoscope readings for all zodiac signs",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "nullable": false,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "zodiac_sign",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "year",
+          "type": "integer",
+          "nullable": false
+        },
+        {
+          "name": "month",
+          "type": "integer",
+          "nullable": false
+        },
+        {
+          "name": "general",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "love",
+          "type": "text",
+          "nullable": true
+        },
+        {
+          "name": "career",
+          "type": "text",
+          "nullable": true
+        },
+        {
+          "name": "health",
+          "type": "text",
+          "nullable": true
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "now()"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "horoscope_monthly_zodiac_date_idx",
+          "columns": ["zodiac_sign", "year", "month"],
+          "unique": true
+        }
+      ],
+      "rls": {
+        "enabled": true,
+        "policies": [
+          {
+            "name": "Anyone can view horoscopes",
+            "operation": "SELECT",
+            "using": "true"
+          }
+        ]
+      }
+    },
+    {
+      "name": "transactions",
+      "description": "Credit and diamond transaction history",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "nullable": false,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "user_id",
+          "type": "uuid",
+          "nullable": false,
+          "references": "profiles.id"
+        },
+        {
+          "name": "type",
+          "type": "text",
+          "nullable": false,
+          "description": "Transaction type: purchase, reward, deduction, refund"
+        },
+        {
+          "name": "currency_type",
+          "type": "text",
+          "nullable": false,
+          "description": "Currency: credits or diamonds"
+        },
+        {
+          "name": "amount",
+          "type": "integer",
+          "nullable": false,
+          "description": "Amount added (positive) or deducted (negative)"
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "nullable": false,
+          "description": "Transaction description"
+        },
+        {
+          "name": "reference_id",
+          "type": "text",
+          "nullable": true,
+          "description": "Reference to related entity (fortune_id, purchase_id, etc.)"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "now()"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "transactions_user_id_idx",
+          "columns": ["user_id"]
+        }
+      ],
+      "rls": {
+        "enabled": true,
+        "policies": [
+          {
+            "name": "Users can view own transactions",
+            "operation": "SELECT",
+            "using": "auth.uid() = user_id"
+          }
+        ]
+      }
+    }
+  ],
+  "storage_buckets": [
+    {
+      "name": "profile-avatars",
+      "description": "User profile avatar images",
+      "public": true,
+      "file_size_limit": 5242880,
+      "allowed_mime_types": ["image/jpeg", "image/png", "image/webp"]
+    },
+    {
+      "name": "fortune-images",
+      "description": "Fortune reading images (coffee cups, palms, etc.)",
+      "public": false,
+      "file_size_limit": 10485760,
+      "allowed_mime_types": ["image/jpeg", "image/png", "image/webp"]
+    },
+    {
+      "name": "fortune-teller-avatars",
+      "description": "Fortune teller profile images",
+      "public": true,
+      "file_size_limit": 5242880,
+      "allowed_mime_types": ["image/jpeg", "image/png", "image/webp"]
+    }
+  ],
+  "functions": [
+    {
+      "name": "handle_new_user",
+      "description": "Trigger function to create profile and wallet when new user signs up",
+      "trigger": "auth.users INSERT"
+    },
+    {
+      "name": "update_fortune_teller_rating",
+      "description": "Function to recalculate fortune teller rating when responses are rated",
+      "trigger": "fortune_responses UPDATE"
+    }
+  ]
+}
