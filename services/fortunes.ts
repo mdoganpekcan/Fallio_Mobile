@@ -131,7 +131,6 @@ export const fortuneService = {
       metadata: fortune.metadata,
     };
   },
-  
   async markAsRead(fortuneId: string): Promise<void> {
     const { error } = await supabase
       .from('fortunes')
