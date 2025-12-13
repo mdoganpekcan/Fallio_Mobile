@@ -44,11 +44,18 @@
       [
         "expo-router",
         {
-          "origin": "https://rork.com/"
+          "origin": "https://fallio-web.vercel.app/"
         }
       ],
       "expo-font",
       "expo-web-browser",
+      [
+        "react-native-google-mobile-ads",
+        {
+          "androidAppId": "ca-app-pub-5812875423104468~8803913008",
+          "iosAppId": "ca-app-pub-xxxxxxxxxxxxxxxxxx~xxxxxxxxx"
+        }
+      ],
       [
         "react-native-purchases",
         {
