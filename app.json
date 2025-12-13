@@ -44,7 +44,7 @@
       [
         "expo-router",
         {
-          "origin": "https://rork.com/"
+          "origin": "https://fallio-web.vercel.app/"
         }
       ],
       "expo-font",
