@@ -134,6 +134,9 @@ export const authService = {
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email: registerData.email,
       password: registerData.password,
+      options: {
+        emailRedirectTo: 'https://fallio-web.vercel.app/',
+      },
     });
 
     if (authError) {

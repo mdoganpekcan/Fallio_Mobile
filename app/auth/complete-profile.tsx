@@ -91,6 +91,14 @@ export default function CompleteProfileScreen() {
     }
   };
 
+  // Eğer kullanıcı zaten bilgilerini girdiyse bu ekranı atla
+  React.useEffect(() => {
+    if (user?.birthDate && user?.gender && user?.zodiacSign) {
+       // Bilgiler zaten varsa ana sayfaya yönlendir
+       router.replace('/(tabs)');
+    }
+  }, [user]);
+
   return (
     <SafeAreaView style={styles.container}>
       <LinearGradient
