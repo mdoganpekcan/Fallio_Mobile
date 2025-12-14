@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,14 +8,76 @@ import {
   TextInput,
   Alert,
   ActivityIndicator,
+  Modal,
+  FlatList,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { ArrowLeft, Save } from 'lucide-react-native';
+import { ArrowLeft, Save, ChevronDown, X } from 'lucide-react-native';
 import { Colors, Spacing, Typography, BorderRadius } from '@/constants/theme';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppStore } from '@/store/useAppStore';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { profileService, UpdateProfileData } from '@/services/profiles';
+import { calculateZodiacSign, zodiacSigns } from '@/types';
+
+const RELATIONSHIP_STATUSES = [
+  'İlişkisi Yok',
+  'İlişkisi Var',
+  'Nişanlı',
+  'Evli',
+  'Karmaşık',
+  'Platonik',
+  'Ayrılmış',
+  'Dul',
+];
+
+const GENDERS = [
+  { label: 'Kadın', value: 'female' },
+  { label: 'Erkek', value: 'male' },
+  { label: 'Diğer', value: 'other' },
+];
+
+interface SelectionModalProps {
+  visible: boolean;
+  title: string;
+  options: string[] | { label: string; value: string }[];
+  onSelect: (value: string) => void;
+  onClose: () => void;
+}
+
+const SelectionModal = ({ visible, title, options, onSelect, onClose }: SelectionModalProps) => (
+  <Modal visible={visible} transparent animationType="slide">
+    <View style={styles.modalOverlay}>
+      <View style={styles.modalContent}>
+        <View style={styles.modalHeader}>
+          <Text style={styles.modalTitle}>{title}</Text>
+          <TouchableOpacity onPress={onClose}>
+            <X size={24} color={Colors.text} />
+          </TouchableOpacity>
+        </View>
+        <FlatList
+          data={options}
+          keyExtractor={(item) => (typeof item === 'string' ? item : item.value)}
+          renderItem={({ item }) => {
+            const label = typeof item === 'string' ? item : item.label;
+            const value = typeof item === 'string' ? item : item.value;
+            return (
+              <TouchableOpacity
+                style={styles.modalItem}
+                onPress={() => {
+                  onSelect(value);
+                  onClose();
+                }}
+              >
+                <Text style={styles.modalItemText}>{label}</Text>
+              </TouchableOpacity>
+            );
+          }}
+        />
+      </View>
+    </View>
+  </Modal>
+);
 
 export default function EditProfileScreen() {
   const router = useRouter();
@@ -23,6 +85,17 @@ export default function EditProfileScreen() {
   const user = useAppStore((state) => state.user);
 
   const [formData, setFormData] = useState<UpdateProfileData>({});
+  const [modalConfig, setModalConfig] = useState<{
+    visible: boolean;
+    title: string;
+    options: any[];
+    field: keyof UpdateProfileData | null;
+  }>({
+    visible: false,
+    title: '',
+    options: [],
+    field: null,
+  });
 
   const { data: profile, isLoading } = useQuery({
     queryKey: ['profile', user?.id],
@@ -30,7 +103,7 @@ export default function EditProfileScreen() {
     enabled: !!user,
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (profile) {
       setFormData({
         fullName: profile.fullName,
@@ -38,6 +111,8 @@ export default function EditProfileScreen() {
         job: profile.job,
         relationshipStatus: profile.relationshipStatus,
         zodiacSign: profile.zodiacSign,
+        birthDate: profile.birthDate,
+        gender: profile.gender,
       });
     }
   }, [profile]);
@@ -60,6 +135,32 @@ export default function EditProfileScreen() {
 
   const handleSave = () => {
     updateMutation.mutate(formData);
+  };
+
+  const handleBirthDateChange = (text: string) => {
+    let cleaned = text.replace(/[^0-9]/g, '');
+    
+    if (cleaned.length >= 2 && cleaned.length <= 4) {
+      cleaned = cleaned.slice(0, 2) + '.' + cleaned.slice(2);
+    } else if (cleaned.length > 4) {
+      cleaned = cleaned.slice(0, 2) + '.' + cleaned.slice(2, 4) + '.' + cleaned.slice(4, 8);
+    }
+
+    const newData = { ...formData, birthDate: cleaned };
+    
+    // Auto-calculate zodiac if date is valid
+    if (cleaned.length === 10) {
+      const [day, month, year] = cleaned.split('.');
+      const isoDate = `${year}-${month}-${day}`;
+      const zodiac = calculateZodiacSign(isoDate);
+      newData.zodiacSign = zodiac;
+    }
+
+    setFormData(newData);
+  };
+
+  const openModal = (field: keyof UpdateProfileData, title: string, options: any[]) => {
+    setModalConfig({ visible: true, title, options, field });
   };
 
   if (isLoading) {
@@ -101,6 +202,34 @@ export default function EditProfileScreen() {
             />
           </View>
 
+          <View style={styles.row}>
+            <View style={[styles.inputGroup, { flex: 1, marginRight: Spacing.sm }]}>
+              <Text style={styles.label}>Doğum Tarihi</Text>
+              <TextInput
+                style={styles.input}
+                value={formData.birthDate}
+                onChangeText={handleBirthDateChange}
+                placeholder="GG.AA.YYYY"
+                placeholderTextColor={Colors.textMuted}
+                keyboardType="numeric"
+                maxLength={10}
+              />
+            </View>
+
+            <View style={[styles.inputGroup, { flex: 1, marginLeft: Spacing.sm }]}>
+              <Text style={styles.label}>Cinsiyet</Text>
+              <TouchableOpacity
+                style={styles.selectInput}
+                onPress={() => openModal('gender', 'Cinsiyet Seçin', GENDERS)}
+              >
+                <Text style={[styles.selectText, !formData.gender && styles.placeholderText]}>
+                  {GENDERS.find(g => g.value === formData.gender)?.label || 'Seçiniz'}
+                </Text>
+                <ChevronDown size={20} color={Colors.textMuted} />
+              </TouchableOpacity>
+            </View>
+          </View>
+
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Meslek</Text>
             <TextInput
@@ -114,24 +243,28 @@ export default function EditProfileScreen() {
 
           <View style={styles.inputGroup}>
             <Text style={styles.label}>İlişki Durumu</Text>
-            <TextInput
-              style={styles.input}
-              value={formData.relationshipStatus}
-              onChangeText={(text) => setFormData({ ...formData, relationshipStatus: text })}
-              placeholder="İlişki Durumunuz (Evli, Bekar, İlişkisi Var...)"
-              placeholderTextColor={Colors.textMuted}
-            />
+            <TouchableOpacity
+              style={styles.selectInput}
+              onPress={() => openModal('relationshipStatus', 'İlişki Durumu Seçin', RELATIONSHIP_STATUSES)}
+            >
+              <Text style={[styles.selectText, !formData.relationshipStatus && styles.placeholderText]}>
+                {formData.relationshipStatus || 'Seçiniz'}
+              </Text>
+              <ChevronDown size={20} color={Colors.textMuted} />
+            </TouchableOpacity>
           </View>
 
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Burç</Text>
-            <TextInput
-              style={styles.input}
-              value={formData.zodiacSign}
-              onChangeText={(text) => setFormData({ ...formData, zodiacSign: text })}
-              placeholder="Burcunuz"
-              placeholderTextColor={Colors.textMuted}
-            />
+            <TouchableOpacity
+              style={styles.selectInput}
+              onPress={() => openModal('zodiacSign', 'Burç Seçin', zodiacSigns.map(z => z.name))}
+            >
+              <Text style={[styles.selectText, !formData.zodiacSign && styles.placeholderText]}>
+                {formData.zodiacSign || 'Seçiniz'}
+              </Text>
+              <ChevronDown size={20} color={Colors.textMuted} />
+            </TouchableOpacity>
           </View>
 
           <View style={styles.inputGroup}>
@@ -148,6 +281,18 @@ export default function EditProfileScreen() {
           </View>
         </View>
       </ScrollView>
+
+      <SelectionModal
+        visible={modalConfig.visible}
+        title={modalConfig.title}
+        options={modalConfig.options}
+        onSelect={(value) => {
+          if (modalConfig.field) {
+            setFormData({ ...formData, [modalConfig.field]: value });
+          }
+        }}
+        onClose={() => setModalConfig({ ...modalConfig, visible: false })}
+      />
     </SafeAreaView>
   );
 }
@@ -157,27 +302,27 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.background,
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
   },
   backButton: {
-    width: 40,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
+    padding: Spacing.xs,
   },
   headerTitle: {
-    ...Typography.heading,
+    ...Typography.title,
+    fontSize: 18,
     color: Colors.text,
-  },
-  loadingContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   scrollView: {
     flex: 1,
@@ -188,20 +333,77 @@ const styles = StyleSheet.create({
   inputGroup: {
     marginBottom: Spacing.lg,
   },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
   label: {
     ...Typography.bodyBold,
     color: Colors.text,
-    marginBottom: Spacing.sm,
+    marginBottom: Spacing.xs,
   },
   input: {
     backgroundColor: Colors.card,
     borderRadius: BorderRadius.md,
     padding: Spacing.md,
     color: Colors.text,
-    fontSize: 16,
+    ...Typography.body,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  selectInput: {
+    backgroundColor: Colors.card,
+    borderRadius: BorderRadius.md,
+    padding: Spacing.md,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  selectText: {
+    color: Colors.text,
+    ...Typography.body,
+  },
+  placeholderText: {
+    color: Colors.textMuted,
   },
   textArea: {
-    height: 100,
+    height: 120,
     textAlignVertical: 'top',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: Colors.card,
+    borderTopLeftRadius: BorderRadius.xl,
+    borderTopRightRadius: BorderRadius.xl,
+    maxHeight: '50%',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: Spacing.lg,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+  },
+  modalTitle: {
+    ...Typography.title,
+    fontSize: 18,
+    color: Colors.text,
+  },
+  modalItem: {
+    padding: Spacing.lg,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+  },
+  modalItemText: {
+    ...Typography.body,
+    color: Colors.text,
+    textAlign: 'center',
   },
 });

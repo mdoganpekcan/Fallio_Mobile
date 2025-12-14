@@ -18,6 +18,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { calculateZodiacSign } from '@/types';
 import { authService } from '@/services/auth';
+import { profileService } from '@/services/profiles';
 import { useMutation } from '@tanstack/react-query';
 import { useAppStore } from '@/store/useAppStore';
 
@@ -43,14 +44,32 @@ export default function RegisterScreen() {
       const [day, month, year] = birthDate.split('.');
       const isoDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
 
-      return authService.signUp({
+      // 1. Önce avatar olmadan kayıt ol
+      const authResponse = await authService.signUp({
         email,
         password,
         fullName,
         birthDate: isoDate,
         gender,
-        avatarUrl: avatarUri || undefined,
+        avatarUrl: undefined, // Yerel dosya yolunu gönderme
       });
+
+      // 2. Eğer avatar seçildiyse ve kullanıcı oluştuysa yükle
+      // Not: authResponse.user.id Supabase Auth ID'sidir.
+      const userId = authResponse?.user?.id;
+      
+      if (avatarUri && userId) {
+        try {
+          console.log('[Register] Uploading avatar for user:', userId);
+          await profileService.uploadAvatar(userId, avatarUri);
+          // uploadAvatar zaten profili güncelliyor
+        } catch (uploadError) {
+          console.error('[Register] Avatar upload failed:', uploadError);
+          // Avatar yüklenemese bile kayıt başarılı sayılır, kullanıcıya devam etmesi için izin ver
+        }
+      }
+
+      return authResponse;
     },
     onSuccess: async () => {
       console.log('[Register] Success');

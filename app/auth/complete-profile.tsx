@@ -55,14 +55,14 @@ export default function CompleteProfileScreen() {
 
       if (!user?.id) throw new Error('Kullanıcı bulunamadı');
 
-      // Update profiles table
+      // Update profiles table (Use upsert to ensure row exists)
       const { error: profileError } = await supabase
         .from('profiles')
-        .update({
+        .upsert({
+          user_id: user.id,
           birthdate: isoDate,
           gender: gender
-        })
-        .eq('user_id', user.id);
+        }, { onConflict: 'user_id' });
 
       if (profileError) throw profileError;
 

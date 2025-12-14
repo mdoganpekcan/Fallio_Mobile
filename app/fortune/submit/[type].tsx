@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   TextInput,
   Alert,
+  Image,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
@@ -108,15 +109,42 @@ export default function FortuneSubmitScreen() {
       return;
     }
 
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      quality: 0.8,
-    });
-
-    if (!result.canceled && result.assets[0]) {
-      setImages([...images, result.assets[0].uri]);
-    }
+    Alert.alert('Fotoğraf Yükle', 'Fotoğrafı nasıl yüklemek istersiniz?', [
+      {
+        text: 'Kamera',
+        onPress: async () => {
+          const permission = await ImagePicker.requestCameraPermissionsAsync();
+          if (permission.status !== 'granted') {
+            Alert.alert('Hata', 'Kamera izni gerekli.');
+            return;
+          }
+          const result = await ImagePicker.launchCameraAsync({
+            allowsEditing: true,
+            quality: 0.8,
+          });
+          if (!result.canceled && result.assets[0]) {
+            setImages([...images, result.assets[0].uri]);
+          }
+        },
+      },
+      {
+        text: 'Galeri',
+        onPress: async () => {
+          const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            quality: 0.8,
+          });
+          if (!result.canceled && result.assets[0]) {
+            setImages([...images, result.assets[0].uri]);
+          }
+        },
+      },
+      {
+        text: 'İptal',
+        style: 'cancel',
+      },
+    ]);
   };
 
   const renderImageUpload = () => {
@@ -130,24 +158,34 @@ export default function FortuneSubmitScreen() {
           {type === 'coffee' ? 'Fotoğraflar' : 'Fotoğraf'}
         </Text>
         <View style={styles.imageGrid}>
-          {Array.from({ length: imageCount }).map((_, index) => (
-            <TouchableOpacity
-              key={index}
-              style={styles.imageUploadBox}
-              onPress={pickImage}
-            >
-              <Upload size={32} color={Colors.textSecondary} />
-              <Text style={styles.imageUploadText}>
-                {type === 'coffee' && index === 0 && 'Fincan İçi'}
-                {type === 'coffee' && index === 1 && 'Fincan Tabağı'}
-                {type === 'coffee' && index === 2 && 'Genel Görünüm'}
-                {type === 'palm' && 'El Fotoğrafı'}
-              </Text>
-            </TouchableOpacity>
-          ))}
+          {Array.from({ length: imageCount }).map((_, index) => {
+            const hasImage = images[index];
+            return (
+              <TouchableOpacity
+                key={index}
+                style={[styles.imageUploadBox, hasImage && styles.imageUploadBoxFilled]}
+                onPress={pickImage}
+              >
+                {hasImage ? (
+                  <Image source={{ uri: hasImage }} style={styles.uploadedImage} />
+                ) : (
+                  <>
+                    <Upload size={32} color={Colors.textSecondary} />
+                    <Text style={styles.imageUploadText}>
+                      {type === 'coffee' && index === 0 && 'Fincan İçi'}
+                      {type === 'coffee' && index === 1 && 'Fincan Tabağı'}
+                      {type === 'coffee' && index === 2 && 'Genel Görünüm'}
+                      {type === 'palm' && 'El Fotoğrafı'}
+                    </Text>
+                  </>
+                )}
+              </TouchableOpacity>
+            );
+          })}
         </View>
       </View>
     );
+
   };
 
   const renderTarotCards = () => {
@@ -382,6 +420,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: Spacing.md,
+    overflow: 'hidden',
+  },
+  imageUploadBoxFilled: {
+    borderStyle: 'solid',
+    padding: 0,
+  },
+  uploadedImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
   },
   imageUploadText: {
     ...Typography.caption,

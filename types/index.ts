@@ -73,6 +73,9 @@ export interface Subscription {
 }
 
 export const zodiacSigns = [
+  { name: 'Oğlak', start: { month: 12, day: 22 }, end: { month: 1, day: 19 } },
+  { name: 'Kova', start: { month: 1, day: 20 }, end: { month: 2, day: 18 } },
+  { name: 'Balık', start: { month: 2, day: 19 }, end: { month: 3, day: 20 } },
   { name: 'Koç', start: { month: 3, day: 21 }, end: { month: 4, day: 19 } },
   { name: 'Boğa', start: { month: 4, day: 20 }, end: { month: 5, day: 20 } },
   { name: 'İkizler', start: { month: 5, day: 21 }, end: { month: 6, day: 20 } },
@@ -82,9 +85,6 @@ export const zodiacSigns = [
   { name: 'Terazi', start: { month: 9, day: 23 }, end: { month: 10, day: 22 } },
   { name: 'Akrep', start: { month: 10, day: 23 }, end: { month: 11, day: 21 } },
   { name: 'Yay', start: { month: 11, day: 22 }, end: { month: 12, day: 21 } },
-  { name: 'Oğlak', start: { month: 12, day: 22 }, end: { month: 1, day: 19 } },
-  { name: 'Kova', start: { month: 1, day: 20 }, end: { month: 2, day: 18 } },
-  { name: 'Balık', start: { month: 2, day: 19 }, end: { month: 3, day: 20 } },
 ];
 
 export const calculateZodiacSign = (birthDate: string): string => {

@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Falio - Gerçek Fal Uygulaması",
-    "slug": "falio-gercek-fal-uygulamasi",
+    "slug": "falio",
     "version": "0.1.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -57,27 +57,9 @@
         }
       ],
       [
-        "react-native-purchases",
-        {
-          "googlePlayApiKey": "goog_YOUR_ANDROID_API_KEY"
-        }
-      ],
-      [
         "expo-image-picker",
         {
           "photosPermission": "The app accesses your photos to let you share them with your friends."
-        }
-      ],
-      [
-        "expo-notifications",
-        {
-          "icon": "./local/assets/notification_icon.png",
-          "color": "#ffffff",
-          "defaultChannel": "default",
-          "sounds": [
-            "./local/assets/notification_sound.wav"
-          ],
-          "enableBackgroundRemoteNotifications": false
         }
       ]
     ],
@@ -86,12 +68,12 @@
     },
     "extra": {
       "router": {
-        "origin": "https://rork.com/"
+        "origin": "https://fallio-web.vercel.app/"
       },
       "eas": {
-        "projectId": "3ed7c030-31a8-49d1-a938-0a4982b122d9"
+        "projectId": "5711fe50-bf31-4f30-87ce-ac1811dc9836"
       }
     },
-    "owner": "tinmoidev"
+    "owner": "velcrinn"
   }
 }

@@ -41,8 +41,13 @@ export default function ProfileScreen() {
       if (!user) throw new Error('User not found');
       return profileService.uploadAvatar(user.id, uri);
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       queryClient.invalidateQueries({ queryKey: ['profile', user?.id] });
+      // Global store'u da güncelle ki diğer ekranlarda (örn. tab bar) avatar güncellensin
+      const updatedUser = await authService.getUser();
+      if (updatedUser) {
+        useAppStore.getState().setUser(updatedUser);
+      }
     },
   });
 

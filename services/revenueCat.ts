@@ -4,8 +4,8 @@ import { Platform } from 'react-native';
 // RevenueCat Dashboard'dan alacağınız API Anahtarları
 // https://app.revenuecat.com/
 const API_KEYS = {
-  ios: 'appl_YOUR_IOS_API_KEY', // TODO: iOS API Key'inizi buraya girin
-  android: 'goog_YOUR_ANDROID_API_KEY', // TODO: Android API Key'inizi buraya girin
+  ios: 'test_FLmNXnvhMuwIQLaqDfXfRgpgMLw', // TODO: iOS API Key'inizi buraya girin
+  android: 'test_FLmNXnvhMuwIQLaqDfXfRgpgMLw', // TODO: Android API Key'inizi buraya girin
 };
 
 // RevenueCat üzerindeki Entitlement ID'niz (örn: 'premium', 'pro_access')
