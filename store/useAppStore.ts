@@ -8,7 +8,7 @@ interface AppState {
   horoscope: HoroscopeReading | null;
   isOnboardingComplete: boolean;
   theme: 'light' | 'dark' | 'system';
-  language: 'tr' | 'en';
+  language: 'tr' | 'en' | 'es' | 'pt';
   
   setUser: (user: User | null) => void;
   updateUserCredits: (credits: number) => void;
@@ -19,7 +19,7 @@ interface AppState {
   setHoroscope: (horoscope: HoroscopeReading) => void;
   completeOnboarding: () => void;
   setTheme: (theme: 'light' | 'dark' | 'system') => void;
-  setLanguage: (language: 'tr' | 'en') => void;
+  setLanguage: (language: 'tr' | 'en' | 'es' | 'pt') => void;
   logout: () => void;
 }
 

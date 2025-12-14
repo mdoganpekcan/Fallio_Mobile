@@ -12,6 +12,7 @@ import { Colors } from "@/constants/theme";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { notificationService } from "@/services/notifications";
 import { revenueCatService } from "@/services/revenueCat";
+import '@/i18n'; // Initialize i18n
 
 SplashScreen.preventAutoHideAsync();
 WebBrowser.maybeCompleteAuthSession();

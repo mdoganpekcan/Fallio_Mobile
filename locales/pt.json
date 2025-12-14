@@ -1,0 +1,136 @@
+{
+  "common": {
+    "welcome": "Bem-vindo",
+    "loading": "Carregando...",
+    "error": "Erro",
+    "success": "Sucesso",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "ok": "OK",
+    "continue": "Continuar",
+    "back": "Voltar",
+    "send": "Enviar",
+    "close": "Fechar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "share": "Compartilhar",
+    "camera": "Câmera",
+    "gallery": "Galeria",
+    "yes": "Sim",
+    "no": "Não",
+    "warning": "Aviso"
+  },
+  "auth": {
+    "login": "Entrar",
+    "register": "Registrar",
+    "email": "Endereço de E-mail",
+    "password": "Senha",
+    "fullName": "Nome Completo",
+    "birthDate": "Data de Nascimento",
+    "gender": "Gênero",
+    "forgotPassword": "Esqueceu a senha?",
+    "noAccount": "Não tem uma conta? Registre-se",
+    "hasAccount": "Já tem uma conta? Entre",
+    "loginWithGoogle": "Entrar com Google",
+    "loginWithApple": "Entrar com Apple",
+    "termsAndPrivacy": "Ao se registrar, você concorda com nossos Termos de Uso e Política de Privacidade.",
+    "resetPassword": "Redefinir Senha",
+    "sendResetLink": "Enviar Link de Redefinição",
+    "checkEmail": "Por favor, verifique sua caixa de entrada.",
+    "completeProfile": "Completar Perfil",
+    "selectGender": "Selecione o Gênero",
+    "male": "Masculino",
+    "female": "Feminino",
+    "other": "Outro",
+    "logout": "Sair",
+    "deleteAccount": "Excluir Conta",
+    "deleteAccountConfirm": "Tem certeza de que deseja excluir permanentemente sua conta e todos os seus dados? Esta ação não pode ser desfeita."
+  },
+  "tabs": {
+    "home": "Início",
+    "fortunes": "Minhas Fortunas",
+    "profile": "Perfil",
+    "credits": "Comprar Créditos"
+  },
+  "home": {
+    "dailyHoroscope": "Seu Horóscopo Diário",
+    "featuredTellers": "Videntes em Destaque",
+    "popularFortunes": "Fortunas Populares",
+    "viewAll": "Ver Tudo",
+    "welcomeBack": "Bem-vindo de volta, {{name}}!",
+    "credits": "{{count}} Créditos"
+  },
+  "fortune": {
+    "types": {
+      "coffee": "Leitura de Café",
+      "tarot": "Leitura de Tarô",
+      "palm": "Quiromancia",
+      "dream": "Interpretação de Sonhos",
+      "love": "Compatibilidade Amorosa",
+      "card": "Cartomancia",
+      "color": "Leitura de Cores"
+    },
+    "status": {
+      "pending": "Interpretando",
+      "completed": "Concluído",
+      "draft": "Rascunho"
+    },
+    "actions": {
+      "readFortune": "Ler Fortuna",
+      "sendFortune": "Enviar Fortuna",
+      "takePhoto": "Tirar Foto",
+      "chooseCards": "Escolher Cartas",
+      "writeDream": "Escrever Sonho"
+    },
+    "prompts": {
+      "coffeeInstruction": "Envie fotos da sua xícara e pires.",
+      "palmInstruction": "Tire uma foto nítida da sua mão esquerda.",
+      "dreamPlaceholder": "Descreva seu sonho em detalhes...",
+      "questionPlaceholder": "Você tem uma pergunta específica?"
+    },
+    "result": {
+      "yourFortune": "Sua Fortuna",
+      "rateFortune": "Avaliar Leitura",
+      "shareFortune": "Compartilhar Leitura"
+    }
+  },
+  "profile": {
+    "title": "Meu Perfil",
+    "editProfile": "Editar Perfil",
+    "accountSettings": "Configurações da Conta",
+    "notifications": "Configurações de Notificação",
+    "privacy": "Política de Privacidade",
+    "terms": "Termos de Uso",
+    "help": "Ajuda e Suporte",
+    "language": "Idioma",
+    "theme": "Tema",
+    "zodiac": "{{sign}}",
+    "relationshipStatus": "Status de Relacionamento",
+    "job": "Profissão"
+  },
+  "wallet": {
+    "title": "Minha Carteira",
+    "currentBalance": "Saldo Atual",
+    "buyCredits": "Adicionar Créditos",
+    "history": "Histórico de Transações",
+    "packages": "Pacotes de Créditos",
+    "successMessage": "Créditos adicionados com sucesso!",
+    "insufficientCredits": "Créditos insuficientes. Por favor, adicione créditos."
+  },
+  "errors": {
+    "general": "Ocorreu um erro. Por favor, tente novamente.",
+    "network": "Por favor, verifique sua conexão com a internet.",
+    "requiredField": "Este campo é obrigatório.",
+    "invalidEmail": "Endereço de e-mail inválido.",
+    "passwordTooShort": "A senha deve ter pelo menos 6 caracteres.",
+    "passwordsDontMatch": "As senhas não coincidem.",
+    "uploadFailed": "Falha no envio."
+  },
+  "notifications": {
+    "title": "Notificações",
+    "fortuneReady": "Sua fortuna está pronta!",
+    "dailyHoroscope": "Seu horóscopo diário está pronto.",
+    "campaigns": "Campanhas e Ofertas",
+    "appUpdates": "Atualizações do Aplicativo"
+  }
+}

@@ -16,9 +16,8 @@ import { useRouter } from 'expo-router';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { walletService } from '@/services/wallet';
 import { useAppStore } from '@/store/useAppStore';
-import { useMutation } from '@tanstack/react-query';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { StatusBar } from 'expo-status-bar';
+import { PurchasesPackage } from 'react-native-purchases';
+import { revenueCatService } from '@/services/revenueCat';
 
 export default function CreditsScreen() {
   const router = useRouter();
@@ -26,25 +25,23 @@ export default function CreditsScreen() {
   const updateUserCredits = useAppStore((state) => state.updateUserCredits);
   const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
-  const [selectedPlanId, setSelectedPlanId] = React.useState<string | null>(null);
+  const [selectedPackage, setSelectedPackage] = React.useState<PurchasesPackage | null>(null);
+  const [loadingAd, setLoadingAd] = React.useState(false);
 
-  const { data: creditPackages = [], isLoading: creditLoading } = useQuery({
-    queryKey: ['credit-packages'],
-    queryFn: () => walletService.getCreditPackages(),
+  // RevenueCat Offerings (Ürünler)
+  const { data: offerings, isLoading: offeringsLoading } = useQuery({
+    queryKey: ['rc-offerings'],
+    queryFn: () => revenueCatService.getOfferings(),
   });
 
-  const { data: subscription, isLoading: subscriptionLoading } = useQuery({
-    queryKey: ['active-subscription', user?.id],
-    queryFn: () => (user ? walletService.getActiveSubscription(user.id) : Promise.resolve(null)),
-    enabled: !!user,
+  // RevenueCat Abonelik Durumu
+  const { data: isPro, isLoading: proLoading } = useQuery({
+    queryKey: ['rc-status', user?.id],
+    queryFn: () => revenueCatService.checkSubscriptionStatus(),
   });
 
-  const { data: subscriptionPlans = [], isLoading: subscriptionPlansLoading } = useQuery({
-    queryKey: ['subscription-plans'],
-    queryFn: () => walletService.getSubscriptionPlans(),
-  });
-
-  const purchaseMutation = useMutation({
+  // Kredi Ekleme (Backend)
+  const addCreditsMutation = useMutation({
     mutationFn: async (credits: number) => {
       if (!user) throw new Error('Kullanıcı bulunamadı');
       await walletService.updateCredits(user.id, credits);
@@ -53,15 +50,58 @@ export default function CreditsScreen() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['wallet', user?.id] });
-      Alert.alert('Başarılı', 'Kredi eklendi.');
-    },
-    onError: (error: any) => {
-      Alert.alert('Hata', error?.message || 'Satın alma sırasında hata oluştu.');
+      Alert.alert('Başarılı', 'Kredi hesabınıza eklendi.');
     },
   });
 
-  const handlePurchaseUnavailable = () => {
-    Alert.alert('Bilgi', 'Satın alma altyapısı henüz yapılandırılmadı.');
+  // Satın Alma İşlemi
+  const handlePurchase = async (pkg: PurchasesPackage) => {
+    try {
+      const { customerInfo } = await revenueCatService.purchasePackage(pkg);
+      
+      // Eğer kredi paketi ise (identifier kontrolü veya metadata)
+      // Örnek: '10_credits_pack'
+      if (pkg.product.identifier.includes('credit')) {
+        // Paketteki kredi miktarını belirle (Metadata veya ID'den)
+        // Basitlik için: ID içinde sayı varsa onu al, yoksa 10 varsay
+        const credits = parseInt(pkg.product.identifier.replace(/[^0-9]/g, '')) || 10;
+        await addCreditsMutation.mutateAsync(credits);
+      } else {
+        // Abonelik ise
+        Alert.alert('Başarılı', 'Premium üyelik aktif edildi!');
+        queryClient.invalidateQueries({ queryKey: ['rc-status'] });
+      }
+    } catch (e: any) {
+      if (!e.userCancelled) {
+        Alert.alert('Hata', e.message || 'Satın alma başarısız.');
+      }
+    }
+  };
+
+  const handleWatchAd = async () => {
+    if (!user) return;
+    
+    if (!adMobService.isRewardedReady()) {
+      Alert.alert('Bilgi', 'Reklam şu anda yükleniyor, lütfen biraz bekleyin.');
+      return;
+    }
+
+    setLoadingAd(true);
+    try {
+      const result = await adMobService.showRewarded();
+      if (result.watched) {
+        // Kredi ekle (+1 kredi)
+        await purchaseMutation.mutateAsync(1);
+      } else {
+        // İzleme tamamlanmadı veya hata oluştu
+        // Alert.alert('Bilgi', 'Reklam sonuna kadar izlenmedi.');
+      }
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Hata', 'Reklam gösterilirken bir sorun oluştu.');
+    } finally {
+      setLoadingAd(false);
+    }
   };
 
   return (
@@ -75,6 +115,36 @@ export default function CreditsScreen() {
       </View>
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+        
+        {/* Ücretsiz Kredi Alanı */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Ücretsiz Kredi Kazan</Text>
+          <TouchableOpacity 
+            style={styles.adButton}
+            onPress={handleWatchAd}
+            disabled={loadingAd}
+          >
+            <LinearGradient
+              colors={['#6366f1', '#4f46e5']}
+              style={styles.adButtonGradient}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+            >
+              {loadingAd ? (
+                <ActivityIndicator color="#FFF" />
+              ) : (
+                <View style={styles.adContent}>
+                  <Text style={styles.adButtonIcon}>🎬</Text>
+                  <View>
+                    <Text style={styles.adButtonTitle}>Reklam İzle</Text>
+                    <Text style={styles.adButtonSubtitle}>+1 Kredi Kazan</Text>
+                  </View>
+                </View>
+              )}
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
+
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Potansiyelini Ortaya Çıkar</Text>
           <Text style={styles.sectionDescription}>
@@ -99,151 +169,85 @@ export default function CreditsScreen() {
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Kredi Paketleri</Text>
-
-          {creditLoading ? (
-            <ActivityIndicator color={Colors.primary} />
-          ) : creditPackages.length === 0 ? (
-            <Text style={styles.emptyText}>Aktif kredi paketi bulunamadı.</Text>
-          ) : (
-            creditPackages.map((pkg) => (
-              <TouchableOpacity
-                key={pkg.id}
-                style={styles.packageCard}
-                onPress={() => purchaseMutation.mutate(pkg.credits)}
-                disabled={purchaseMutation.isPending}
-              >
-                <View style={styles.packageContent}>
-                  <View style={styles.packageIcon}>
-                    <Text style={styles.diamondIcon}>💳</Text>
-                  </View>
+          <View style={styles.packagesContainer}>
+            {offeringsLoading ? (
+              <ActivityIndicator color={Colors.primary} />
+            ) : (
+              offerings?.availablePackages
+                .filter((pkg) => pkg.product.identifier.includes('credit'))
+                .map((pkg) => (
+                <TouchableOpacity
+                  key={pkg.identifier}
+                  style={styles.packageCard}
+                  onPress={() => handlePurchase(pkg)}
+                >
                   <View style={styles.packageInfo}>
-                    <Text style={styles.packageAmount}>{pkg.credits} kredi</Text>
-                    <Text style={styles.packagePrice}>{pkg.price} TL</Text>
+                    <Text style={styles.packageAmount}>{pkg.product.title}</Text>
                   </View>
-                </View>
-              </TouchableOpacity>
-            ))
-          )}
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Abonelik Seçenekleri</Text>
-
-          {subscriptionPlansLoading ? (
-            <ActivityIndicator color={Colors.primary} />
-          ) : subscriptionPlans.length === 0 ? (
-            <Text style={styles.emptyText}>Aktif abonelik seçeneği bulunamadı.</Text>
-          ) : (
-            subscriptionPlans.map((plan) => (
-              <TouchableOpacity
-                key={plan.id}
-                style={[
-                  styles.subscriptionCard,
-                  plan.status === 'active' && styles.subscriptionCardHighlighted,
-                  selectedPlanId === plan.id && styles.subscriptionCardHighlighted,
-                ]}
-                onPress={() => setSelectedPlanId(plan.id)}
-                activeOpacity={0.8}
-              >
-                <View style={styles.subscriptionContent}>
-                  <View style={styles.radioButton}>
-                    <View style={styles.radioButtonInner} />
-                  </View>
-                  <View style={styles.subscriptionInfo}>
-                    <Text style={styles.subscriptionPeriod}>{plan.plan_name}</Text>
-                    <Text style={styles.subscriptionPrice}>
-                      {plan.price} TL / {plan.cycle}
-                    </Text>
-                    {plan.perks?.length ? (
-                      <View style={{ marginTop: 6 }}>
-                        {plan.perks.map((perk) => (
-                          <Text key={perk} style={styles.perkItem}>
-                            • {perk}
-                          </Text>
-                        ))}
-                      </View>
-                    ) : null}
-                  </View>
-                </View>
-                <Text style={styles.subscriptionStatus}>Satın alma için destekle iletişime geç</Text>
-              </TouchableOpacity>
-            ))
-          )}
-
-          <Text style={[styles.sectionTitle, { marginTop: Spacing.md }]}>Abonelik Durumu</Text>
-
-          {subscriptionLoading ? (
-            <ActivityIndicator color={Colors.primary} />
-          ) : subscription ? (
-            <View style={[styles.subscriptionCard, styles.subscriptionCardHighlighted]}>
-              <View style={styles.subscriptionContent}>
-                <View style={styles.radioButton}>
-                  <View style={styles.radioButtonInner} />
-                </View>
-                <View style={styles.subscriptionInfo}>
-                  <Text style={styles.subscriptionPeriod}>{subscription.plan_name}</Text>
-                  <Text style={styles.subscriptionPrice}>
-                    {subscription.price} TL / {subscription.cycle}
-                  </Text>
-                </View>
-              </View>
-              <Text style={styles.subscriptionStatus}>Aktif</Text>
-            </View>
-          ) : (
-            <Text style={styles.emptyText}>Aktif abonelik bulunmuyor.</Text>
-          )}
-        </View>
-
-        {subscriptionPlans.length > 0 && (
-          <TouchableOpacity
-            style={[styles.purchaseButton, !selectedPlanId && { opacity: 0.5 }]}
-            onPress={() => {
-              if (!selectedPlanId) return;
-              Alert.alert('Bilgi', 'Abonelik satın alma akışı henüz aktif değil. Play Console ürün kimlikleri tanımlandığında devreye alınacak.');
-            }}
-            disabled={!selectedPlanId}
-          >
-            <LinearGradient
-              colors={[Colors.gradientStart, Colors.gradientMiddle]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={styles.purchaseGradient}
-            >
-              <Text style={styles.purchaseButtonText}>
-                {selectedPlanId ? 'Abone Ol' : 'Plan Seç'}
-              </Text>
-            </LinearGradient>
-          </TouchableOpacity>
-        )}
-
-        <View style={styles.section}>
-          <View style={styles.rewardCard}>
-            <View style={styles.rewardIcon}>
-              <Text style={styles.rewardIconText}>💎</Text>
-            </View>
-            <View style={styles.rewardInfo}>
-              <Text style={styles.rewardTitle}>İzle & Kazan</Text>
-              <Text style={styles.rewardDescription}>
-                Ödüllü reklam izleyerek kredi kazan.
-              </Text>
-            </View>
-            <View style={styles.rewardBadge}>
-              <Text style={styles.rewardBadgeText}>+10</Text>
-            </View>
+                  <Text style={styles.packagePrice}>{pkg.product.priceString}</Text>
+                </TouchableOpacity>
+              ))
+            )}
+            {(!offerings || offerings.availablePackages.filter(p => p.product.identifier.includes('credit')).length === 0) && !offeringsLoading && (
+               <Text style={{color: Colors.textSecondary}}>Şu anda kredi paketi bulunmuyor.</Text>
+            )}
           </View>
         </View>
 
-        <View style={styles.footer}>
-          <TouchableOpacity>
-            <Text style={styles.footerLink}>Gizlilik Politikası</Text>
-          </TouchableOpacity>
-          <Text style={styles.footerSeparator}>•</Text>
-          <TouchableOpacity>
-            <Text style={styles.footerLink}>Kullanım Koşulları</Text>
-          </TouchableOpacity>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Premium Abonelik</Text>
+          {isPro ? (
+            <View style={styles.activeSubscription}>
+              <Text style={styles.activeSubTitle}>Premium Üyesiniz</Text>
+              <Text style={styles.activeSubDate}>
+                Aboneliğiniz aktif.
+              </Text>
+            </View>
+          ) : (
+            <View style={styles.plansContainer}>
+              {offeringsLoading ? (
+                <ActivityIndicator color={Colors.primary} />
+              ) : (
+                offerings?.availablePackages
+                  .filter((pkg) => !pkg.product.identifier.includes('credit'))
+                  .map((pkg) => (
+                  <TouchableOpacity
+                    key={pkg.identifier}
+                    style={[
+                      styles.planCard,
+                      selectedPackage?.identifier === pkg.identifier && styles.selectedPlan,
+                    ]}
+                    onPress={() => setSelectedPackage(pkg)}
+                  >
+                    <View style={styles.planHeader}>
+                      <Text style={styles.planName}>{pkg.product.title}</Text>
+                    </View>
+                    <Text style={styles.planPrice}>{pkg.product.priceString} / {pkg.product.subscriptionPeriod || 'Ay'}</Text>
+                    <TouchableOpacity
+                      style={[
+                        styles.subscribeButton,
+                        selectedPackage?.identifier === pkg.identifier && styles.selectedSubscribeButton,
+                      ]}
+                      onPress={() => handlePurchase(pkg)}
+                    >
+                      <Text
+                        style={[
+                          styles.subscribeButtonText,
+                          selectedPackage?.identifier === pkg.identifier && styles.selectedSubscribeButtonText,
+                        ]}
+                      >
+                        Abone Ol
+                      </Text>
+                    </TouchableOpacity>
+                  </TouchableOpacity>
+                ))
+              )}
+               {(!offerings || offerings.availablePackages.filter(p => !p.product.identifier.includes('credit')).length === 0) && !offeringsLoading && (
+               <Text style={{color: Colors.textSecondary}}>Şu anda abonelik planı bulunmuyor.</Text>
+            )}
+            </View>
+          )}
         </View>
-
-        <View style={{ height: 32 }} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -260,234 +264,173 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
   },
   headerTitle: {
-    ...Typography.heading,
+    ...Typography.h2,
     color: Colors.text,
   },
   scrollView: {
     flex: 1,
   },
   section: {
-    paddingHorizontal: Spacing.lg,
-    marginBottom: Spacing.xl,
+    padding: Spacing.lg,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
   },
   sectionTitle: {
-    ...Typography.heading,
+    ...Typography.h3,
     color: Colors.text,
     marginBottom: Spacing.sm,
   },
   sectionDescription: {
     ...Typography.body,
     color: Colors.textSecondary,
-    marginBottom: Spacing.lg,
+    marginBottom: Spacing.md,
   },
   featuresList: {
-    marginBottom: Spacing.md,
+    gap: Spacing.sm,
   },
   feature: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: Spacing.md,
+    gap: Spacing.sm,
   },
   featureIcon: {
     fontSize: 20,
-    marginRight: Spacing.md,
   },
   featureText: {
     ...Typography.body,
     color: Colors.text,
   },
+  packagesContainer: {
+    gap: Spacing.md,
+  },
   packageCard: {
-    backgroundColor: Colors.card,
-    borderRadius: BorderRadius.lg,
-    padding: Spacing.md,
-    marginBottom: Spacing.md,
-    ...Shadows.medium,
-  },
-  popularBadge: {
-    position: 'absolute',
-    top: -8,
-    right: Spacing.md,
-    backgroundColor: Colors.primary,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: 4,
-    borderRadius: BorderRadius.full,
-  },
-  popularText: {
-    ...Typography.small,
-    color: Colors.text,
-    fontWeight: '600',
-  },
-  packageContent: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  packageIcon: {
-    width: 56,
-    height: 56,
+    justifyContent: 'space-between',
+    padding: Spacing.md,
+    backgroundColor: Colors.card,
     borderRadius: BorderRadius.md,
-    backgroundColor: Colors.cardSecondary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: Spacing.md,
-  },
-  diamondIcon: {
-    fontSize: 28,
+    borderWidth: 1,
+    borderColor: Colors.border,
   },
   packageInfo: {
-    flex: 1,
-  },
-  packageAmount: {
-    ...Typography.heading,
-    color: Colors.text,
-    marginBottom: 4,
-  },
-  packagePrice: {
-    ...Typography.body,
-    color: Colors.textSecondary,
-  },
-  subscriptionCard: {
-    backgroundColor: Colors.card,
-    borderRadius: BorderRadius.lg,
-    padding: Spacing.md,
-    marginBottom: Spacing.md,
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  subscriptionCardHighlighted: {
-    borderColor: Colors.primary,
-  },
-  discountBadge: {
-    position: 'absolute',
-    top: -8,
-    right: Spacing.md,
-    backgroundColor: Colors.premium,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: 4,
-    borderRadius: BorderRadius.full,
-  },
-  discountText: {
-    ...Typography.small,
-    color: Colors.background,
-    fontWeight: '600',
-  },
-  subscriptionContent: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  radioButton: {
-    width: 24,
-    height: 24,
-    borderRadius: BorderRadius.full,
-    borderWidth: 2,
-    borderColor: Colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: Spacing.md,
-  },
-  radioButtonInner: {
-    width: 12,
-    height: 12,
-    borderRadius: BorderRadius.full,
-    backgroundColor: Colors.primary,
-  },
-  subscriptionInfo: {
-    flex: 1,
-  },
-  subscriptionPeriod: {
-    ...Typography.bodyBold,
-    color: Colors.text,
-    marginBottom: 4,
-  },
-  subscriptionPrice: {
-    ...Typography.body,
-    color: Colors.textSecondary,
-  },
-  subscriptionStatus: {
-    ...Typography.caption,
-    color: Colors.premium,
-    marginTop: Spacing.sm,
-  },
-  perkItem: {
-    ...Typography.caption,
-    color: Colors.textSecondary,
-  },
-  rewardCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: Colors.card,
-    borderRadius: BorderRadius.lg,
-    padding: Spacing.md,
-    ...Shadows.medium,
-  },
-  rewardIcon: {
-    width: 56,
-    height: 56,
-    borderRadius: BorderRadius.full,
-    backgroundColor: Colors.cardSecondary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: Spacing.md,
-  },
-  rewardIconText: {
-    fontSize: 28,
-  },
-  rewardInfo: {
-    flex: 1,
-  },
-  rewardTitle: {
-    ...Typography.bodyBold,
-    color: Colors.text,
-    marginBottom: 4,
-  },
-  rewardDescription: {
-    ...Typography.caption,
-    color: Colors.textSecondary,
-  },
-  rewardBadge: {
-    backgroundColor: Colors.premium,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: 4,
-    borderRadius: BorderRadius.full,
-  },
-  rewardBadgeText: {
-    ...Typography.bodyBold,
-    color: Colors.background,
-  },
-  emptyText: {
-    ...Typography.body,
-    color: Colors.textSecondary,
-    marginBottom: Spacing.md,
-  },
-  purchaseButton: {
-    marginHorizontal: Spacing.lg,
-    borderRadius: BorderRadius.lg,
-    overflow: 'hidden',
-    ...Shadows.large,
-  },
-  purchaseGradient: {
-    paddingVertical: 16,
-    alignItems: 'center',
-  },
-  purchaseButtonText: {
-    ...Typography.bodyBold,
-    color: Colors.text,
-    fontSize: 18,
-  },
-  footer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: Spacing.lg,
     gap: Spacing.sm,
   },
-  footerLink: {
+  packageAmount: {
+    ...Typography.h4,
+    color: Colors.text,
+  },
+  packageBonus: {
     ...Typography.caption,
+    color: Colors.success,
+    fontWeight: 'bold',
+  },
+  packagePrice: {
+    ...Typography.h4,
+    color: Colors.primary,
+  },
+  plansContainer: {
+    gap: Spacing.md,
+  },
+  planCard: {
+    padding: Spacing.md,
+    backgroundColor: Colors.card,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  selectedPlan: {
+    borderColor: Colors.primary,
+    backgroundColor: Colors.primary + '10',
+  },
+  planHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: Spacing.xs,
+  },
+  planName: {
+    ...Typography.h4,
+    color: Colors.text,
+  },
+  popularBadge: {
+    backgroundColor: Colors.primary,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 2,
+    borderRadius: BorderRadius.sm,
+  },
+  popularText: {
+    ...Typography.caption,
+    color: '#FFF',
+    fontWeight: 'bold',
+  },
+  planPrice: {
+    ...Typography.body,
+    color: Colors.textSecondary,
+    marginBottom: Spacing.md,
+  },
+  subscribeButton: {
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.sm,
+    backgroundColor: Colors.border,
+    alignItems: 'center',
+  },
+  selectedSubscribeButton: {
+    backgroundColor: Colors.primary,
+  },
+  subscribeButtonText: {
+    ...Typography.button,
+    color: Colors.text,
+  },
+  selectedSubscribeButtonText: {
+    color: '#FFF',
+  },
+  activeSubscription: {
+    padding: Spacing.md,
+    backgroundColor: Colors.success + '20',
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    borderColor: Colors.success,
+  },
+  activeSubTitle: {
+    ...Typography.h4,
+    color: Colors.success,
+    marginBottom: Spacing.xs,
+  },
+  activeSubDate: {
+    ...Typography.body,
     color: Colors.textSecondary,
   },
-  footerSeparator: {
+  adButton: {
+    borderRadius: BorderRadius.md,
+    overflow: 'hidden',
+    marginTop: Spacing.xs,
+  },
+  adButtonGradient: {
+    padding: Spacing.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  adContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.md,
+  },
+  adButtonIcon: {
+    fontSize: 24,
+  },
+  adButtonTitle: {
+    ...Typography.h4,
+    color: '#FFF',
+  },
+  adButtonSubtitle: {
     ...Typography.caption,
-    color: Colors.textSecondary,
+    color: '#E0E7FF',
   },
 });

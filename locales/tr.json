@@ -1,0 +1,136 @@
+{
+  "common": {
+    "welcome": "Hoş Geldiniz",
+    "loading": "Yükleniyor...",
+    "error": "Hata",
+    "success": "Başarılı",
+    "save": "Kaydet",
+    "cancel": "İptal",
+    "ok": "Tamam",
+    "continue": "Devam Et",
+    "back": "Geri",
+    "send": "Gönder",
+    "close": "Kapat",
+    "delete": "Sil",
+    "edit": "Düzenle",
+    "share": "Paylaş",
+    "camera": "Kamera",
+    "gallery": "Galeri",
+    "yes": "Evet",
+    "no": "Hayır",
+    "warning": "Uyarı"
+  },
+  "auth": {
+    "login": "Giriş Yap",
+    "register": "Kayıt Ol",
+    "email": "E-posta Adresi",
+    "password": "Şifre",
+    "fullName": "Ad Soyad",
+    "birthDate": "Doğum Tarihi",
+    "gender": "Cinsiyet",
+    "forgotPassword": "Şifremi Unuttum",
+    "noAccount": "Hesabınız yok mu? Kayıt olun",
+    "hasAccount": "Zaten hesabınız var mı? Giriş yapın",
+    "loginWithGoogle": "Google ile Giriş Yap",
+    "loginWithApple": "Apple ile Giriş Yap",
+    "termsAndPrivacy": "Kayıt olarak Kullanım Koşulları ve Gizlilik Politikasını kabul etmiş olursunuz.",
+    "resetPassword": "Şifre Sıfırla",
+    "sendResetLink": "Sıfırlama Bağlantısı Gönder",
+    "checkEmail": "Lütfen e-posta kutunuzu kontrol edin.",
+    "completeProfile": "Profilini Tamamla",
+    "selectGender": "Cinsiyet Seçiniz",
+    "male": "Erkek",
+    "female": "Kadın",
+    "other": "Diğer",
+    "logout": "Çıkış Yap",
+    "deleteAccount": "Hesabımı Sil",
+    "deleteAccountConfirm": "Hesabınızı ve tüm verilerinizi kalıcı olarak silmek istediğinizden emin misiniz? Bu işlem geri alınamaz."
+  },
+  "tabs": {
+    "home": "Ana Sayfa",
+    "fortunes": "Fallarım",
+    "profile": "Profil",
+    "credits": "Kredi Al"
+  },
+  "home": {
+    "dailyHoroscope": "Günlük Burç Yorumun",
+    "featuredTellers": "Öne Çıkan Falcılar",
+    "popularFortunes": "Popüler Fallar",
+    "viewAll": "Tümünü Gör",
+    "welcomeBack": "Tekrar hoş geldin, {{name}}!",
+    "credits": "{{count}} Kredi"
+  },
+  "fortune": {
+    "types": {
+      "coffee": "Kahve Falı",
+      "tarot": "Tarot Falı",
+      "palm": "El Falı",
+      "dream": "Rüya Tabiri",
+      "love": "Aşk Uyumu",
+      "card": "İskambil Falı",
+      "color": "Renk Falı"
+    },
+    "status": {
+      "pending": "Yorumlanıyor",
+      "completed": "Tamamlandı",
+      "draft": "Taslak"
+    },
+    "actions": {
+      "readFortune": "Falı Oku",
+      "sendFortune": "Fal Gönder",
+      "takePhoto": "Fotoğraf Çek",
+      "chooseCards": "Kart Seç",
+      "writeDream": "Rüyanı Yaz"
+    },
+    "prompts": {
+      "coffeeInstruction": "Fincanınızın ve tabağınızın fotoğraflarını yükleyin.",
+      "palmInstruction": "Sol elinizin net bir fotoğrafını çekin.",
+      "dreamPlaceholder": "Rüyanızı detaylı bir şekilde anlatın...",
+      "questionPlaceholder": "Sormak istediğiniz özel bir soru var mı?"
+    },
+    "result": {
+      "yourFortune": "Fal Yorumun",
+      "rateFortune": "Yorumu Puanla",
+      "shareFortune": "Yorumu Paylaş"
+    }
+  },
+  "profile": {
+    "title": "Profilim",
+    "editProfile": "Profili Düzenle",
+    "accountSettings": "Hesap Ayarları",
+    "notifications": "Bildirim Ayarları",
+    "privacy": "Gizlilik Politikası",
+    "terms": "Kullanım Koşulları",
+    "help": "Yardım ve Destek",
+    "language": "Dil Seçeneği",
+    "theme": "Tema",
+    "zodiac": "{{sign}} Burcu",
+    "relationshipStatus": "İlişki Durumu",
+    "job": "Meslek"
+  },
+  "wallet": {
+    "title": "Cüzdanım",
+    "currentBalance": "Mevcut Bakiye",
+    "buyCredits": "Kredi Yükle",
+    "history": "Harcama Geçmişi",
+    "packages": "Kredi Paketleri",
+    "successMessage": "Kredi yükleme işlemi başarılı!",
+    "insufficientCredits": "Yetersiz kredi. Lütfen kredi yükleyin."
+  },
+  "errors": {
+    "general": "Bir hata oluştu. Lütfen tekrar deneyin.",
+    "network": "İnternet bağlantınızı kontrol edin.",
+    "requiredField": "Bu alan zorunludur.",
+    "invalidEmail": "Geçersiz e-posta adresi.",
+    "passwordTooShort": "Şifre en az 6 karakter olmalıdır.",
+    "passwordsDontMatch": "Şifreler eşleşmiyor.",
+    "uploadFailed": "Yükleme başarısız oldu."
+  },
+  "notifications": {
+    "title": "Bildirimler",
+    "fortuneReady": "Falınız yorumlandı!",
+    "dailyHoroscope": "Günlük burç yorumunuz hazır.",
+    "campaigns": "Kampanyalar ve Fırsatlar",
+    "appUpdates": "Uygulama Güncellemeleri"
+  }
+}

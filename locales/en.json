@@ -1,0 +1,136 @@
+{
+  "common": {
+    "welcome": "Welcome",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "save": "Save",
+    "cancel": "Cancel",
+    "ok": "OK",
+    "continue": "Continue",
+    "back": "Back",
+    "send": "Send",
+    "close": "Close",
+    "delete": "Delete",
+    "edit": "Edit",
+    "share": "Share",
+    "camera": "Camera",
+    "gallery": "Gallery",
+    "yes": "Yes",
+    "no": "No",
+    "warning": "Warning"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "email": "Email Address",
+    "password": "Password",
+    "fullName": "Full Name",
+    "birthDate": "Birth Date",
+    "gender": "Gender",
+    "forgotPassword": "Forgot Password",
+    "noAccount": "Don't have an account? Register",
+    "hasAccount": "Already have an account? Login",
+    "loginWithGoogle": "Login with Google",
+    "loginWithApple": "Login with Apple",
+    "termsAndPrivacy": "By registering, you agree to our Terms of Use and Privacy Policy.",
+    "resetPassword": "Reset Password",
+    "sendResetLink": "Send Reset Link",
+    "checkEmail": "Please check your email inbox.",
+    "completeProfile": "Complete Profile",
+    "selectGender": "Select Gender",
+    "male": "Male",
+    "female": "Female",
+    "other": "Other",
+    "logout": "Logout",
+    "deleteAccount": "Delete Account",
+    "deleteAccountConfirm": "Are you sure you want to permanently delete your account and all your data? This action cannot be undone."
+  },
+  "tabs": {
+    "home": "Home",
+    "fortunes": "My Fortunes",
+    "profile": "Profile",
+    "credits": "Buy Credits"
+  },
+  "home": {
+    "dailyHoroscope": "Your Daily Horoscope",
+    "featuredTellers": "Featured Tellers",
+    "popularFortunes": "Popular Fortunes",
+    "viewAll": "View All",
+    "welcomeBack": "Welcome back, {{name}}!",
+    "credits": "{{count}} Credits"
+  },
+  "fortune": {
+    "types": {
+      "coffee": "Coffee Fortune",
+      "tarot": "Tarot Reading",
+      "palm": "Palm Reading",
+      "dream": "Dream Interpretation",
+      "love": "Love Compatibility",
+      "card": "Card Reading",
+      "color": "Color Reading"
+    },
+    "status": {
+      "pending": "Interpreting",
+      "completed": "Completed",
+      "draft": "Draft"
+    },
+    "actions": {
+      "readFortune": "Read Fortune",
+      "sendFortune": "Send Fortune",
+      "takePhoto": "Take Photo",
+      "chooseCards": "Choose Cards",
+      "writeDream": "Write Dream"
+    },
+    "prompts": {
+      "coffeeInstruction": "Upload photos of your cup and saucer.",
+      "palmInstruction": "Take a clear photo of your left hand.",
+      "dreamPlaceholder": "Describe your dream in detail...",
+      "questionPlaceholder": "Do you have a specific question?"
+    },
+    "result": {
+      "yourFortune": "Your Fortune",
+      "rateFortune": "Rate Reading",
+      "shareFortune": "Share Reading"
+    }
+  },
+  "profile": {
+    "title": "My Profile",
+    "editProfile": "Edit Profile",
+    "accountSettings": "Account Settings",
+    "notifications": "Notification Settings",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Use",
+    "help": "Help & Support",
+    "language": "Language",
+    "theme": "Theme",
+    "zodiac": "{{sign}}",
+    "relationshipStatus": "Relationship Status",
+    "job": "Job"
+  },
+  "wallet": {
+    "title": "My Wallet",
+    "currentBalance": "Current Balance",
+    "buyCredits": "Add Credits",
+    "history": "Transaction History",
+    "packages": "Credit Packages",
+    "successMessage": "Credits added successfully!",
+    "insufficientCredits": "Insufficient credits. Please add credits."
+  },
+  "errors": {
+    "general": "An error occurred. Please try again.",
+    "network": "Please check your internet connection.",
+    "requiredField": "This field is required.",
+    "invalidEmail": "Invalid email address.",
+    "passwordTooShort": "Password must be at least 6 characters.",
+    "passwordsDontMatch": "Passwords do not match.",
+    "uploadFailed": "Upload failed."
+  },
+  "notifications": {
+    "title": "Notifications",
+    "fortuneReady": "Your fortune is ready!",
+    "dailyHoroscope": "Your daily horoscope is ready.",
+    "campaigns": "Campaigns and Deals",
+    "appUpdates": "App Updates"
+  }
+}

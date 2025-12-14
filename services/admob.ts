@@ -95,10 +95,6 @@ class AdMobService {
       this.rewardedLoaded = true;
     });
 
-    this.rewarded.addAdEventListener(RewardedAdEventType.EARNED_REWARD, (reward) => {
-      console.log('[AdMob] User earned reward:', reward);
-    });
-
     this.rewarded.addAdEventListener(AdEventType.CLOSED, () => {
       console.log('[AdMob] Rewarded closed');
       this.rewardedLoaded = false;
@@ -130,11 +126,13 @@ class AdMobService {
         let earned = false;
         let rewardAmount = 0;
 
+        // Geçici event listener'lar
         const unsubscribeEarned = this.rewarded.addAdEventListener(
           RewardedAdEventType.EARNED_REWARD,
           (reward) => {
             earned = true;
             rewardAmount = reward.amount;
+            console.log('[AdMob] Reward earned:', reward);
           }
         );
         
@@ -147,7 +145,10 @@ class AdMobService {
           }
         );
 
-        this.rewarded.show().catch(() => {
+        this.rewarded.show().catch((error) => {
+           console.error('[AdMob] Show error:', error);
+           unsubscribeEarned();
+           unsubscribeClosed();
            resolve({ watched: false });
         });
       } else {
