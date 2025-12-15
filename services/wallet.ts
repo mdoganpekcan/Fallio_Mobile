@@ -72,6 +72,37 @@ export const walletService = {
     console.log('[Wallet] Credits updated successfully');
   },
 
+  async getDailyFreeUsageCount(userId: string): Promise<number> {
+    const today = new Date().toISOString().split('T')[0];
+    const { count, error } = await supabase
+      .from('daily_free_usages')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', userId)
+      .eq('usage_date', today);
+      
+    if (error) {
+      console.error('[Wallet] Get daily usage error:', error);
+      return 0;
+    }
+    return count || 0;
+  },
+
+  async recordDailyFreeUsage(userId: string, fortuneType: string): Promise<void> {
+    const today = new Date().toISOString().split('T')[0];
+    const { error } = await supabase
+      .from('daily_free_usages')
+      .insert({
+        user_id: userId,
+        fortune_type: fortuneType,
+        usage_date: today
+      });
+      
+    if (error) {
+      console.error('[Wallet] Record daily usage error:', error);
+      throw error;
+    }
+  },
+
   async getCreditPackages() {
     const { data, error } = await supabase
       .from('credit_packages')
