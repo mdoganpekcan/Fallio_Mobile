@@ -1,6 +1,6 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import * as Localization from 'expo-localization';
+// import * as Localization from 'expo-localization';
 import 'intl-pluralrules';
 
 import tr from './locales/tr.json';
@@ -16,6 +16,9 @@ const resources = {
 };
 
 const getDeviceLanguage = () => {
+  // Native module 'ExpoLocalization' eksik olduğu için geçici olarak devre dışı bırakıldı.
+  // Development build yeniden alındığında bu kısım açılabilir.
+  /*
   try {
     const locales = Localization.getLocales();
     if (locales && locales.length > 0) {
@@ -24,6 +27,7 @@ const getDeviceLanguage = () => {
   } catch (error) {
     console.warn("Localization module not found, falling back to 'en'", error);
   }
+  */
   return 'en';
 };
 
