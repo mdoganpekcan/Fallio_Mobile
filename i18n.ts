@@ -16,11 +16,15 @@ const resources = {
 };
 
 const getDeviceLanguage = () => {
-  const locales = Localization.getLocales();
-  if (locales && locales.length > 0) {
-    return locales[0].languageCode ?? 'tr';
+  try {
+    const locales = Localization.getLocales();
+    if (locales && locales.length > 0) {
+      return locales[0].languageCode ?? 'en';
+    }
+  } catch (error) {
+    console.warn("Localization module not found, falling back to 'en'", error);
   }
-  return 'tr';
+  return 'en';
 };
 
 i18n
