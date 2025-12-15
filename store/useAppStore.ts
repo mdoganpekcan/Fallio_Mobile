@@ -1,6 +1,5 @@
 import { create } from 'zustand';
-import { User, Fortune, FortuneTeller, HoroscopeReading } from '@/types';
-import { AppConfig } from '@/services/config';
+import { User, Fortune, FortuneTeller, HoroscopeReading, AppConfig } from '@/types';
 
 interface AppState {
   user: User | null;
@@ -70,27 +69,4 @@ export const useAppStore = create<AppState>((set) => ({
   setAppConfig: (config) => set({ appConfig: config }),
 
   logout: () => set({ user: null, fortunes: [], horoscope: null }),
-}));
-
-      fortunes: state.fortunes.map((f) =>
-        f.id === id ? { ...f, ...updates } : f
-      ),
-    })),
-
-  setFortuneTellers: (fortuneTellers) => set({ fortuneTellers }),
-  
-  setHoroscope: (horoscope) => set({ horoscope }),
-  
-  completeOnboarding: () => set({ isOnboardingComplete: true }),
-  
-  setTheme: (theme) => set({ theme }),
-  
-  setLanguage: (language) => set({ language }),
-  
-  logout: () =>
-    set({
-      user: null,
-      fortunes: [],
-      horoscope: null,
-    }),
 }));

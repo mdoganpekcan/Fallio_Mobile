@@ -20,6 +20,7 @@ import { useMutation } from '@tanstack/react-query';
 import { fortuneService } from '@/services/fortunes';
 import { useAppStore } from '@/store/useAppStore';
 import { walletService } from '@/services/wallet';
+import { supabase } from '@/services/supabase';
 
 export default function FortuneSubmitScreen() {
   const router = useRouter();
@@ -48,9 +49,24 @@ export default function FortuneSubmitScreen() {
       }
 
       const creditCost = appConfig?.fortune_costs?.[type as FortuneType] ?? fortuneInfo.credit;
+      let isFree = false;
+
+      // Günlük Ücretsiz Fal Kontrolü
+      if (appConfig?.daily_free_fortune_limit && appConfig.daily_free_fortune_limit > 0) {
+        const today = new Date().toISOString().split('T')[0];
+        const { count, error } = await supabase
+          .from('daily_free_usages')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', user.id)
+          .eq('usage_date', today);
+        
+        if (!error && count !== null && count < appConfig.daily_free_fortune_limit) {
+          isFree = true;
+        }
+      }
 
       const wallet = await walletService.getWallet(user.id);
-      if (wallet.credits < creditCost) {
+      if (!isFree && wallet.credits < creditCost) {
         throw new Error('Yeterli krediniz yok. Lütfen kredi satın alın.');
       }
 
@@ -80,9 +96,19 @@ export default function FortuneSubmitScreen() {
         metadata,
       });
 
-      const newCredits = wallet.credits - creditCost;
-      await walletService.updateCredits(user.id, -creditCost);
-      updateUserCredits(newCredits);
+      if (isFree) {
+        // Ücretsiz kullanım hakkını düş
+        await supabase.from('daily_free_usages').insert({
+          user_id: user.id,
+          fortune_type: type,
+          usage_date: new Date().toISOString().split('T')[0]
+        });
+      } else {
+        // Krediden düş
+        const newCredits = wallet.credits - creditCost;
+        await walletService.updateCredits(user.id, -creditCost);
+        updateUserCredits(newCredits);
+      }
 
       return fortune;
     },

@@ -20,6 +20,7 @@ import { PurchasesPackage } from 'react-native-purchases';
 import { revenueCatService } from '@/services/revenueCat';
 import { adMobService } from '@/services/admob';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { StatusBar } from 'expo-status-bar';
 
 export default function CreditsScreen() {
   const router = useRouter();
@@ -271,7 +272,7 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.border,
   },
   headerTitle: {
-    ...Typography.h2,
+    ...Typography.title,
     color: Colors.text,
   },
   scrollView: {
@@ -283,7 +284,7 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.border,
   },
   sectionTitle: {
-    ...Typography.h3,
+    ...Typography.heading,
     color: Colors.text,
     marginBottom: Spacing.sm,
   },
@@ -326,7 +327,7 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   packageAmount: {
-    ...Typography.h4,
+    ...Typography.subheading,
     color: Colors.text,
   },
   packageBonus: {
@@ -335,7 +336,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   packagePrice: {
-    ...Typography.h4,
+    ...Typography.subheading,
     color: Colors.primary,
   },
   plansContainer: {
@@ -359,7 +360,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xs,
   },
   planName: {
-    ...Typography.h4,
+    ...Typography.subheading,
     color: Colors.text,
   },
   popularBadge: {
@@ -388,7 +389,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primary,
   },
   subscribeButtonText: {
-    ...Typography.button,
+    ...Typography.bodyBold,
     color: Colors.text,
   },
   selectedSubscribeButtonText: {
@@ -402,7 +403,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.success,
   },
   activeSubTitle: {
-    ...Typography.h4,
+    ...Typography.subheading,
     color: Colors.success,
     marginBottom: Spacing.xs,
   },
@@ -429,7 +430,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
   },
   adButtonTitle: {
-    ...Typography.h4,
+    ...Typography.subheading,
     color: '#FFF',
   },
   adButtonSubtitle: {

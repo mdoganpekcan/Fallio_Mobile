@@ -1,14 +1,5 @@
 import { supabase } from './supabase';
-
-export interface AppConfig {
-  id: number;
-  ad_reward_amount: number;
-  welcome_credits: number;
-  daily_free_fortune_limit: number;
-  maintenance_mode: boolean;
-  contact_email: string;
-  fortune_costs: Record<string, number>;
-}
+import { AppConfig } from '@/types';
 
 export const configService = {
   async getAppConfig(): Promise<AppConfig | null> {

@@ -5,7 +5,7 @@ import { Platform } from 'react-native';
 // https://app.revenuecat.com/
 const API_KEYS = {
   ios: 'test_FLmNXnvhMuwIQLaqDfXfRgpgMLw', // TODO: iOS API Key'inizi buraya girin
-  android: 'test_FLmNXnvhMuwIQLaqDfXfRgpgMLw', // TODO: Android API Key'inizi buraya girin
+  android: 'goog_frfgrLlLzhceSzZHzaPJOKxnXmw',
 };
 
 // RevenueCat üzerindeki Entitlement ID'niz (örn: 'premium', 'pro_access')

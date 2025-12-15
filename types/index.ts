@@ -1,3 +1,22 @@
+export interface AppConfig {
+  id: number;
+  ad_reward_amount: number;
+  welcome_credits: number;
+  daily_free_fortune_limit: number;
+  maintenance_mode: boolean;
+  contact_email: string;
+  fortune_costs: {
+    coffee: number;
+    tarot: number;
+    palm: number;
+    dream: number;
+    love: number;
+    card: number;
+    color: number;
+  };
+  updated_at: string;
+}
+
 export interface User {
   id: string;
   email: string;
