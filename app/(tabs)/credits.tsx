@@ -13,15 +13,18 @@ import { X } from 'lucide-react-native';
 import { Colors, Spacing, Typography, BorderRadius, Shadows } from '@/constants/theme';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { walletService } from '@/services/wallet';
 import { useAppStore } from '@/store/useAppStore';
 import { PurchasesPackage } from 'react-native-purchases';
 import { revenueCatService } from '@/services/revenueCat';
+import { adMobService } from '@/services/admob';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function CreditsScreen() {
   const router = useRouter();
   const user = useAppStore((state) => state.user);
+  const appConfig = useAppStore((state) => state.appConfig);
   const updateUserCredits = useAppStore((state) => state.updateUserCredits);
   const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
@@ -90,8 +93,8 @@ export default function CreditsScreen() {
     try {
       const result = await adMobService.showRewarded();
       if (result.watched) {
-        // Kredi ekle (+1 kredi)
-        await purchaseMutation.mutateAsync(1);
+        const rewardAmount = appConfig?.ad_reward_amount || 1;
+        await addCreditsMutation.mutateAsync(rewardAmount);
       } else {
         // İzleme tamamlanmadı veya hata oluştu
         // Alert.alert('Bilgi', 'Reklam sonuna kadar izlenmedi.');
@@ -137,7 +140,7 @@ export default function CreditsScreen() {
                   <Text style={styles.adButtonIcon}>🎬</Text>
                   <View>
                     <Text style={styles.adButtonTitle}>Reklam İzle</Text>
-                    <Text style={styles.adButtonSubtitle}>+1 Kredi Kazan</Text>
+                    <Text style={styles.adButtonSubtitle}>+{appConfig?.ad_reward_amount || 1} Kredi Kazan</Text>
                   </View>
                 </View>
               )}

@@ -13,6 +13,7 @@ import { Colors, Spacing, Typography, BorderRadius, Shadows } from '@/constants/
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getFortuneTypeInfo, FortuneType } from '@/constants/fortuneTypes';
+import { useAppStore } from '@/store/useAppStore';
 
 const { width } = Dimensions.get('window');
 
@@ -20,6 +21,8 @@ export default function FortuneTypeScreen() {
   const router = useRouter();
   const { type } = useLocalSearchParams<{ type: string }>();
   const fortuneInfo = getFortuneTypeInfo(type as FortuneType);
+  const appConfig = useAppStore((state) => state.appConfig);
+  const creditCost = appConfig?.fortune_costs?.[type as FortuneType] ?? fortuneInfo.credit;
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -46,7 +49,7 @@ export default function FortuneTypeScreen() {
 
         <View style={styles.creditInfo}>
           <Text style={styles.creditIcon}>💎</Text>
-          <Text style={styles.creditText}>Gerekli Kredi: {fortuneInfo.credit}</Text>
+          <Text style={styles.creditText}>Gerekli Kredi: {creditCost}</Text>
         </View>
 
         <View style={styles.buttonContainer}>

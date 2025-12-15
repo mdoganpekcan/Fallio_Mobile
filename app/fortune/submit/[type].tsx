@@ -26,6 +26,7 @@ export default function FortuneSubmitScreen() {
   const { type, tellerId } = useLocalSearchParams<{ type: string; tellerId?: string | string[] }>();
   const fortuneInfo = getFortuneTypeInfo(type as FortuneType);
   const user = useAppStore((state) => state.user);
+  const appConfig = useAppStore((state) => state.appConfig);
   const updateUserCredits = useAppStore((state) => state.updateUserCredits);
   const selectedTellerId = Array.isArray(tellerId) ? tellerId[0] : tellerId;
   
@@ -46,8 +47,10 @@ export default function FortuneSubmitScreen() {
         throw new Error('Gerekli tüm fotoğrafları ekleyin');
       }
 
+      const creditCost = appConfig?.fortune_costs?.[type as FortuneType] ?? fortuneInfo.credit;
+
       const wallet = await walletService.getWallet(user.id);
-      if (wallet.credits < fortuneInfo.credit) {
+      if (wallet.credits < creditCost) {
         throw new Error('Yeterli krediniz yok. Lütfen kredi satın alın.');
       }
 
@@ -77,8 +80,8 @@ export default function FortuneSubmitScreen() {
         metadata,
       });
 
-      const newCredits = wallet.credits - fortuneInfo.credit;
-      await walletService.updateCredits(user.id, -fortuneInfo.credit);
+      const newCredits = wallet.credits - creditCost;
+      await walletService.updateCredits(user.id, -creditCost);
       updateUserCredits(newCredits);
 
       return fortune;

@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { User, Fortune, FortuneTeller, HoroscopeReading } from '@/types';
+import { AppConfig } from '@/services/config';
 
 interface AppState {
   user: User | null;
@@ -9,6 +10,7 @@ interface AppState {
   isOnboardingComplete: boolean;
   theme: 'light' | 'dark' | 'system';
   language: 'tr' | 'en' | 'es' | 'pt';
+  appConfig: AppConfig | null;
   
   setUser: (user: User | null) => void;
   updateUserCredits: (credits: number) => void;
@@ -20,6 +22,7 @@ interface AppState {
   completeOnboarding: () => void;
   setTheme: (theme: 'light' | 'dark' | 'system') => void;
   setLanguage: (language: 'tr' | 'en' | 'es' | 'pt') => void;
+  setAppConfig: (config: AppConfig) => void;
   logout: () => void;
 }
 
@@ -31,6 +34,7 @@ export const useAppStore = create<AppState>((set) => ({
   isOnboardingComplete: false,
   theme: 'dark',
   language: 'tr',
+  appConfig: null,
 
   setUser: (user) => set({ user }),
   
@@ -48,6 +52,26 @@ export const useAppStore = create<AppState>((set) => ({
   
   updateFortune: (id, updates) =>
     set((state) => ({
+      fortunes: state.fortunes.map((f) =>
+        f.id === id ? { ...f, ...updates } : f
+      ),
+    })),
+
+  setFortuneTellers: (fortuneTellers) => set({ fortuneTellers }),
+  
+  setHoroscope: (horoscope) => set({ horoscope }),
+  
+  completeOnboarding: () => set({ isOnboardingComplete: true }),
+  
+  setTheme: (theme) => set({ theme }),
+
+  setLanguage: (language) => set({ language }),
+
+  setAppConfig: (config) => set({ appConfig: config }),
+
+  logout: () => set({ user: null, fortunes: [], horoscope: null }),
+}));
+
       fortunes: state.fortunes.map((f) =>
         f.id === id ? { ...f, ...updates } : f
       ),

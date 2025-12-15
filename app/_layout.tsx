@@ -5,13 +5,14 @@ import * as WebBrowser from "expo-web-browser";
 import React, { useEffect, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { StatusBar } from "expo-status-bar";
-import { View, ActivityIndicator } from "react-native";
+import { View, ActivityIndicator, Alert } from "react-native";
 import { useAppStore } from "@/store/useAppStore";
 import { authService } from "@/services/auth";
 import { Colors } from "@/constants/theme";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { notificationService } from "@/services/notifications";
 import { revenueCatService } from "@/services/revenueCat";
+import { configService } from "@/services/config";
 import '@/i18n'; // Initialize i18n
 
 SplashScreen.preventAutoHideAsync();
@@ -54,13 +55,27 @@ function useProtectedRoute(user: any) {
 
 function RootLayoutNav() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const { user, setUser, completeOnboarding } = useAppStore();
+  const { user, setUser, completeOnboarding, setAppConfig } = useAppStore();
 
   useProtectedRoute(user);
 
   useEffect(() => {
     const initAuth = async () => {
       try {
+        // 1. Load App Config
+        const config = await configService.getAppConfig();
+        if (config) {
+          setAppConfig(config);
+          if (config.maintenance_mode) {
+            Alert.alert(
+              "Bakım Modu",
+              "Uygulamamız şu anda bakım çalışması nedeniyle hizmet verememektedir. Lütfen daha sonra tekrar deneyiniz.",
+              [{ text: "Tamam", onPress: () => {} }]
+            );
+            // Opsiyonel: Kullanıcıyı bakım ekranına yönlendir veya etkileşimi kısıtla
+          }
+        }
+
         const hasSeenOnboarding = await AsyncStorage.getItem('hasSeenOnboarding');
         if (hasSeenOnboarding) {
           completeOnboarding();
@@ -87,7 +102,7 @@ function RootLayoutNav() {
     return () => {
       subscription?.unsubscribe();
     };
-  }, [setUser, completeOnboarding]);
+  }, [setUser, completeOnboarding, setAppConfig]);
 
   useEffect(() => {
     if (!user) return;

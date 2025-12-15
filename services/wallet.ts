@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { useAppStore } from '@/store/useAppStore';
 
 export const walletService = {
   async getWallet(userId: string) {
@@ -16,11 +17,12 @@ export const walletService = {
 
     if (!data) {
       console.log('[Wallet] No wallet, creating default record');
+      const welcomeCredits = useAppStore.getState().appConfig?.welcome_credits ?? 500;
       const { data: newWallet, error: createError } = await supabase
         .from('wallet')
         .insert({
           user_id: userId,
-          credits: 500,
+          credits: welcomeCredits,
         })
         .select()
         .single();
