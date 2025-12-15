@@ -58,13 +58,19 @@ class RevenueCatService {
   }
 
   async getOfferings(): Promise<PurchasesOffering | null> {
+    if (!this.isInitialized) return null;
     try {
       const offerings = await Purchases.getOfferings();
       if (offerings.current && offerings.current.availablePackages.length !== 0) {
         return offerings.current;
       }
       return null;
-    } catch (e) {
+    } catch (e: any) {
+      // Suppress ConfigurationError if products are not set up yet
+      if (e.code === 'ConfigurationError' || e.message?.includes('ConfigurationError')) {
+        console.warn('[RevenueCat] Offerings not configured yet. Ignoring error.');
+        return null;
+      }
       console.error('[RevenueCat] Error fetching offerings:', e);
       return null;
     }

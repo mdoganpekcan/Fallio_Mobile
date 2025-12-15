@@ -81,20 +81,31 @@ export default function RegisterScreen() {
     },
     onError: (error: Error) => {
       console.error('[Register] Error:', error);
-      Alert.alert('Kayıt Hatası', error.message || 'Kayıt sırasında bir hata oluştu');
+      let message = error.message || 'Kayıt sırasında bir hata oluştu';
+      
+      if (message.includes('duplicate key') || message.includes('users_email_key')) {
+        message = 'Bu e-posta adresi zaten kullanımda. Lütfen giriş yapın.';
+      }
+
+      Alert.alert('Kayıt Hatası', message);
     },
   });
 
   const pickImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.8,
-    });
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8,
+      });
 
-    if (!result.canceled && result.assets[0]) {
-      setAvatarUri(result.assets[0].uri);
+      if (!result.canceled && result.assets[0]) {
+        setAvatarUri(result.assets[0].uri);
+      }
+    } catch (error) {
+      console.error('ImagePicker Error:', error);
+      Alert.alert('Hata', 'Galeri açılamadı. Lütfen izinleri kontrol edin veya tekrar deneyin.');
     }
   };
 
