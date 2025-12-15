@@ -200,7 +200,33 @@ export const authService = {
     if (!user) return null;
 
     try {
-      const userRow = await this.ensureUserRecords({ id: user.id, email: user.email }, extraData);
+      // First try to get the existing user record
+      let { data: userRow, error: fetchError } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      // If user record doesn't exist, create it
+      if (fetchError || !userRow) {
+        console.log('[Auth] User record not found, creating...');
+        userRow = await this.ensureUserRecords({ id: user.id, email: user.email }, extraData);
+      } else if (extraData && Object.keys(extraData).length > 0) {
+        // If we have extra data (e.g. from Google Sign In), update the profile
+        // But ONLY if we actually have extra data.
+        // This prevents overwriting existing data with empty strings on normal app launch.
+        console.log('[Auth] Updating existing user with extra data...');
+        await this.updateProfile(user.id, extraData);
+        
+        // Refetch to get updated data
+        const { data: updatedUser } = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+        if (updatedUser) userRow = updatedUser;
+      }
+
       const { data: profile } = await supabase
         .from('profiles')
         .select('*')

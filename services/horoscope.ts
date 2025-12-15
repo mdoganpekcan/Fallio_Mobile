@@ -27,10 +27,29 @@ export const horoscopeService = {
 
   async getHoroscopeByScope(zodiacSign: string, scope: 'daily' | 'weekly' | 'monthly') {
     console.log('[Horoscope] Fetching horoscope for:', zodiacSign, scope);
+    
+    // Map UI zodiac names (Turkish) to DB keys (slugs)
+    const zodiacMap: Record<string, string> = {
+      'Koç': 'koc',
+      'Boğa': 'boga',
+      'İkizler': 'ikizler',
+      'Yengeç': 'yengec',
+      'Aslan': 'aslan',
+      'Başak': 'basak',
+      'Terazi': 'terazi',
+      'Akrep': 'akrep',
+      'Yay': 'yay',
+      'Oğlak': 'oglak',
+      'Kova': 'kova',
+      'Balık': 'balik'
+    };
+
+    const dbSign = zodiacMap[zodiacSign] || zodiacSign.toLowerCase();
+
     const { data, error } = await supabase
       .from('horoscopes')
       .select('*')
-      .eq('sign', zodiacSign)
+      .eq('sign', dbSign)
       .eq('scope', scope)
       .order('effective_date', { ascending: false })
       .limit(1)
@@ -46,7 +65,7 @@ export const horoscopeService = {
     }
 
     return {
-      zodiacSign: data.sign,
+      zodiacSign: data.sign, // This will be 'koc', 'boga' etc.
       general: data.general,
       love: data.love,
       career: data.money,
