@@ -89,16 +89,13 @@ export const profileService = {
       const fileExt = uri.includes('.') ? uri.split('.').pop() : 'jpg';
       const fileName = `${userId}/avatar-${Date.now()}.${fileExt}`;
 
-      const formData = new FormData();
-      formData.append('file', {
-        uri,
-        name: fileName,
-        type: `image/${fileExt === 'jpg' ? 'jpeg' : fileExt}`,
-      } as any);
+      // Use fetch to get the blob from the URI (more reliable than FormData on Android)
+      const response = await fetch(uri);
+      const blob = await response.blob();
 
       const { data, error } = await supabase.storage
         .from('profile-avatars')
-        .upload(fileName, formData as any, {
+        .upload(fileName, blob, {
           upsert: true,
           contentType: `image/${fileExt === 'jpg' ? 'jpeg' : fileExt}`,
         });
