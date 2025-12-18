@@ -135,7 +135,7 @@ export const authService = {
       email: registerData.email,
       password: registerData.password,
       options: {
-        emailRedirectTo: 'https://fallio-web.vercel.app/',
+        emailRedirectTo: 'https://fallio-web.vercel.app/auth/verified',
       },
     });
 

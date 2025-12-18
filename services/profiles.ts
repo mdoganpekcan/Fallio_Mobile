@@ -82,22 +82,32 @@ export const profileService = {
     console.log('[Profile] Profile updated successfully');
   },
 
+import * as FileSystem from 'expo-file-system';
+import { decode } from 'base64-arraybuffer';
+
+// ... existing code ...
+
   async uploadAvatar(userId: string, uri: string): Promise<string> {
     console.log('[Profile] Uploading avatar for user:', userId);
 
     try {
       const fileExt = uri.includes('.') ? uri.split('.').pop() : 'jpg';
       const fileName = `${userId}/avatar-${Date.now()}.${fileExt}`;
+      const contentType = `image/${fileExt === 'jpg' ? 'jpeg' : fileExt}`;
 
-      // Use fetch to get the blob from the URI (more reliable than FormData on Android)
-      const response = await fetch(uri);
-      const blob = await response.blob();
+      // Android'de fetch/blob bazen sorun çıkarabiliyor.
+      // En güvenilir yöntem: Dosyayı base64 oku -> ArrayBuffer'a çevir -> Yükle
+      const base64 = await FileSystem.readAsStringAsync(uri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+      
+      const arrayBuffer = decode(base64);
 
       const { data, error } = await supabase.storage
         .from('profile-avatars')
-        .upload(fileName, blob, {
+        .upload(fileName, arrayBuffer, {
           upsert: true,
-          contentType: `image/${fileExt === 'jpg' ? 'jpeg' : fileExt}`,
+          contentType: contentType,
         });
 
       if (error) {
