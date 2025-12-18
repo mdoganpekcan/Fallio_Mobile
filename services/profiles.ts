@@ -1,4 +1,6 @@
 import { supabase } from './supabase';
+import * as FileSystem from 'expo-file-system';
+import { decode } from 'base64-arraybuffer';
 
 export interface UpdateProfileData {
   fullName?: string;
@@ -81,11 +83,6 @@ export const profileService = {
 
     console.log('[Profile] Profile updated successfully');
   },
-
-import * as FileSystem from 'expo-file-system';
-import { decode } from 'base64-arraybuffer';
-
-// ... existing code ...
 
   async uploadAvatar(userId: string, uri: string): Promise<string> {
     console.log('[Profile] Uploading avatar for user:', userId);
