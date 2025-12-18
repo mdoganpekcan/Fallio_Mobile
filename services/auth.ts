@@ -96,6 +96,23 @@ export const authService = {
         .eq('id', rpcData.id)
         .single();
 
+    // CRITICAL FIX: Ensure profile data is also synced to 'profiles' table
+    // The RPC only updates 'users' table, but 'getUser' reads from 'profiles'.
+    if (extra?.birthDate || extra?.gender) {
+       console.log('[Auth] Syncing profile data to profiles table...');
+       const { error: profileError } = await supabase.from('profiles').upsert({
+          user_id: rpcData.id,
+          birthdate: extra.birthDate || null,
+          gender: extra.gender || null,
+          email: authUser.email || '', // profiles table might require email
+          full_name: extra.fullName || ''
+       }, { onConflict: 'user_id' });
+       
+       if (profileError) {
+          console.error('[Auth] Failed to sync profile data:', profileError);
+       }
+    }
+
     if (fetchError) {
       // RLS politikaları veya oturum durumu nedeniyle kullanıcı okunamıyor olabilir.
       // Bu bir hata değil, sadece veriyi geri döndüremediğimiz anlamına gelir.

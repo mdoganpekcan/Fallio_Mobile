@@ -22,12 +22,13 @@ import { horoscopeService } from '@/services/horoscope';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 
-type HoroscopePeriod = 'Günlük' | 'Haftalık' | 'Aylık';
+type HoroscopeCategory = 'general' | 'love' | 'career' | 'health';
 
 export default function HomeScreen() {
   const router = useRouter();
   const user = useAppStore((state) => state.user);
   const [selectedPeriod, setSelectedPeriod] = useState<HoroscopePeriod>('Günlük');
+  const [selectedCategory, setSelectedCategory] = useState<HoroscopeCategory>('general');
   const [modalVisible, setModalVisible] = useState(false);
   const insets = useSafeAreaInsets();
 
@@ -117,20 +118,34 @@ export default function HomeScreen() {
 
           <View style={styles.horoscopeCard}>
           <View style={styles.horoscopeHeader}>
-            <View style={styles.horoscopeIconRow}>
-              <Sparkles size={20} color={Colors.text} />
-              <Text style={styles.horoscopeCategory}>Aşk</Text>
-            </View>
-            <View style={styles.horoscopeIconRow}>
+            <TouchableOpacity 
+              style={[styles.horoscopeIconRow, selectedCategory === 'love' && styles.activeCategory]}
+              onPress={() => setSelectedCategory('love')}
+            >
+              <Text style={styles.horoscopeCategory}>❤️ Aşk</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={[styles.horoscopeIconRow, selectedCategory === 'career' && styles.activeCategory]}
+              onPress={() => setSelectedCategory('career')}
+            >
               <Text style={styles.horoscopeCategory}>💰 Para</Text>
-            </View>
-            <View style={styles.horoscopeIconRow}>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={[styles.horoscopeIconRow, selectedCategory === 'health' && styles.activeCategory]}
+              onPress={() => setSelectedCategory('health')}
+            >
               <Text style={styles.horoscopeCategory}>🛡️ Sağlık</Text>
-            </View>
+            </TouchableOpacity>
+             <TouchableOpacity 
+              style={[styles.horoscopeIconRow, selectedCategory === 'general' && styles.activeCategory]}
+              onPress={() => setSelectedCategory('general')}
+            >
+              <Text style={styles.horoscopeCategory}>✨ Genel</Text>
+            </TouchableOpacity>
           </View>
 
-          <Text style={styles.horoscopeText}>
-            {horoscope?.general ||
+          <Text style={styles.horoscopeText} numberOfLines={4}>
+            {horoscope?.[selectedCategory] ||
               (user?.zodiacSign
                 ? 'Burç yorumun hazırlanıyor.'
                 : 'Burç bilgisi için profilini tamamla.')}
@@ -140,7 +155,7 @@ export default function HomeScreen() {
             style={styles.readMoreButton}
             onPress={() => setModalVisible(true)}
           >
-            <Text style={styles.readMoreText}>Devamını Oku</Text>
+            <Text style={styles.readMoreText}>Devamını Oku...</Text>
           </TouchableOpacity>
         </View>
         </View>
@@ -364,6 +379,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
+    padding: 6,
+    borderRadius: 8,
+  },
+  activeCategory: {
+    backgroundColor: 'rgba(139, 92, 246, 0.2)', // Colors.primary with opacity
   },
   horoscopeCategory: {
     ...Typography.caption,
