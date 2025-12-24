@@ -16,8 +16,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import FortuneTellerCard from '@/components/FortuneTellerCard';
 import { useQuery } from '@tanstack/react-query';
 import { fortuneTellerService, FortuneTellerFilters } from '@/services/fortuneTellers';
+import { useTranslation } from 'react-i18next';
 
 export default function FortuneTellersScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const params = useLocalSearchParams<{ fortuneType?: string; selectedTellerId?: string }>();
   const [showFilters, setShowFilters] = useState<boolean>(false);
@@ -51,7 +53,7 @@ export default function FortuneTellersScreen() {
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <ArrowLeft size={24} color={Colors.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Falcılar</Text>
+        <Text style={styles.headerTitle}>{t('fortune_tellers.title')}</Text>
         <TouchableOpacity style={styles.filterButton} onPress={() => setShowFilters(true)}>
           <Filter size={24} color={Colors.text} />
         </TouchableOpacity>
@@ -62,7 +64,7 @@ export default function FortuneTellersScreen() {
           <Search size={20} color={Colors.textMuted} />
           <TextInput
             style={styles.searchInput}
-            placeholder="Falcı ara..."
+            placeholder={t('fortune_tellers.search_placeholder')}
             placeholderTextColor={Colors.textMuted}
             value={searchQuery}
             onChangeText={setSearchQuery}
@@ -79,7 +81,7 @@ export default function FortuneTellersScreen() {
           <View style={styles.content}>
             {fortuneTellers.length === 0 ? (
               <View style={styles.emptyState}>
-                <Text style={styles.emptyText}>Falcı bulunamadı</Text>
+                <Text style={styles.emptyText}>{t('fortune_tellers.empty')}</Text>
               </View>
             ) : (
               fortuneTellers.map((teller) => (
@@ -104,14 +106,14 @@ export default function FortuneTellersScreen() {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Filtreler</Text>
+              <Text style={styles.modalTitle}>{t('fortune_tellers.filters.title')}</Text>
               <TouchableOpacity onPress={() => setShowFilters(false)}>
                 <X size={24} color={Colors.text} />
               </TouchableOpacity>
             </View>
 
             <View style={styles.filterSection}>
-              <Text style={styles.filterLabel}>Sırala</Text>
+              <Text style={styles.filterLabel}>{t('fortune_tellers.filters.sort_by')}</Text>
               <View style={styles.filterOptions}>
                 {(['rating', 'price', 'views'] as const).map((sort) => (
                   <TouchableOpacity
@@ -128,7 +130,7 @@ export default function FortuneTellersScreen() {
                         filters.sortBy === sort && styles.filterOptionTextActive,
                       ]}
                     >
-                      {sort === 'rating' ? 'Puan' : sort === 'price' ? 'Fiyat' : 'Görüntülenme'}
+                      {sort === 'rating' ? t('fortune_tellers.filters.rating') : sort === 'price' ? t('fortune_tellers.filters.price') : t('fortune_tellers.filters.views')}
                     </Text>
                   </TouchableOpacity>
                 ))}
@@ -136,7 +138,7 @@ export default function FortuneTellersScreen() {
             </View>
 
             <View style={styles.filterSection}>
-              <Text style={styles.filterLabel}>Minimum Puan</Text>
+              <Text style={styles.filterLabel}>{t('fortune_tellers.filters.min_rating')}</Text>
               <View style={styles.filterOptions}>
                 {[4.5, 4.7, 4.9].map((rating) => (
                   <TouchableOpacity
@@ -164,7 +166,7 @@ export default function FortuneTellersScreen() {
               style={styles.applyButton}
               onPress={() => setShowFilters(false)}
             >
-              <Text style={styles.applyButtonText}>Uygula</Text>
+              <Text style={styles.applyButtonText}>{t('fortune_tellers.filters.apply')}</Text>
             </TouchableOpacity>
           </View>
         </View>

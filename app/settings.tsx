@@ -50,13 +50,13 @@ export default function SettingsScreen() {
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <ArrowLeft size={24} color={Colors.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>{t('profile.accountSettings')}</Text>
+        <Text style={styles.headerTitle}>{t('settings.title')}</Text>
         <View style={{ width: 40 }} />
       </View>
 
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('profile.theme')}</Text>
+          <Text style={styles.sectionTitle}>{t('settings.theme.title')}</Text>
           
           <View style={styles.settingItem}>
             <View style={styles.settingLeft}>
@@ -67,16 +67,16 @@ export default function SettingsScreen() {
                   <Sun size={24} color={Colors.primary} />
                 )}
               </View>
-              <Text style={styles.settingLabel}>{t('profile.theme')}</Text>
+              <Text style={styles.settingLabel}>{t('settings.theme.title')}</Text>
             </View>
             <Text style={styles.settingValue}>
-              {theme === 'dark' ? 'Dark' : theme === 'light' ? 'Light' : 'System'}
+              {t(`settings.theme.${theme}`)}
             </Text>
           </View>
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('profile.language')}</Text>
+          <Text style={styles.sectionTitle}>{t('settings.language.title')}</Text>
           
           <TouchableOpacity 
             style={styles.settingItem} 
@@ -86,7 +86,7 @@ export default function SettingsScreen() {
               <View style={styles.iconContainer}>
                 <Globe size={24} color={Colors.primary} />
               </View>
-              <Text style={styles.settingLabel}>{t('profile.language')}</Text>
+              <Text style={styles.settingLabel}>{t('settings.language.title')}</Text>
             </View>
             <Text style={styles.settingValue}>
               {getLanguageLabel(language)}
@@ -95,14 +95,14 @@ export default function SettingsScreen() {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>{t('profile.notifications')}</Text>
+          <Text style={styles.sectionTitle}>{t('settings.notifications.title')}</Text>
           
           <View style={styles.settingItem}>
             <View style={styles.settingLeft}>
               <View style={styles.iconContainer}>
                 <Bell size={24} color={Colors.primary} />
               </View>
-              <Text style={styles.settingLabel}>{t('notifications.title')}</Text>
+              <Text style={styles.settingLabel}>{t('settings.notifications.enable')}</Text>
             </View>
             <Switch
               value={notificationsEnabled}
@@ -126,7 +126,7 @@ export default function SettingsScreen() {
           <View style={styles.modalOverlay}>
             <TouchableWithoutFeedback>
               <View style={styles.modalContent}>
-                <Text style={styles.modalTitle}>{t('profile.language')}</Text>
+                <Text style={styles.modalTitle}>{t('settings.language.title')}</Text>
                 {languages.map((lang) => (
                   <TouchableOpacity
                     key={lang.code}

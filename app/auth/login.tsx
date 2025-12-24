@@ -18,8 +18,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { authService } from '@/services/auth';
 import { useMutation } from '@tanstack/react-query';
 import { useAppStore } from '@/store/useAppStore';
+import { useTranslation } from 'react-i18next';
 
 export default function LoginScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -29,7 +31,7 @@ export default function LoginScreen() {
   const loginMutation = useMutation({
     mutationFn: async () => {
       if (!email || !password) {
-        throw new Error('E-posta ve şifre gereklidir');
+        throw new Error(t('auth.errors.email_password_required'));
       }
       // Şifreyi de trimleyelim, mobil klavyeler bazen boşluk ekler
       await authService.signIn(email.trim(), password.trim());
@@ -43,13 +45,13 @@ export default function LoginScreen() {
     },
     onError: (error: Error) => {
       console.error('[Login] Error:', error);
-      let message = 'Giriş yapılamadı.';
+      let message = t('auth.errors.login_failed');
       if (error.message.includes('Invalid login credentials')) {
-        message = 'E-posta veya şifre hatalı. Lütfen bilgilerinizi kontrol edin.';
+        message = t('auth.errors.invalid_credentials');
       } else if (error.message.includes('Email not confirmed')) {
-        message = 'E-posta adresiniz henüz onaylanmamış. Lütfen gelen kutunuzu kontrol edin.';
+        message = t('auth.errors.email_not_confirmed');
       }
-      Alert.alert('Giriş Hatası', message);
+      Alert.alert(t('auth.errors.login_error_title'), message);
     },
   });
 
@@ -58,7 +60,7 @@ export default function LoginScreen() {
       await authService.signInWithGoogle();
     } catch (error: any) {
       console.error('[Login] Google error:', error);
-      Alert.alert('Hata', error.message || 'Google ile giriş yapılamadı');
+      Alert.alert(t('auth.errors.error_title'), error.message || t('auth.errors.google_login_error'));
     }
   };
 
@@ -83,16 +85,16 @@ export default function LoginScreen() {
               <Text style={styles.logoIcon}>⭐</Text>
             </LinearGradient>
             <Text style={styles.title}>Falio</Text>
-            <Text style={styles.subtitle}>Tekrar Hoş Geldin</Text>
+            <Text style={styles.subtitle}>{t('auth.welcome_back')}</Text>
           </View>
 
           <View style={styles.form}>
-            <Text style={styles.label}>E-posta</Text>
+            <Text style={styles.label}>{t('common.email')}</Text>
             <View style={styles.inputContainer}>
               <Mail size={20} color={Colors.textSecondary} style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
-                placeholder="E-posta adresini gir"
+                placeholder={t('auth.enter_email')}
                 placeholderTextColor={Colors.textMuted}
                 value={email}
                 onChangeText={setEmail}
@@ -102,12 +104,12 @@ export default function LoginScreen() {
               />
             </View>
 
-            <Text style={styles.label}>Şifre</Text>
+            <Text style={styles.label}>{t('common.password')}</Text>
             <View style={styles.inputContainer}>
               <Lock size={20} color={Colors.textSecondary} style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
-                placeholder="Şifreni gir"
+                placeholder={t('auth.enter_password')}
                 placeholderTextColor={Colors.textMuted}
                 value={password}
                 onChangeText={setPassword}
@@ -131,7 +133,7 @@ export default function LoginScreen() {
               style={styles.forgotPassword}
               onPress={() => router.push('/auth/forgot-password' as any)}
             >
-              <Text style={styles.forgotPasswordText}>Şifremi Unuttum?</Text>
+              <Text style={styles.forgotPasswordText}>{t('auth.forgot_password_q')}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity 
@@ -146,26 +148,26 @@ export default function LoginScreen() {
                 style={styles.loginButtonGradient}
               >
                 <Text style={styles.loginButtonText}>
-                  {loginMutation.isPending ? 'Giriş yapılıyor...' : 'Giriş Yap'}
+                  {loginMutation.isPending ? t('auth.logging_in') : t('auth.login_action')}
                 </Text>
               </LinearGradient>
             </TouchableOpacity>
 
             <View style={styles.divider}>
               <View style={styles.dividerLine} />
-              <Text style={styles.dividerText}>veya</Text>
+              <Text style={styles.dividerText}>{t('auth.or')}</Text>
               <View style={styles.dividerLine} />
             </View>
 
             <TouchableOpacity style={styles.googleButton} onPress={handleGoogleLogin}>
               <Text style={styles.googleIcon}>G</Text>
-              <Text style={styles.googleButtonText}>Google ile Giriş Yap</Text>
+              <Text style={styles.googleButtonText}>{t('auth.google_login')}</Text>
             </TouchableOpacity>
 
             <View style={styles.footer}>
-              <Text style={styles.footerText}>Hesabın yok mu? </Text>
+              <Text style={styles.footerText}>{t('auth.no_account')} </Text>
               <TouchableOpacity onPress={() => router.push('/auth/register' as any)}>
-                <Text style={styles.footerLink}>Kayıt Ol</Text>
+                <Text style={styles.footerLink}>{t('auth.register_link')}</Text>
               </TouchableOpacity>
             </View>
           </View>

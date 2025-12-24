@@ -21,8 +21,10 @@ import { fortuneService } from '@/services/fortunes';
 import { useAppStore } from '@/store/useAppStore';
 import { walletService } from '@/services/wallet';
 import { supabase } from '@/services/supabase';
+import { useTranslation } from 'react-i18next';
 
 export default function FortuneSubmitScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { type, tellerId } = useLocalSearchParams<{ type: string; tellerId?: string | string[] }>();
   const fortuneInfo = getFortuneTypeInfo(type as FortuneType);
@@ -40,12 +42,12 @@ export default function FortuneSubmitScreen() {
   const submitMutation = useMutation({
     mutationFn: async () => {
       if (!user) {
-        throw new Error('Lütfen giriş yapın');
+        throw new Error(t('fortune.submit.errors.login_required'));
       }
 
       const requiredImages = type === 'coffee' ? 3 : type === 'palm' ? 1 : 0;
       if (requiredImages > 0 && images.length < requiredImages) {
-        throw new Error('Gerekli tüm fotoğrafları ekleyin');
+        throw new Error(t('fortune.submit.errors.missing_photos'));
       }
 
       const creditCost = appConfig?.fortune_costs?.[type as FortuneType] ?? fortuneInfo.credit;
@@ -67,22 +69,22 @@ export default function FortuneSubmitScreen() {
 
       const wallet = await walletService.getWallet(user.id);
       if (!isFree && wallet.credits < creditCost) {
-        throw new Error('Yeterli krediniz yok. Lütfen kredi satın alın.');
+        throw new Error(t('fortune.submit.errors.insufficient_credits'));
       }
 
       const metaDetails: string[] = [];
       const metadata: Record<string, any> = {};
 
       if (type === 'tarot' && selectedCards.length > 0) {
-        metaDetails.push(`Seçilen kartlar: ${selectedCards.map((c) => c + 1).join(', ')}`);
+        metaDetails.push(t('fortune.submit.metadata.selected_cards', { cards: selectedCards.map((c) => c + 1).join(', ') }));
         metadata.selected_cards = selectedCards.map((c) => c + 1);
       }
       if (type === 'color' && selectedColor) {
-        metaDetails.push(`Seçilen renk: ${selectedColor}`);
+        metaDetails.push(t('fortune.submit.metadata.selected_color', { color: selectedColor }));
         metadata.selected_color = selectedColor;
       }
       if (type === 'dream' && category) {
-        metaDetails.push(`Kategori: ${category}`);
+        metaDetails.push(t('fortune.submit.metadata.category', { category }));
         metadata.category = category;
       }
       const composedNote = [note.trim(), ...metaDetails].filter(Boolean).join('\n');
@@ -118,13 +120,13 @@ export default function FortuneSubmitScreen() {
     },
     onError: (error: Error) => {
       console.error('[FortuneSubmit] Error:', error);
-      Alert.alert('Hata', error.message || 'Fal gönderilirken bir hata oluştu', [
+      Alert.alert(t('auth.errors.error_title'), error.message || t('fortune.submit.errors.submit_error'), [
         {
-          text: 'Kapat',
+          text: t('common.close'),
           style: 'cancel',
         },
         {
-          text: 'Kredi Satın Al',
+          text: t('fortune.submit.buy_credits'),
           onPress: () => router.push('/credits' as any),
         },
       ]);
@@ -134,17 +136,17 @@ export default function FortuneSubmitScreen() {
   const pickImage = async () => {
     const requiredImages = type === 'coffee' ? 3 : type === 'palm' ? 1 : 6;
     if (images.length >= requiredImages) {
-      Alert.alert('Bilgi', 'Yeterli sayıda fotoğraf eklediniz.');
+      Alert.alert(t('common.info'), t('fortune.submit.alerts.max_photos'));
       return;
     }
 
-    Alert.alert('Fotoğraf Yükle', 'Fotoğrafı nasıl yüklemek istersiniz?', [
+    Alert.alert(t('fortune.submit.alerts.upload_photo_title'), t('fortune.submit.alerts.upload_photo_message'), [
       {
-        text: 'Kamera',
+        text: t('fortune.submit.alerts.camera'),
         onPress: async () => {
           const permission = await ImagePicker.requestCameraPermissionsAsync();
           if (permission.status !== 'granted') {
-            Alert.alert('Hata', 'Kamera izni gerekli.');
+            Alert.alert(t('auth.errors.error_title'), t('fortune.submit.errors.camera_permission'));
             return;
           }
           const result = await ImagePicker.launchCameraAsync({
@@ -157,7 +159,7 @@ export default function FortuneSubmitScreen() {
         },
       },
       {
-        text: 'Galeri',
+        text: t('fortune.submit.alerts.gallery'),
         onPress: async () => {
           const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -170,7 +172,7 @@ export default function FortuneSubmitScreen() {
         },
       },
       {
-        text: 'İptal',
+        text: t('common.cancel'),
         style: 'cancel',
       },
     ]);
@@ -184,7 +186,7 @@ export default function FortuneSubmitScreen() {
     return (
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>
-          {type === 'coffee' ? 'Fotoğraflar' : 'Fotoğraf'}
+          {type === 'coffee' ? t('fortune.submit.photos') : t('fortune.submit.photo')}
         </Text>
         <View style={styles.imageGrid}>
           {Array.from({ length: imageCount }).map((_, index) => {
@@ -201,10 +203,10 @@ export default function FortuneSubmitScreen() {
                   <>
                     <Upload size={32} color={Colors.textSecondary} />
                     <Text style={styles.imageUploadText}>
-                      {type === 'coffee' && index === 0 && 'Fincan İçi'}
-                      {type === 'coffee' && index === 1 && 'Fincan Tabağı'}
-                      {type === 'coffee' && index === 2 && 'Genel Görünüm'}
-                      {type === 'palm' && 'El Fotoğrafı'}
+                      {type === 'coffee' && index === 0 && t('fortune.submit.photo_labels.cup_inside')}
+                      {type === 'coffee' && index === 1 && t('fortune.submit.photo_labels.cup_saucer')}
+                      {type === 'coffee' && index === 2 && t('fortune.submit.photo_labels.general_view')}
+                      {type === 'palm' && t('fortune.submit.photo_labels.palm')}
                     </Text>
                   </>
                 )}
@@ -224,8 +226,8 @@ export default function FortuneSubmitScreen() {
 
     return (
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Kart Seç (3 Adet)</Text>
-        <Text style={styles.description}>Kalbinizin sesini dinleyerek 3 kart seçin</Text>
+        <Text style={styles.sectionTitle}>{t('fortune.submit.select_cards')}</Text>
+        <Text style={styles.description}>{t('fortune.submit.select_cards_desc')}</Text>
         <View style={styles.cardGrid}>
           {cards.map((cardIndex) => (
             <TouchableOpacity
@@ -259,24 +261,24 @@ export default function FortuneSubmitScreen() {
     if (type !== 'color') return null;
 
     const colors = [
-      { name: 'Kırmızı', value: '#FF0000' },
-      { name: 'Turuncu', value: '#FF7F00' },
-      { name: 'Sarı', value: '#FFFF00' },
-      { name: 'Yeşil', value: '#00FF00' },
-      { name: 'Mavi', value: '#0000FF' },
-      { name: 'Lacivert', value: '#4B0082' },
-      { name: 'Mor', value: '#9400D3' },
-      { name: 'Pembe', value: '#FF69B4' },
-      { name: 'Kahverengi', value: '#8B4513' },
-      { name: 'Siyah', value: '#000000' },
-      { name: 'Beyaz', value: '#FFFFFF' },
-      { name: 'Gri', value: '#808080' },
+      { name: t('colors.red'), value: '#FF0000' },
+      { name: t('colors.orange'), value: '#FF7F00' },
+      { name: t('colors.yellow'), value: '#FFFF00' },
+      { name: t('colors.green'), value: '#00FF00' },
+      { name: t('colors.blue'), value: '#0000FF' },
+      { name: t('colors.navy'), value: '#4B0082' },
+      { name: t('colors.purple'), value: '#9400D3' },
+      { name: t('colors.pink'), value: '#FF69B4' },
+      { name: t('colors.brown'), value: '#8B4513' },
+      { name: t('colors.black'), value: '#000000' },
+      { name: t('colors.white'), value: '#FFFFFF' },
+      { name: t('colors.gray'), value: '#808080' },
     ];
 
     return (
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Renk Seç</Text>
-        <Text style={styles.description}>Size en yakın gelen rengi seçin</Text>
+        <Text style={styles.sectionTitle}>{t('fortune.submit.select_color')}</Text>
+        <Text style={styles.description}>{t('fortune.submit.select_color_desc')}</Text>
         <View style={styles.colorGrid}>
           {colors.map((color) => (
             <TouchableOpacity
@@ -299,28 +301,34 @@ export default function FortuneSubmitScreen() {
   const renderCategoryPicker = () => {
     if (type !== 'dream') return null;
 
-    const categories = ['Aşk', 'Para', 'Aile', 'İş', 'Sağlık'];
+    const categories = [
+      { label: t('categories.love'), value: 'Aşk' },
+      { label: t('categories.money'), value: 'Para' },
+      { label: t('categories.family'), value: 'Aile' },
+      { label: t('categories.career'), value: 'İş' },
+      { label: t('categories.health'), value: 'Sağlık' },
+    ];
 
     return (
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Kategori Seç</Text>
+        <Text style={styles.sectionTitle}>{t('fortune.submit.select_category')}</Text>
         <View style={styles.categoryGrid}>
           {categories.map((cat) => (
             <TouchableOpacity
-              key={cat}
+              key={cat.value}
               style={[
                 styles.categoryButton,
-                category === cat && styles.categoryButtonActive,
+                category === cat.value && styles.categoryButtonActive,
               ]}
-              onPress={() => setCategory(cat)}
+              onPress={() => setCategory(cat.value)}
             >
               <Text
                 style={[
                   styles.categoryButtonText,
-                  category === cat && styles.categoryButtonTextActive,
+                  category === cat.value && styles.categoryButtonTextActive,
                 ]}
               >
-                {cat}
+                {cat.label}
               </Text>
             </TouchableOpacity>
           ))}
@@ -335,7 +343,7 @@ export default function FortuneSubmitScreen() {
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <ArrowLeft size={24} color={Colors.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>{fortuneInfo.name}</Text>
+        <Text style={styles.headerTitle}>{t(fortuneInfo.name)}</Text>
         <View style={{ width: 40 }} />
       </View>
 
@@ -347,16 +355,16 @@ export default function FortuneSubmitScreen() {
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>
-            {type === 'dream' ? 'Rüyanı Anlat' : 'Not (Opsiyonel)'}
+            {type === 'dream' ? t('fortune.submit.tell_dream') : t('fortune.submit.note_optional')}
           </Text>
           <TextInput
             style={styles.textArea}
             placeholder={
               type === 'dream'
-                ? 'Rüyanızı detaylı bir şekilde anlatın...'
+                ? t('fortune.submit.placeholders.dream')
                 : type === 'tarot'
-                ? 'Niyetinizi veya sorunuzu yazın...'
-                : 'Falınızla ilgili not ekleyebilirsiniz...'
+                ? t('fortune.submit.placeholders.tarot')
+                : t('fortune.submit.placeholders.default')
             }
             placeholderTextColor={Colors.textMuted}
             value={note}
@@ -370,7 +378,7 @@ export default function FortuneSubmitScreen() {
         <View style={styles.creditSection}>
           <View style={styles.creditInfo}>
             <Text style={styles.creditIcon}>💎</Text>
-            <Text style={styles.creditText}>Gerekli Kredi: {fortuneInfo.credit}</Text>
+            <Text style={styles.creditText}>{t('fortune.type.required_credits', { cost: fortuneInfo.credit })}</Text>
           </View>
         </View>
 
@@ -387,7 +395,7 @@ export default function FortuneSubmitScreen() {
               style={styles.buttonGradient}
             >
               <Text style={styles.submitButtonText}>
-                {submitMutation.isPending ? 'Gönderiliyor...' : 'Falını Gönder'}
+                {submitMutation.isPending ? t('fortune.submit.sending') : t('fortune.submit.send')}
               </Text>
             </LinearGradient>
           </TouchableOpacity>

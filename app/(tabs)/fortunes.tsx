@@ -15,13 +15,15 @@ import { useQuery } from '@tanstack/react-query';
 import { fortuneService } from '@/services/fortunes';
 import { useAppStore } from '@/store/useAppStore';
 import { getFortuneTypeInfo } from '@/constants/fortuneTypes';
+import { useTranslation } from 'react-i18next';
 
-type FortuneFilter = 'Tümü' | 'Okunmamış';
+type FortuneFilter = 'all' | 'unread';
 
 export default function FortunesScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const user = useAppStore((state) => state.user);
-  const [filter, setFilter] = useState<FortuneFilter>('Tümü');
+  const [filter, setFilter] = useState<FortuneFilter>('all');
 
   const { data: fortunes = [], isLoading, refetch } = useQuery({
     queryKey: ['fortunes', user?.id],
@@ -37,9 +39,9 @@ export default function FortunesScreen() {
     }, [user, refetch])
   );
 
-  const filters: FortuneFilter[] = ['Tümü', 'Okunmamış'];
+  const filters: FortuneFilter[] = ['all', 'unread'];
 
-  const filteredFortunes = filter === 'Tümü' 
+  const filteredFortunes = filter === 'all' 
     ? fortunes
     : fortunes.filter(f => f.status === 'pending');
 
@@ -50,13 +52,13 @@ export default function FortunesScreen() {
   };
 
   const getFortuneTellerName = (fortune: typeof fortunes[0]) => {
-    return fortune.fortuneTellerName || 'Falcı';
+    return fortune.fortuneTellerName || t('fortunes.teller');
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Fallarım</Text>
+        <Text style={styles.headerTitle}>{t('fortunes.title')}</Text>
         <View style={{ width: 40 }} />
       </View>
 
@@ -76,7 +78,7 @@ export default function FortunesScreen() {
                 filter === f && styles.filterButtonTextActive,
               ]}
             >
-              {f}
+              {t(`fortunes.filters.${f}`)}
             </Text>
           </TouchableOpacity>
         ))}
@@ -93,9 +95,9 @@ export default function FortunesScreen() {
               <View style={styles.emptyIconContainer}>
                 <Clock size={64} color={Colors.textMuted} />
               </View>
-              <Text style={styles.emptyTitle}>Geçmiş Falınız Yok</Text>
+              <Text style={styles.emptyTitle}>{t('fortunes.empty.title')}</Text>
               <Text style={styles.emptyText}>
-                Henüz geçmiş bir falınız bulunmuyor. Yeni bir fal baktırdığınızda burada görünecektir.
+                {t('fortunes.empty.description')}
               </Text>
             </View>
           ) : (
@@ -119,7 +121,7 @@ export default function FortunesScreen() {
                     <Text style={styles.fortuneName}>{getFortuneTellerName(fortune)}</Text>
                     <Text style={styles.fortuneDate}>{formatDate(fortune.createdAt)}</Text>
                     {fortune.status === 'pending' && (
-                      <Text style={styles.statusText}>Beklemede</Text>
+                      <Text style={styles.statusText}>{t('fortunes.status.pending')}</Text>
                     )}
                   </View>
 

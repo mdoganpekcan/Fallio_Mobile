@@ -18,10 +18,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { fortuneService } from '@/services/fortunes';
 import { fortuneTellerService } from '@/services/fortuneTellers';
 import { getFortuneTypeInfo } from '@/constants/fortuneTypes';
+import { useTranslation } from 'react-i18next';
 
 import Markdown from 'react-native-markdown-display';
 
 export default function FortuneResultScreen() {
+  const { t, i18n } = useTranslation();
   const router = useRouter();
   const queryClient = useQueryClient();
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -68,13 +70,13 @@ export default function FortuneResultScreen() {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     const options: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'long', year: 'numeric' };
-    return date.toLocaleDateString('tr-TR', options);
+    return date.toLocaleDateString(i18n.language, options);
   };
 
   const handleShare = async () => {
     try {
       await Share.share({
-        message: `Falio - ${fortuneInfo.name}\n\n${fortune.result}`,
+        message: t('fortune.result.share_message', { type: t(fortuneInfo.name), result: fortune.result }),
       });
     } catch {
       return;
@@ -83,7 +85,7 @@ export default function FortuneResultScreen() {
 
   const handleRate = (rating: 1 | -1) => {
     if (fortune.status !== 'completed') {
-      Alert.alert('Bilgi', 'Fal sonucu tamamlandığında oylama yapabilirsiniz.');
+      Alert.alert(t('common.info'), t('fortune.result.alerts.rating_wait'));
       return;
     }
     rateMutation.mutate(rating);
@@ -95,7 +97,7 @@ export default function FortuneResultScreen() {
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <ArrowLeft size={24} color={Colors.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Fal Sonucu</Text>
+        <Text style={styles.headerTitle}>{t('fortune.result.title')}</Text>
         <View style={{ width: 40 }} />
       </View>
 
@@ -105,12 +107,12 @@ export default function FortuneResultScreen() {
             <Text style={styles.avatarText}>🔮</Text>
           </View>
           <Text style={styles.fortuneTellerName}>
-            {fortuneTeller?.name || 'Falcı'}
+            {fortuneTeller?.name || t('fortune.result.teller_default')}
           </Text>
-          <Text style={styles.fortuneType}>{fortuneInfo.name}</Text>
+          <Text style={styles.fortuneType}>{t(fortuneInfo.name)}</Text>
           <Text style={styles.fortuneDate}>{formatDate(fortune.createdAt)}</Text>
           <Text style={styles.fortuneStatus}>
-            {fortune.status === 'completed' ? 'Tamamlandı' : 'Beklemede'}
+            {fortune.status === 'completed' ? t('fortunes.status.completed') : t('fortunes.status.pending')}
           </Text>
         </View>
 
@@ -127,13 +129,13 @@ export default function FortuneResultScreen() {
               strong: { color: Colors.primary, fontWeight: 'bold' },
             }}
           >
-            {fortune.result || 'Fal yorumu bekleniyor...'}
+            {fortune.result || t('fortune.result.waiting_message')}
           </Markdown>
         </View>
 
         {fortune.result && (
           <View style={styles.ratingSection}>
-            <Text style={styles.ratingTitle}>Yorumu nasıl buldun?</Text>
+            <Text style={styles.ratingTitle}>{t('fortune.result.rating_title')}</Text>
             <View style={styles.ratingButtons}>
               <TouchableOpacity
                 style={[
@@ -144,7 +146,7 @@ export default function FortuneResultScreen() {
                 disabled={rateMutation.isPending || fortune.status !== 'completed'}
               >
                 <ThumbsUp size={24} color={Colors.success} />
-                <Text style={[styles.ratingButtonText, { color: Colors.success }]}>Beğendim</Text>
+                <Text style={[styles.ratingButtonText, { color: Colors.success }]}>{t('fortune.result.like')}</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[
@@ -155,7 +157,7 @@ export default function FortuneResultScreen() {
                 disabled={rateMutation.isPending || fortune.status !== 'completed'}
               >
                 <ThumbsDown size={24} color={Colors.error} />
-                <Text style={[styles.ratingButtonText, { color: Colors.error }]}>Beğenmedim</Text>
+                <Text style={[styles.ratingButtonText, { color: Colors.error }]}>{t('fortune.result.dislike')}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -171,7 +173,7 @@ export default function FortuneResultScreen() {
             end={{ x: 1, y: 0 }}
             style={styles.retryButtonGradient}
           >
-            <Text style={styles.retryButtonText}>Yeniden Fal Baktır</Text>
+            <Text style={styles.retryButtonText}>{t('fortune.result.retry')}</Text>
           </LinearGradient>
         </TouchableOpacity>
 

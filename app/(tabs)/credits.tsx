@@ -21,8 +21,10 @@ import { revenueCatService } from '@/services/revenueCat';
 import { adMobService } from '@/services/admob';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
+import { useTranslation } from 'react-i18next';
 
 export default function CreditsScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const user = useAppStore((state) => state.user);
   const appConfig = useAppStore((state) => state.appConfig);
@@ -47,14 +49,14 @@ export default function CreditsScreen() {
   // Kredi Ekleme (Backend)
   const addCreditsMutation = useMutation({
     mutationFn: async (credits: number) => {
-      if (!user) throw new Error('Kullanıcı bulunamadı');
+      if (!user) throw new Error(t('auth.errors.user_not_found'));
       await walletService.updateCredits(user.id, credits);
       const wallet = await walletService.getWallet(user.id);
       updateUserCredits(wallet.credits);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['wallet', user?.id] });
-      Alert.alert('Başarılı', 'Kredi hesabınıza eklendi.');
+      Alert.alert(t('credits.messages.success'), t('credits.messages.creditsAdded'));
     },
   });
 
@@ -72,12 +74,12 @@ export default function CreditsScreen() {
         await addCreditsMutation.mutateAsync(credits);
       } else {
         // Abonelik ise
-        Alert.alert('Başarılı', 'Premium üyelik aktif edildi!');
+        Alert.alert(t('credits.messages.success'), t('credits.messages.premiumActivated'));
         queryClient.invalidateQueries({ queryKey: ['rc-status'] });
       }
     } catch (e: any) {
       if (!e.userCancelled) {
-        Alert.alert('Hata', e.message || 'Satın alma başarısız.');
+        Alert.alert(t('credits.messages.error'), e.message || t('credits.messages.purchaseFailed'));
       }
     }
   };
@@ -86,7 +88,7 @@ export default function CreditsScreen() {
     if (!user) return;
     
     if (!adMobService.isRewardedReady()) {
-      Alert.alert('Bilgi', 'Reklam şu anda yükleniyor, lütfen biraz bekleyin.');
+      Alert.alert(t('common.info'), t('credits.messages.adLoading'));
       return;
     }
 
@@ -102,7 +104,7 @@ export default function CreditsScreen() {
       }
     } catch (error) {
       console.error(error);
-      Alert.alert('Hata', 'Reklam gösterilirken bir sorun oluştu.');
+      Alert.alert(t('credits.messages.error'), t('credits.messages.adError'));
     } finally {
       setLoadingAd(false);
     }
@@ -112,7 +114,7 @@ export default function CreditsScreen() {
     <SafeAreaView style={[styles.container, { paddingTop: insets.top }]}>
       <StatusBar style="light" />
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Kredi & Abonelik</Text>
+        <Text style={styles.headerTitle}>{t('credits.title')}</Text>
         <TouchableOpacity onPress={() => router.back()}>
           <X size={24} color={Colors.text} />
         </TouchableOpacity>
@@ -122,7 +124,7 @@ export default function CreditsScreen() {
         
         {/* Ücretsiz Kredi Alanı */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Ücretsiz Kredi Kazan</Text>
+          <Text style={styles.sectionTitle}>{t('credits.freeCredits.title')}</Text>
           <TouchableOpacity 
             style={styles.adButton}
             onPress={handleWatchAd}
@@ -140,8 +142,8 @@ export default function CreditsScreen() {
                 <View style={styles.adContent}>
                   <Text style={styles.adButtonIcon}>🎬</Text>
                   <View>
-                    <Text style={styles.adButtonTitle}>Reklam İzle</Text>
-                    <Text style={styles.adButtonSubtitle}>+{appConfig?.ad_reward_amount || 1} Kredi Kazan</Text>
+                    <Text style={styles.adButtonTitle}>{t('credits.freeCredits.watchAd')}</Text>
+                    <Text style={styles.adButtonSubtitle}>{t('credits.freeCredits.earn', { amount: appConfig?.ad_reward_amount || 1 })}</Text>
                   </View>
                 </View>
               )}
@@ -150,29 +152,29 @@ export default function CreditsScreen() {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Potansiyelini Ortaya Çıkar</Text>
+          <Text style={styles.sectionTitle}>{t('credits.premium.title')}</Text>
           <Text style={styles.sectionDescription}>
-            Premium özelliklerle kaderinin sırlarını çöz.
+            {t('credits.premium.description')}
           </Text>
 
           <View style={styles.featuresList}>
             <View style={styles.feature}>
               <Text style={styles.featureIcon}>✨</Text>
-              <Text style={styles.featureText}>Sınırsız Fal Yorumu</Text>
+              <Text style={styles.featureText}>{t('credits.premium.features.unlimited')}</Text>
             </View>
             <View style={styles.feature}>
               <Text style={styles.featureIcon}>🚫</Text>
-              <Text style={styles.featureText}>Reklamsız Deneyim</Text>
+              <Text style={styles.featureText}>{t('credits.premium.features.noAds')}</Text>
             </View>
             <View style={styles.feature}>
               <Text style={styles.featureIcon}>⭐</Text>
-              <Text style={styles.featureText}>Özel İçeriklere Erişim</Text>
+              <Text style={styles.featureText}>{t('credits.premium.features.specialContent')}</Text>
             </View>
           </View>
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Kredi Paketleri</Text>
+          <Text style={styles.sectionTitle}>{t('credits.packages.title')}</Text>
           <View style={styles.packagesContainer}>
             {offeringsLoading ? (
               <ActivityIndicator color={Colors.primary} />
@@ -193,18 +195,18 @@ export default function CreditsScreen() {
               ))
             )}
             {(!offerings || offerings.availablePackages.filter(p => p.product.identifier.includes('credit')).length === 0) && !offeringsLoading && (
-               <Text style={{color: Colors.textSecondary}}>Şu anda kredi paketi bulunmuyor.</Text>
+               <Text style={{color: Colors.textSecondary}}>{t('credits.packages.noPackages')}</Text>
             )}
           </View>
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Premium Abonelik</Text>
+          <Text style={styles.sectionTitle}>{t('credits.premium.subscriptionTitle')}</Text>
           {isPro ? (
             <View style={styles.activeSubscription}>
-              <Text style={styles.activeSubTitle}>Premium Üyesiniz</Text>
+              <Text style={styles.activeSubTitle}>{t('credits.premium.active')}</Text>
               <Text style={styles.activeSubDate}>
-                Aboneliğiniz aktif.
+                {t('credits.premium.activeDesc')}
               </Text>
             </View>
           ) : (
@@ -240,14 +242,14 @@ export default function CreditsScreen() {
                           selectedPackage?.identifier === pkg.identifier && styles.selectedSubscribeButtonText,
                         ]}
                       >
-                        Abone Ol
+                        {t('credits.premium.subscribe')}
                       </Text>
                     </TouchableOpacity>
                   </TouchableOpacity>
                 ))
               )}
                {(!offerings || offerings.availablePackages.filter(p => !p.product.identifier.includes('credit')).length === 0) && !offeringsLoading && (
-               <Text style={{color: Colors.textSecondary}}>Şu anda abonelik planı bulunmuyor.</Text>
+               <Text style={{color: Colors.textSecondary}}>{t('credits.premium.noPlans')}</Text>
             )}
             </View>
           )}

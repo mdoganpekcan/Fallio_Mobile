@@ -2,8 +2,11 @@ import { Tabs } from 'expo-router';
 import React from 'react';
 import { Home, Clock, DollarSign, User } from 'lucide-react-native';
 import { Colors } from '@/constants/theme';
+import { useTranslation } from 'react-i18next';
 
 export default function TabLayout() {
+  const { t } = useTranslation();
+
   return (
     <Tabs
       screenOptions={{
@@ -27,28 +30,28 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Ana Sayfa',
+          title: t('tabs.home'),
           tabBarIcon: ({ color, size }) => <Home size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="fortunes"
         options={{
-          title: 'Fallarım',
+          title: t('tabs.fortunes'),
           tabBarIcon: ({ color, size }) => <Clock size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="credits"
         options={{
-          title: 'Kredi',
+          title: t('tabs.credits'),
           tabBarIcon: ({ color, size }) => <DollarSign size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'Profil',
+          title: t('tabs.profile'),
           tabBarIcon: ({ color, size }) => <User size={size} color={color} />,
         }}
       />

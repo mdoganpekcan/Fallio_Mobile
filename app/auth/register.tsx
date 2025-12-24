@@ -21,10 +21,12 @@ import { authService } from '@/services/auth';
 import { profileService } from '@/services/profiles';
 import { useMutation } from '@tanstack/react-query';
 import { useAppStore } from '@/store/useAppStore';
+import { useTranslation, Trans } from 'react-i18next';
 
 type Gender = 'male' | 'female' | 'other';
 
 export default function RegisterScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const setUser = useAppStore((state) => state.setUser);
   const [avatarUri, setAvatarUri] = useState<string | null>(null);
@@ -38,7 +40,7 @@ export default function RegisterScreen() {
   const registerMutation = useMutation({
     mutationFn: async () => {
       if (!fullName || !email || !password || !birthDate || !gender) {
-        throw new Error('Lütfen tüm alanları doldurun');
+        throw new Error(t('auth.errors.fill_all_fields'));
       }
 
       const [day, month, year] = birthDate.split('.');
@@ -81,13 +83,13 @@ export default function RegisterScreen() {
     },
     onError: (error: Error) => {
       console.error('[Register] Error:', error);
-      let message = error.message || 'Kayıt sırasında bir hata oluştu';
+      let message = error.message || t('auth.errors.register_error');
       
       if (message.includes('duplicate key') || message.includes('users_email_key')) {
-        message = 'Bu e-posta adresi zaten kullanımda. Lütfen giriş yapın.';
+        message = t('auth.errors.email_in_use');
       }
 
-      Alert.alert('Kayıt Hatası', message);
+      Alert.alert(t('auth.errors.register_error_title'), message);
     },
   });
 
@@ -105,7 +107,7 @@ export default function RegisterScreen() {
       }
     } catch (error) {
       console.error('ImagePicker Error:', error);
-      Alert.alert('Hata', 'Galeri açılamadı. Lütfen izinleri kontrol edin veya tekrar deneyin.');
+      Alert.alert(t('auth.errors.error_title'), t('auth.errors.gallery_error'));
     }
   };
 
@@ -133,9 +135,9 @@ export default function RegisterScreen() {
   };
 
   const genders: { value: Gender; label: string }[] = [
-    { value: 'female', label: 'Kadın' },
-    { value: 'male', label: 'Erkek' },
-    { value: 'other', label: 'Diğer' },
+    { value: 'female', label: t('auth.genders.female') },
+    { value: 'male', label: t('auth.genders.male') },
+    { value: 'other', label: t('auth.genders.other') },
   ];
 
   return (
@@ -150,8 +152,8 @@ export default function RegisterScreen() {
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.header}>
-            <Text style={styles.title}>Hesap Oluştur</Text>
-            <Text style={styles.subtitle}>Falio ailesine hoş geldin</Text>
+            <Text style={styles.title}>{t('auth.create_account')}</Text>
+            <Text style={styles.subtitle}>{t('auth.welcome_family')}</Text>
           </View>
 
           <View style={styles.form}>
@@ -172,15 +174,15 @@ export default function RegisterScreen() {
                   <Camera size={20} color={Colors.text} />
                 </View>
               </TouchableOpacity>
-              <Text style={styles.avatarText}>Profil Fotoğrafı Ekle</Text>
+              <Text style={styles.avatarText}>{t('auth.add_profile_photo')}</Text>
             </View>
 
-            <Text style={styles.label}>Ad Soyad</Text>
+            <Text style={styles.label}>{t('auth.full_name')}</Text>
             <View style={styles.inputContainer}>
               <User size={20} color={Colors.textSecondary} style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
-                placeholder="Ad ve soyadını gir"
+                placeholder={t('auth.enter_full_name')}
                 placeholderTextColor={Colors.textMuted}
                 value={fullName}
                 onChangeText={setFullName}
@@ -188,12 +190,12 @@ export default function RegisterScreen() {
               />
             </View>
 
-            <Text style={styles.label}>E-posta</Text>
+            <Text style={styles.label}>{t('common.email')}</Text>
             <View style={styles.inputContainer}>
               <Mail size={20} color={Colors.textSecondary} style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
-                placeholder="E-posta adresini gir"
+                placeholder={t('auth.enter_email')}
                 placeholderTextColor={Colors.textMuted}
                 value={email}
                 onChangeText={setEmail}
@@ -203,12 +205,12 @@ export default function RegisterScreen() {
               />
             </View>
 
-            <Text style={styles.label}>Şifre</Text>
+            <Text style={styles.label}>{t('common.password')}</Text>
             <View style={styles.inputContainer}>
               <Lock size={20} color={Colors.textSecondary} style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
-                placeholder="Şifre oluştur"
+                placeholder={t('auth.create_password')}
                 placeholderTextColor={Colors.textMuted}
                 value={password}
                 onChangeText={setPassword}
@@ -218,12 +220,12 @@ export default function RegisterScreen() {
               />
             </View>
 
-            <Text style={styles.label}>Doğum Tarihi</Text>
+            <Text style={styles.label}>{t('auth.birth_date')}</Text>
             <View style={styles.inputContainer}>
               <Calendar size={20} color={Colors.textSecondary} style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
-                placeholder="GG.AA.YYYY"
+                placeholder={t('auth.date_format')}
                 placeholderTextColor={Colors.textMuted}
                 value={birthDate}
                 onChangeText={handleBirthDateChange}
@@ -234,14 +236,14 @@ export default function RegisterScreen() {
 
             {zodiac ? (
               <View style={styles.zodiacContainer}>
-                <Text style={styles.zodiacLabel}>Burcunuz:</Text>
+                <Text style={styles.zodiacLabel}>{t('auth.zodiac_sign')}</Text>
                 <View style={styles.zodiacBadge}>
                   <Text style={styles.zodiacText}>{zodiac}</Text>
                 </View>
               </View>
             ) : null}
 
-            <Text style={styles.label}>Cinsiyet</Text>
+            <Text style={styles.label}>{t('auth.gender')}</Text>
             <View style={styles.genderContainer}>
               {genders.map((g) => (
                 <TouchableOpacity
@@ -276,20 +278,22 @@ export default function RegisterScreen() {
                 style={styles.registerButtonGradient}
               >
                 <Text style={styles.registerButtonText}>
-                  {registerMutation.isPending ? 'Kaydediliyor...' : 'Devam Et'}
+                  {registerMutation.isPending ? t('auth.registering') : t('auth.continue')}
                 </Text>
               </LinearGradient>
             </TouchableOpacity>
 
             <Text style={styles.legal}>
-              Devam ederek <Text style={styles.legalLink}>Kullanım Koşulları</Text> ve{' '}
-              <Text style={styles.legalLink}>Gizlilik Politikası</Text>&apos;nı kabul etmiş olursunuz.
+              <Trans i18nKey="auth.legal_text">
+                Devam ederek <Text style={styles.legalLink}>Kullanım Koşulları</Text> ve{' '}
+                <Text style={styles.legalLink}>Gizlilik Politikası</Text>&apos;nı kabul etmiş olursunuz.
+              </Trans>
             </Text>
 
             <View style={styles.footer}>
-              <Text style={styles.footerText}>Zaten hesabın var mı? </Text>
+              <Text style={styles.footerText}>{t('auth.have_account_question')} </Text>
               <TouchableOpacity onPress={() => router.back()}>
-                <Text style={styles.footerLink}>Giriş Yap</Text>
+                <Text style={styles.footerLink}>{t('auth.login_action')}</Text>
               </TouchableOpacity>
             </View>
           </View>

@@ -14,10 +14,12 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getFortuneTypeInfo, FortuneType } from '@/constants/fortuneTypes';
 import { useAppStore } from '@/store/useAppStore';
+import { useTranslation } from 'react-i18next';
 
 const { width } = Dimensions.get('window');
 
 export default function FortuneTypeScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { type } = useLocalSearchParams<{ type: string }>();
   const fortuneInfo = getFortuneTypeInfo(type as FortuneType);
@@ -44,12 +46,12 @@ export default function FortuneTypeScreen() {
           </LinearGradient>
         </View>
 
-        <Text style={styles.title}>{fortuneInfo.name}</Text>
-        <Text style={styles.description}>{fortuneInfo.detailedDescription}</Text>
+        <Text style={styles.title}>{t(fortuneInfo.name)}</Text>
+        <Text style={styles.description}>{t(fortuneInfo.detailedDescription)}</Text>
 
         <View style={styles.creditInfo}>
           <Text style={styles.creditIcon}>💎</Text>
-          <Text style={styles.creditText}>Gerekli Kredi: {creditCost}</Text>
+          <Text style={styles.creditText}>{t('fortune.type.required_credits', { cost: creditCost })}</Text>
         </View>
 
         <View style={styles.buttonContainer}>
@@ -63,7 +65,7 @@ export default function FortuneTypeScreen() {
               end={{ x: 1, y: 0 }}
               style={styles.buttonGradient}
             >
-              <Text style={styles.primaryButtonText}>Hemen Fal Bak</Text>
+              <Text style={styles.primaryButtonText}>{t('fortune.type.start_now')}</Text>
             </LinearGradient>
           </TouchableOpacity>
 
@@ -71,7 +73,7 @@ export default function FortuneTypeScreen() {
             style={styles.secondaryButton}
             onPress={() => router.push(`/fortune-tellers?fortuneType=${type}` as any)}
           >
-            <Text style={styles.secondaryButtonText}>Falcı Seç</Text>
+            <Text style={styles.secondaryButtonText}>{t('fortune.type.choose_teller')}</Text>
           </TouchableOpacity>
         </View>
 

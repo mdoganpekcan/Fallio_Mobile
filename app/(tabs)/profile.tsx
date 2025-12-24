@@ -21,8 +21,10 @@ import * as ImagePicker from 'expo-image-picker';
 import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
+import { useTranslation } from 'react-i18next';
 
 export default function ProfileScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const queryClient = useQueryClient();
   const user = useAppStore((state) => state.user);
@@ -38,7 +40,7 @@ export default function ProfileScreen() {
 
   const uploadAvatarMutation = useMutation({
     mutationFn: async (uri: string) => {
-      if (!user) throw new Error('User not found');
+      if (!user) throw new Error(t('auth.errors.user_not_found'));
       return profileService.uploadAvatar(user.id, uri);
     },
     onSuccess: async () => {
@@ -55,7 +57,7 @@ export default function ProfileScreen() {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
     
     if (!permissionResult.granted) {
-      Alert.alert('Hata', 'Galeri erişimi gereklidir.');
+      Alert.alert(t('auth.errors.error_title'), t('profile.alerts.gallery_permission_error'));
       return;
     }
 
@@ -70,9 +72,9 @@ export default function ProfileScreen() {
       setIsUploading(true);
       try {
         await uploadAvatarMutation.mutateAsync(result.assets[0].uri);
-        Alert.alert('Başarılı', 'Profil fotoğrafınız güncellendi.');
+        Alert.alert(t('common.success'), t('profile.alerts.avatar_success'));
       } catch {
-        Alert.alert('Hata', 'Fotoğraf yüklenirken bir hata oluştu.');
+        Alert.alert(t('auth.errors.error_title'), t('profile.alerts.avatar_error'));
       } finally {
         setIsUploading(false);
       }
@@ -81,12 +83,12 @@ export default function ProfileScreen() {
 
   const handleLogout = async () => {
     Alert.alert(
-      'Çıkış',
-      'Çıkış yapmak istediğinizden emin misiniz?',
+      t('profile.alerts.logout_title'),
+      t('profile.alerts.logout_message'),
       [
-        { text: 'Vazgeç', style: 'cancel' },
+        { text: t('profile.alerts.logout_cancel'), style: 'cancel' },
         {
-          text: 'Çıkış Yap',
+          text: t('profile.alerts.logout_confirm'),
           style: 'destructive',
           onPress: async () => {
             try {
@@ -94,7 +96,7 @@ export default function ProfileScreen() {
               logout();
               router.replace('/auth/login' as any);
             } catch {
-              Alert.alert('Hata', 'Çıkış yapılırken bir hata oluştu.');
+              Alert.alert(t('auth.errors.error_title'), t('profile.alerts.logout_error'));
             }
           },
         },
@@ -104,12 +106,12 @@ export default function ProfileScreen() {
 
   const handleDeleteAccount = async () => {
     Alert.alert(
-      'Hesabı Sil',
-      'Hesabınızı ve tüm verilerinizi kalıcı olarak silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.',
+      t('profile.alerts.delete_account_title'),
+      t('profile.alerts.delete_account_message'),
       [
-        { text: 'Vazgeç', style: 'cancel' },
+        { text: t('profile.alerts.logout_cancel'), style: 'cancel' },
         {
-          text: 'Hesabı Sil',
+          text: t('profile.alerts.delete_account_confirm'),
           style: 'destructive',
           onPress: async () => {
             try {
@@ -118,7 +120,7 @@ export default function ProfileScreen() {
               router.replace('/auth/login' as any);
             } catch (error) {
               console.error(error);
-              Alert.alert('Hata', 'Hesap silinirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
+              Alert.alert(t('auth.errors.error_title'), t('profile.alerts.delete_account_error'));
             }
           },
         },
@@ -129,27 +131,27 @@ export default function ProfileScreen() {
   const menuItems = [
     {
       icon: Edit2,
-      title: 'Profili Düzenle',
+      title: t('profile.menu.edit_profile'),
       onPress: () => router.push('/profile/edit' as any),
     },
     {
       icon: UserIcon,
-      title: 'Hesap Ayarları',
+      title: t('profile.menu.account_settings'),
       onPress: () => router.push('/settings' as any),
     },
     {
       icon: Bell,
-      title: 'Bildirim Ayarları',
+      title: t('profile.menu.notification_settings'),
       onPress: () => router.push('/notifications' as any),
     },
     {
       icon: Shield,
-      title: 'Gizlilik Sözleşmesi',
+      title: t('profile.menu.privacy_policy'),
       onPress: () => router.push('/content/privacy' as any),
     },
     {
       icon: Shield,
-      title: 'Kullanım Koşulları',
+      title: t('profile.menu.terms_of_use'),
       onPress: () => router.push('/content/terms' as any),
     },
   ];
@@ -171,9 +173,9 @@ export default function ProfileScreen() {
   }
 
   const formatBirthDate = (dateString: string | null | undefined) => {
-    if (!dateString) return 'Belirtilmemiş';
+    if (!dateString) return t('profile.common.unspecified');
     const date = new Date(dateString);
-    if (isNaN(date.getTime())) return 'Geçersiz Tarih';
+    if (isNaN(date.getTime())) return t('profile.common.invalid_date');
     return date.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
   };
 
@@ -181,7 +183,7 @@ export default function ProfileScreen() {
     <SafeAreaView style={[styles.container, { paddingTop: insets.top }]}>
       <StatusBar style="light" />
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Profil</Text>
+        <Text style={styles.headerTitle}>{t('profile.title')}</Text>
         <TouchableOpacity 
           style={styles.settingsButton}
           onPress={() => router.push('/settings' as any)}
@@ -230,7 +232,7 @@ export default function ProfileScreen() {
             {profile.relationshipStatus ? <Text style={styles.userRelation}>{profile.relationshipStatus}</Text> : null}
             <Text style={styles.userBirthDate}>{formatBirthDate(profile.birthDate)}</Text>
             <View style={styles.zodiacBadge}>
-              <Text style={styles.zodiacText}>{profile.zodiacSign} Burcu</Text>
+              <Text style={styles.zodiacText}>{t('profile.common.zodiac_sign', { sign: profile.zodiacSign })}</Text>
             </View>
           </View>
         </View>
@@ -252,7 +254,7 @@ export default function ProfileScreen() {
         </View>
 
         <View style={styles.socialSection}>
-          <Text style={styles.socialTitle}>Bizi Takip Edin</Text>
+          <Text style={styles.socialTitle}>{t('profile.social.follow_us')}</Text>
           <View style={styles.socialLinks}>
             {socialLinks.map((social, index) => (
               <TouchableOpacity
@@ -267,11 +269,11 @@ export default function ProfileScreen() {
 
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <LogOut size={20} color={Colors.premium} />
-          <Text style={styles.logoutButtonText}>Çıkış Yap</Text>
+          <Text style={styles.logoutButtonText}>{t('profile.actions.logout')}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.deleteAccountButton} onPress={handleDeleteAccount}>
-          <Text style={styles.deleteAccountText}>Hesabımı Sil</Text>
+          <Text style={styles.deleteAccountText}>{t('profile.actions.delete_account')}</Text>
         </TouchableOpacity>
 
         <View style={{ height: 32 }} />

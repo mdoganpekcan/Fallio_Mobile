@@ -1,0 +1,478 @@
+{
+  "common": {
+    "welcome": "Welcome",
+    "login": "Login",
+    "register": "Register",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Success",
+    "guest": "Guest",
+    "info": "Info",
+    "close": "Close"
+  },
+  "colors": {
+    "red": "Red",
+    "orange": "Orange",
+    "yellow": "Yellow",
+    "green": "Green",
+    "blue": "Blue",
+    "navy": "Navy Blue",
+    "purple": "Purple",
+    "pink": "Pink",
+    "brown": "Brown",
+    "black": "Black",
+    "white": "White",
+    "gray": "Gray"
+  },
+  "tabs": {
+    "home": "Home",
+    "fortunes": "My Fortunes",
+    "credits": "Credits",
+    "profile": "Profile"
+  },
+  "auth": {
+    "login_title": "Login to your account",
+    "register_title": "Create a new account",
+    "forgot_password": "Forgot Password",
+    "dont_have_account": "Don't have an account? Register",
+    "already_have_account": "Already have an account? Login",
+    "have_account_question": "Already have an account?",
+    "login_action": "Login",
+    "welcome_back": "Welcome Back",
+    "enter_email": "Enter your email",
+    "enter_password": "Enter your password",
+    "forgot_password_q": "Forgot Password?",
+    "logging_in": "Logging in...",
+    "or": "or",
+    "google_login": "Continue with Google",
+    "no_account": "Don't have an account?",
+    "register_link": "Register",
+    "errors": {
+      "email_password_required": "Email and password are required",
+      "login_failed": "Login failed.",
+      "invalid_credentials": "Invalid email or password. Please check your credentials.",
+      "email_not_confirmed": "Your email address is not confirmed yet. Please check your inbox.",
+      "login_error_title": "Login Error",
+      "error_title": "Error",
+      "google_login_error": "Google login failed",
+      "fill_all_fields": "Please fill in all fields",
+      "register_error": "An error occurred during registration",
+      "email_in_use": "This email address is already in use. Please login.",
+      "register_error_title": "Registration Error",
+      "gallery_error": "Could not open gallery. Please check permissions or try again.",
+      "enter_email": "Please enter your email address",
+      "reset_error": "An error occurred while resetting password",
+      "invalid_birth_date": "Please enter a valid birth date and gender.",
+      "user_not_found": "User not found",
+      "profile_update_error": "An error occurred while updating profile."
+    },
+    "create_account": "Create Account",
+    "welcome_family": "Welcome to the Falio family",
+    "add_profile_photo": "Add Profile Photo",
+    "full_name": "Full Name",
+    "enter_full_name": "Enter your full name",
+    "create_password": "Create password",
+    "birth_date": "Birth Date",
+    "date_format": "DD.MM.YYYY",
+    "zodiac_sign": "Your Zodiac Sign:",
+    "gender": "Gender",
+    "genders": {
+      "female": "Female",
+      "male": "Male",
+      "other": "Other"
+    },
+    "registering": "Registering...",
+    "continue": "Continue",
+    "legal_text": "By continuing, you agree to our <1>Terms of Use</1> and <3>Privacy Policy</3>.",
+    "reset_password": "Reset Password",
+    "reset_password_desc": "Enter your email address and we'll send you a link to reset your password.",
+    "sending": "Sending...",
+    "reset_password_action": "Reset Password",
+    "remembered_password": "Remembered your password?",
+    "email_sent_title": "Email Sent",
+    "email_sent_desc": "A password reset link has been sent to your email address.",
+    "ok": "OK",
+    "complete_profile": "Complete Profile",
+    "complete_profile_desc": "We need your birth date and gender information to provide personalized fortune readings.",
+    "birth_date_label": "Birth Date (DD.MM.YYYY)",
+    "save": "Save",
+    "saving": "Saving..."
+  },
+  "onboarding": {
+    "slide1_title": "Discover Your Future",
+    "slide1_desc": "Get personalized astrology and fortune readings with Falio. Ancient wisdom and real fortune tellers await you.",
+    "slide2_title": "Real Fortune Tellers",
+    "slide2_desc": "Discover your future with the intuitive and empathetic approach of our experienced and expert fortune tellers.",
+    "slide3_title": "Start Now",
+    "slide3_desc": "Your personal astrology and fortune readings are waiting for you.",
+    "next": "Next",
+    "start": "Start",
+    "skip": "Skip"
+  },
+  "home": {
+    "welcome": "Welcome",
+    "horoscopeTitle": "Your Horoscope",
+    "horoscopePlaceholder": "Select your zodiac sign from your profile to see your daily horoscope.",
+    "fortuneTitle": "Get a Fortune Reading",
+    "premiumTitle": "Upgrade to Falio Premium",
+    "premiumDescription": "Get unlimited readings, priority interpretation, and more with Premium.",
+    "premiumButton": "View Premium",
+    "periods": {
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "monthly": "Monthly"
+    },
+    "categories": {
+      "love": "Love",
+      "money": "Money",
+      "family": "Family",
+      "career": "Career",
+      "health": "Health",
+      "general": "General"
+    },
+    "horoscopeLoading": "Your horoscope is being prepared.",
+    "readMore": "Read More...",
+    "premiumFeatures": {
+      "noAds": "Ad-free Experience",
+      "dailyBonus": "Daily Bonus Credits",
+      "priority": "Priority & Fast Response"
+    },
+    "upgradeNow": "Upgrade Now"
+  },
+  "fortuneTypes": {
+    "coffee": {
+      "name": "Coffee Reading",
+      "description": "Discover the tradition of coffee reading",
+      "detailedDescription": "Discover the traditional coffee reading tradition with real interpreters. Send your photos, get your personal reading."
+    },
+    "tarot": {
+      "name": "Tarot Reading",
+      "description": "Learn your future with Tarot cards",
+      "detailedDescription": "This reading helps you understand potentials and challenges in your love life."
+    },
+    "palm": {
+      "name": "Palm Reading",
+      "description": "Discover the secrets of the lines in your palm",
+      "detailedDescription": "Discover the secrets of the lines in your palm and learn what they say about your destiny."
+    },
+    "dream": {
+      "name": "Dream Interpretation",
+      "description": "Learn the meaning of your dreams",
+      "detailedDescription": "Tell us your dream, let us interpret it. Share your dream with us to discover the secrets behind your dreams."
+    },
+    "love": {
+      "name": "Love Reading",
+      "description": "Get insights about your love life",
+      "detailedDescription": "Discover deep insights about your romantic life, relationships, and future partner. Let the stars guide your heart's journey."
+    },
+    "card": {
+      "name": "Card Reading",
+      "description": "Read your fortune with playing cards",
+      "detailedDescription": "Discover the traditional art of fortune telling with playing cards."
+    },
+    "color": {
+      "name": "Color Reading",
+      "description": "Discover your soul with colors",
+      "detailedDescription": "Focus on the color that feels closest to you and choose the color that reflects your energy."
+    }
+  },
+  "zodiac": {
+    "Koç": "Aries",
+    "Boğa": "Taurus",
+    "İkizler": "Gemini",
+    "Yengeç": "Cancer",
+    "Aslan": "Leo",
+    "Başak": "Virgo",
+    "Terazi": "Libra",
+    "Akrep": "Scorpio",
+    "Yay": "Sagittarius",
+    "Oğlak": "Capricorn",
+    "Kova": "Aquarius",
+    "Balık": "Pisces"
+  },
+  "fortunes": {
+    "title": "My Fortunes",
+    "filters": {
+      "all": "All",
+      "unread": "Unread"
+    },
+    "empty": {
+      "title": "No Past Fortunes",
+      "description": "You don't have any past fortunes yet. When you get a new reading, it will appear here."
+    },
+    "status": {
+      "pending": "Pending",
+      "completed": "Completed"
+    },
+    "teller": "Fortune Teller"
+  },
+  "credits": {
+    "title": "Credits & Subscription",
+    "freeCredits": {
+      "title": "Earn Free Credits",
+      "watchAd": "Watch Ad",
+      "earn": "Earn +{{amount}} Credits",
+      "loading": "Loading Ad..."
+    },
+    "premium": {
+      "title": "Unlock Your Potential",
+      "description": "Unlock the secrets of your destiny with Premium features.",
+      "features": {
+        "unlimited": "Unlimited Fortune Readings",
+        "noAds": "Ad-free Experience",
+        "specialContent": "Access to Exclusive Content"
+      },
+      "subscriptionTitle": "Premium Subscription",
+      "active": "You are a Premium Member",
+      "activeDesc": "Your subscription is active.",
+      "subscribe": "Subscribe",
+      "noPlans": "No subscription plans available at the moment."
+    },
+    "packages": {
+      "title": "Credit Packages",
+      "noPackages": "No credit packages available at the moment."
+    },
+    "messages": {
+      "success": "Success",
+      "creditsAdded": "Credits added to your account.",
+      "premiumActivated": "Premium membership activated!",
+      "error": "Error",
+      "purchaseFailed": "Purchase failed.",
+      "adLoading": "Ad is loading, please wait a moment.",
+      "adError": "An error occurred while showing the ad."
+    }
+  },
+  "settings": {
+    "title": "Account Settings",
+    "theme": {
+      "title": "Theme",
+      "dark": "Dark",
+      "light": "Light",
+      "system": "System"
+    },
+    "language": {
+      "title": "Language"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "enable": "Enable Notifications"
+    }
+  },
+  "notifications_screen": {
+    "title": "Notification Settings",
+    "alerts": {
+      "error_title": "Error",
+      "info_title": "Info",
+      "login_required": "Please log in to continue.",
+      "register_success": "Registration for notifications completed.",
+      "permission_error": "Notification permission could not be obtained."
+    },
+    "push": {
+      "title": "Push Notifications",
+      "subtitle": "Toggle general notifications"
+    },
+    "fortune": {
+      "title": "Fortune Results",
+      "subtitle": "Notify when new fortune result is ready"
+    },
+    "promo": {
+      "title": "Campaigns & Announcements",
+      "subtitle": "Notify about opportunities and campaigns"
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "common": {
+      "unspecified": "Unspecified",
+      "invalid_date": "Invalid Date",
+      "zodiac_sign": "{{sign}} Sign"
+    },
+    "menu": {
+      "edit_profile": "Edit Profile",
+      "account_settings": "Account Settings",
+      "notification_settings": "Notification Settings",
+      "privacy_policy": "Privacy Policy",
+      "terms_of_use": "Terms of Use"
+    },
+    "social": {
+      "follow_us": "Follow Us"
+    },
+    "actions": {
+      "logout": "Log Out",
+      "delete_account": "Delete My Account"
+    },
+    "alerts": {
+      "gallery_permission_error": "Gallery access is required.",
+      "avatar_success": "Your profile photo has been updated.",
+      "avatar_error": "An error occurred while uploading the photo.",
+      "logout_title": "Log Out",
+      "logout_message": "Are you sure you want to log out?",
+      "logout_cancel": "Cancel",
+      "logout_confirm": "Log Out",
+      "logout_error": "An error occurred while logging out.",
+      "delete_account_title": "Delete Account",
+      "delete_account_message": "Are you sure you want to permanently delete your account and all your data? This action cannot be undone.",
+      "delete_account_confirm": "Delete Account",
+      "delete_account_error": "An error occurred while deleting the account. Please try again later."
+    }
+  },
+  "fortune": {
+    "type": {
+      "required_credits": "Required Credits: {{cost}}",
+      "start_now": "Start Reading Now",
+      "choose_teller": "Choose Fortune Teller"
+    },
+    "submit": {
+      "errors": {
+        "login_required": "Please log in",
+        "missing_photos": "Please add all required photos",
+        "insufficient_credits": "Insufficient credits. Please purchase credits.",
+        "submit_error": "An error occurred while submitting the fortune",
+        "camera_permission": "Camera permission required."
+      },
+      "metadata": {
+        "selected_cards": "Selected cards: {{cards}}",
+        "selected_color": "Selected color: {{color}}",
+        "category": "Category: {{category}}"
+      },
+      "alerts": {
+        "max_photos": "You have added enough photos.",
+        "upload_photo_title": "Upload Photo",
+        "upload_photo_message": "How would you like to upload the photo?",
+        "camera": "Camera",
+        "gallery": "Gallery"
+      },
+      "buy_credits": "Buy Credits",
+      "photos": "Photos",
+      "photo": "Photo",
+      "photo_labels": {
+        "cup_inside": "Cup Inside",
+        "cup_saucer": "Cup Saucer",
+        "general_view": "General View",
+        "palm": "Palm Photo"
+      },
+      "select_cards": "Select Cards (3)",
+      "select_cards_desc": "Listen to your heart and choose 3 cards",
+      "select_color": "Select Color",
+      "select_color_desc": "Choose the color that feels closest to you",
+      "select_category": "Select Category",
+      "tell_dream": "Tell Your Dream",
+      "note_optional": "Note (Optional)",
+      "placeholders": {
+        "dream": "Describe your dream in detail...",
+        "tarot": "Write your intention or question...",
+        "default": "You can add a note about your fortune..."
+      },
+      "sending": "Sending...",
+      "send": "Send Fortune"
+    },
+    "result": {
+      "title": "Fortune Result",
+      "teller_default": "Fortune Teller",
+      "waiting_message": "Waiting for fortune reading...",
+      "rating_title": "How was the reading?",
+      "like": "Liked",
+      "dislike": "Disliked",
+      "retry": "Get Another Reading",
+      "share_message": "Falio - {{type}}\n\n{{result}}",
+      "alerts": {
+        "rating_wait": "You can rate when the fortune reading is completed."
+      }
+    }
+  },
+  "fortune_tellers": {
+    "title": "Fortune Tellers",
+    "search_placeholder": "Search fortune tellers...",
+    "empty": "No fortune tellers found",
+    "filters": {
+      "title": "Filters",
+      "sort_by": "Sort By",
+      "rating": "Rating",
+      "price": "Price",
+      "views": "Views",
+      "min_rating": "Minimum Rating",
+      "apply": "Apply"
+    }
+  },
+  "legal": {
+    "privacy": {
+      "title": "Privacy Policy",
+      "sections": [
+        {
+          "title": "1. Data Controller and Collected Data",
+          "body": "As Falio (\"Application\"), we process your personal data as a data controller in accordance with the Law on Protection of Personal Data No. 6698 (\"KVKK\") and relevant legislation. Collected data includes:\n\n• Identity Information: Name, surname, birth date, gender.\n• Contact Information: E-mail address.\n• Visual and Audio Records: Photos uploaded for fortune interpretation.\n• Transaction Security Information: IP address, device information, log records.\n• Marketing Information: Cookie records, usage habits."
+        },
+        {
+          "title": "2. Purposes of Processing Personal Data",
+          "body": "Your personal data is processed for the following purposes:\n\n• Performing membership transactions and providing user login.\n• Providing fortune interpretation service and delivering results.\n• Executing in-app purchase and subscription transactions.\n• Meeting customer support requests.\n• Fulfilling legal obligations and informing authorized authorities.\n• Ensuring application security and preventing fraudulent transactions."
+        },
+        {
+          "title": "3. Transfer of Personal Data",
+          "body": "Your data may be shared with our business partners (payment institutions, server service providers) for the purpose of providing the service and with authorized public institutions and organizations in case of legal obligation. Your data is stored on secure servers (Supabase etc.)."
+        },
+        {
+          "title": "4. Data Storage and Destruction",
+          "body": "Your personal data is stored for the period required by the processing purpose and taking into account the legal statute of limitations. At the end of the period or upon your request, your data will be deleted, destroyed or anonymized. Fortune photos may be automatically deleted from the system within a certain period of time after the interpretation process is completed."
+        },
+        {
+          "title": "5. Rights of the Data Subject",
+          "body": "Pursuant to Article 11 of KVKK;\n\n• Learning whether your personal data is processed,\n• Requesting information if processed,\n• Learning the purpose of processing and whether it is used in accordance with its purpose,\n• Knowing the third parties to whom it is transferred domestically or abroad,\n• Requesting correction if incomplete or incorrectly processed,\n• Requesting deletion or destruction.\n\nYou can make a request regarding these rights from the \"Contact Us\" section in the application or from our support e-mail address."
+        },
+        {
+          "title": "6. Cookies",
+          "body": "Cookies and similar technologies may be used to improve the application experience and collect analytical data. You can manage your cookie preferences from your device settings."
+        },
+        {
+          "title": "7. Changes",
+          "body": "This Privacy Policy may be updated depending on legal regulations or service changes. The current text becomes effective on the date it is published on the application."
+        }
+      ]
+    },
+    "terms": {
+      "title": "Terms of Use",
+      "sections": [
+        {
+          "title": "1. Parties and Subject",
+          "body": "These Terms of Use (\"Agreement\") are concluded between the Falio mobile application (\"Application\") and the user who is a member of the Application (\"User\"). By downloading or using the Application, you are deemed to have accepted these terms."
+        },
+        {
+          "title": "2. Scope of Service",
+          "body": "The Application offers entertainment-purpose fortune interpretations in line with the photos and information sent by users. The content offered is purely for entertainment purposes; it does not carry the nature of medical, legal, financial or psychological advice. The User should not make decisions regarding their life based on the interpretations."
+        },
+        {
+          "title": "3. Membership and Account Security",
+          "body": "The User declares that the information provided when creating a membership is correct and up-to-date. The user is responsible for account security (password etc.). Account information belonging to someone else cannot be used. The Application reserves the right to suspend or close the account in suspicious situations."
+        },
+        {
+          "title": "4. Usage Rules and Prohibitions",
+          "body": "The User cannot use the Application for purposes contrary to law and morality. The following actions are prohibited:\n\n• Sending content that is disturbing to others, insulting or threatening.\n• Using software or code that will damage the technical structure of the Application.\n• Sharing content that violates copyright.\n• Making transactions with misleading or fake information."
+        },
+        {
+          "title": "5. Paid Services and Refunds",
+          "body": "Some services within the Application (credit purchase, premium membership etc.) may be paid. Purchase transactions are carried out via App Store / Google Play. Since it is in the nature of digital content, the right of withdrawal and refund is not possible after the service is performed. However, in case of a technical error, platform rules apply."
+        },
+        {
+          "title": "6. Intellectual Property Rights",
+          "body": "The design, software, logo and content of the Application belong to Falio. Users cannot copy, distribute or use these materials for commercial purposes without permission."
+        },
+        {
+          "title": "7. Disclaimer",
+          "body": "The Application does not guarantee that the service will be uninterrupted or error-free. It cannot be held responsible for interruptions caused by technical problems, maintenance works or force majeure. Fortune interpretations are subjective and do not promise certainty."
+        },
+        {
+          "title": "8. Termination of Agreement",
+          "body": "The User can terminate the agreement by deleting their account at any time. The Application may unilaterally close the user account if it detects behavior contrary to the rules."
+        },
+        {
+          "title": "9. Dispute Resolution",
+          "body": "Turkish Law applies to disputes arising from this Agreement and Istanbul Courts and Enforcement Offices are authorized."
+        }
+      ]
+    }
+  }
+}

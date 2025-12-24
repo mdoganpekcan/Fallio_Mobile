@@ -13,6 +13,7 @@ import { Colors, Spacing, Typography, BorderRadius } from '@/constants/theme';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTranslation } from 'react-i18next';
 
 const { width } = Dimensions.get('window');
 
@@ -23,31 +24,32 @@ interface OnboardingSlide {
   image: string;
 }
 
-const slides: OnboardingSlide[] = [
-  {
-    id: '1',
-    title: 'Geleceğini Keşfet',
-    description: 'Falio ile kişiselleştirilmiş astroloji ve fal yorumları al. Kadim bilgelik ve gerçek falcılar seni bekliyor.',
-    image: '🔮',
-  },
-  {
-    id: '2',
-    title: 'Gerçek Falcılar',
-    description: 'Deneyimli ve uzman falcılarımızın sezgisel ve empatik yaklaşımıyla geleceğini keşfet.',
-    image: '✨',
-  },
-  {
-    id: '3',
-    title: 'Hemen Başla',
-    description: 'Kişisel astroloji ve fal yorumların seni bekliyor.',
-    image: '🌟',
-  },
-];
-
 export default function OnboardingScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const flatListRef = useRef<FlatList>(null);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
+
+  const slides: OnboardingSlide[] = [
+    {
+      id: '1',
+      title: t('onboarding.slide1_title'),
+      description: t('onboarding.slide1_desc'),
+      image: '🔮',
+    },
+    {
+      id: '2',
+      title: t('onboarding.slide2_title'),
+      description: t('onboarding.slide2_desc'),
+      image: '✨',
+    },
+    {
+      id: '3',
+      title: t('onboarding.slide3_title'),
+      description: t('onboarding.slide3_desc'),
+      image: '🌟',
+    },
+  ];
 
   const onViewableItemsChanged = useRef(
     ({ viewableItems }: { viewableItems: ViewToken[] }) => {
@@ -101,7 +103,7 @@ export default function OnboardingScreen() {
       <View style={styles.header}>
         {currentIndex < slides.length - 1 && (
           <TouchableOpacity onPress={skip} style={styles.skipButton}>
-            <Text style={styles.skipText}>Skip</Text>
+            <Text style={styles.skipText}>{t('onboarding.skip')}</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -140,7 +142,7 @@ export default function OnboardingScreen() {
             style={styles.nextButtonGradient}
           >
             <Text style={styles.nextButtonText}>
-              {currentIndex === slides.length - 1 ? 'Başla' : 'Devam Et'}
+              {currentIndex === slides.length - 1 ? t('onboarding.start') : t('onboarding.next')}
             </Text>
           </LinearGradient>
         </TouchableOpacity>
@@ -148,7 +150,7 @@ export default function OnboardingScreen() {
         {currentIndex === slides.length - 1 && (
           <TouchableOpacity onPress={() => router.replace('/auth/login' as any)} style={styles.loginLink}>
             <Text style={styles.loginLinkText}>
-              Zaten bir hesabın var mı? <Text style={styles.loginLinkBold}>Giriş Yap</Text>
+              {t('auth.have_account_question')} <Text style={styles.loginLinkBold}>{t('auth.login_action')}</Text>
             </Text>
           </TouchableOpacity>
         )}

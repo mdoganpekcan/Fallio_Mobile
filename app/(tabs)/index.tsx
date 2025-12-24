@@ -21,13 +21,16 @@ import { walletService } from '@/services/wallet';
 import { horoscopeService } from '@/services/horoscope';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
+import { useTranslation } from 'react-i18next';
 
 type HoroscopeCategory = 'general' | 'love' | 'career' | 'health';
+type HoroscopePeriod = 'daily' | 'weekly' | 'monthly';
 
 export default function HomeScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const user = useAppStore((state) => state.user);
-  const [selectedPeriod, setSelectedPeriod] = useState<HoroscopePeriod>('Günlük');
+  const [selectedPeriod, setSelectedPeriod] = useState<HoroscopePeriod>('daily');
   const [selectedCategory, setSelectedCategory] = useState<HoroscopeCategory>('general');
   const [modalVisible, setModalVisible] = useState(false);
   const insets = useSafeAreaInsets();
@@ -42,10 +45,10 @@ export default function HomeScreen() {
     queryKey: ['horoscope', user?.zodiacSign, selectedPeriod],
     queryFn: async () => {
       if (!user?.zodiacSign) return null;
-      if (selectedPeriod === 'Günlük') {
+      if (selectedPeriod === 'daily') {
         return horoscopeService.getDailyHoroscope(user.zodiacSign);
       }
-      if (selectedPeriod === 'Haftalık') {
+      if (selectedPeriod === 'weekly') {
         return horoscopeService.getWeeklyHoroscope(user.zodiacSign);
       }
       return horoscopeService.getMonthlyHoroscope(user.zodiacSign);
@@ -62,7 +65,7 @@ export default function HomeScreen() {
     }, [user, refetchWallet, refetchHoroscope])
   );
 
-  const horoscopePeriods: HoroscopePeriod[] = ['Günlük', 'Haftalık', 'Aylık'];
+  const horoscopePeriods: HoroscopePeriod[] = ['daily', 'weekly', 'monthly'];
   const displayCredits = wallet?.credits ?? user?.credits ?? 0;
 
   return (
@@ -73,7 +76,7 @@ export default function HomeScreen() {
           <View style={styles.avatar}>
             <Text style={styles.avatarText}>{user?.name?.[0]?.toUpperCase() || 'F'}</Text>
           </View>
-          <Text style={styles.headerTitle}>{user?.name || 'Misafir'}</Text>
+          <Text style={styles.headerTitle}>{user?.name || t('common.guest')}</Text>
           <TouchableOpacity style={styles.notificationButton}>
             <Bell size={24} color={Colors.text} />
           </TouchableOpacity>
@@ -86,13 +89,13 @@ export default function HomeScreen() {
             </View>
             <View>
               <Text style={styles.creditAmount}>{displayCredits}</Text>
-              <Text style={styles.creditLabel}>Kredi</Text>
+              <Text style={styles.creditLabel}>{t('tabs.credits')}</Text>
             </View>
           </View>
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Burç Yorumun</Text>
+          <Text style={styles.sectionTitle}>{t('home.horoscopeTitle')}</Text>
 
           <View style={styles.periodTabs}>
             {horoscopePeriods.map((period) => (
@@ -110,7 +113,7 @@ export default function HomeScreen() {
                     selectedPeriod === period && styles.periodTabTextActive,
                   ]}
                 >
-                  {period}
+                  {t(`home.periods.${period}`)}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -122,53 +125,53 @@ export default function HomeScreen() {
               style={[styles.horoscopeIconRow, selectedCategory === 'love' && styles.activeCategory]}
               onPress={() => setSelectedCategory('love')}
             >
-              <Text style={styles.horoscopeCategory}>❤️ Aşk</Text>
+              <Text style={styles.horoscopeCategory}>❤️ {t('home.categories.love')}</Text>
             </TouchableOpacity>
             <TouchableOpacity 
               style={[styles.horoscopeIconRow, selectedCategory === 'career' && styles.activeCategory]}
               onPress={() => setSelectedCategory('career')}
             >
-              <Text style={styles.horoscopeCategory}>💰 Para</Text>
+              <Text style={styles.horoscopeCategory}>💰 {t('home.categories.career')}</Text>
             </TouchableOpacity>
             <TouchableOpacity 
               style={[styles.horoscopeIconRow, selectedCategory === 'health' && styles.activeCategory]}
               onPress={() => setSelectedCategory('health')}
             >
-              <Text style={styles.horoscopeCategory}>🛡️ Sağlık</Text>
+              <Text style={styles.horoscopeCategory}>🛡️ {t('home.categories.health')}</Text>
             </TouchableOpacity>
              <TouchableOpacity 
               style={[styles.horoscopeIconRow, selectedCategory === 'general' && styles.activeCategory]}
               onPress={() => setSelectedCategory('general')}
             >
-              <Text style={styles.horoscopeCategory}>✨ Genel</Text>
+              <Text style={styles.horoscopeCategory}>✨ {t('home.categories.general')}</Text>
             </TouchableOpacity>
           </View>
 
           <Text style={styles.horoscopeText} numberOfLines={4}>
             {horoscope?.[selectedCategory] ||
               (user?.zodiacSign
-                ? 'Burç yorumun hazırlanıyor.'
-                : 'Burç bilgisi için profilini tamamla.')}
+                ? t('home.horoscopeLoading')
+                : t('home.horoscopePlaceholder'))}
           </Text>
 
           <TouchableOpacity 
             style={styles.readMoreButton}
             onPress={() => setModalVisible(true)}
           >
-            <Text style={styles.readMoreText}>Devamını Oku...</Text>
+            <Text style={styles.readMoreText}>{t('home.readMore')}</Text>
           </TouchableOpacity>
         </View>
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Fal Baktır</Text>
+          <Text style={styles.sectionTitle}>{t('home.fortuneTitle')}</Text>
 
           <View style={styles.fortuneGrid}>
             {fortuneTypes.map((fortune) => (
               <FortuneCard
                 key={fortune.id}
                 icon={fortune.icon}
-                title={fortune.name}
+                title={t(fortune.name)}
                 onPress={() => router.push(`/fortune/${fortune.id}` as any)}
                 testID={`fortune-card-${fortune.id}`}
               />
@@ -186,25 +189,25 @@ export default function HomeScreen() {
             end={{ x: 1, y: 1 }}
             style={styles.premiumGradient}
           >
-            <Text style={styles.premiumTitle}>Falio Premium&apos;a Geç</Text>
+            <Text style={styles.premiumTitle}>{t('home.premiumTitle')}</Text>
 
             <View style={styles.premiumFeatures}>
               <View style={styles.premiumFeature}>
                 <Text style={styles.premiumFeatureIcon}>🚫</Text>
-                <Text style={styles.premiumFeatureText}>Reklamsız Deneyim</Text>
+                <Text style={styles.premiumFeatureText}>{t('home.premiumFeatures.noAds')}</Text>
               </View>
               <View style={styles.premiumFeature}>
                 <Text style={styles.premiumFeatureIcon}>📍</Text>
-                <Text style={styles.premiumFeatureText}>Günlük Bonus Kredi</Text>
+                <Text style={styles.premiumFeatureText}>{t('home.premiumFeatures.dailyBonus')}</Text>
               </View>
               <View style={styles.premiumFeature}>
                 <Text style={styles.premiumFeatureIcon}>⚡</Text>
-                <Text style={styles.premiumFeatureText}>Öncelikli & Hızlı Yanıt</Text>
+                <Text style={styles.premiumFeatureText}>{t('home.premiumFeatures.priority')}</Text>
               </View>
             </View>
 
             <View style={styles.premiumButton}>
-              <Text style={styles.premiumButtonText}>Hemen Yükselt</Text>
+              <Text style={styles.premiumButtonText}>{t('home.upgradeNow')}</Text>
             </View>
           </LinearGradient>
         </TouchableOpacity>
@@ -221,32 +224,32 @@ export default function HomeScreen() {
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>{user?.zodiacSign} Burcu Yorumu</Text>
+              <Text style={styles.modalTitle}>{user?.zodiacSign ? t(`zodiac.${user.zodiacSign}`) : ''} {t('home.horoscopeTitle')}</Text>
               <TouchableOpacity onPress={() => setModalVisible(false)}>
                 <Text style={styles.closeButton}>✕</Text>
               </TouchableOpacity>
             </View>
             <ScrollView showsVerticalScrollIndicator={false}>
-              <Text style={styles.modalSectionTitle}>Genel</Text>
+              <Text style={styles.modalSectionTitle}>{t('home.categories.general')}</Text>
               <Text style={styles.modalText}>{horoscope?.general}</Text>
               
               {horoscope?.love && (
                 <>
-                  <Text style={styles.modalSectionTitle}>❤️ Aşk</Text>
+                  <Text style={styles.modalSectionTitle}>❤️ {t('home.categories.love')}</Text>
                   <Text style={styles.modalText}>{horoscope.love}</Text>
                 </>
               )}
               
               {horoscope?.career && (
                 <>
-                  <Text style={styles.modalSectionTitle}>💼 Kariyer & Para</Text>
+                  <Text style={styles.modalSectionTitle}>💼 {t('home.categories.career')}</Text>
                   <Text style={styles.modalText}>{horoscope.career}</Text>
                 </>
               )}
               
               {horoscope?.health && (
                 <>
-                  <Text style={styles.modalSectionTitle}>🛡️ Sağlık</Text>
+                  <Text style={styles.modalSectionTitle}>🛡️ {t('home.categories.health')}</Text>
                   <Text style={styles.modalText}>{horoscope.health}</Text>
                 </>
               )}

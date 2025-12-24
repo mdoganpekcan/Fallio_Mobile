@@ -17,25 +17,27 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { authService } from '@/services/auth';
 import { useMutation } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 
 export default function ForgotPasswordScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const [email, setEmail] = useState<string>('');
 
   const resetPasswordMutation = useMutation({
     mutationFn: async () => {
       if (!email) {
-        throw new Error('Lütfen e-posta adresinizi girin');
+        throw new Error(t('auth.errors.enter_email'));
       }
       return authService.resetPassword(email);
     },
     onSuccess: () => {
       Alert.alert(
-        'E-posta Gönderildi',
-        'Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.',
+        t('auth.email_sent_title'),
+        t('auth.email_sent_desc'),
         [
           {
-            text: 'Tamam',
+            text: t('auth.ok'),
             onPress: () => router.back(),
           },
         ]
@@ -43,7 +45,7 @@ export default function ForgotPasswordScreen() {
     },
     onError: (error: Error) => {
       console.error('[ForgotPassword] Error:', error);
-      Alert.alert('Hata', error.message || 'Şifre sıfırlama sırasında bir hata oluştu');
+      Alert.alert(t('auth.errors.error_title'), error.message || t('auth.errors.reset_error'));
     },
   });
 
@@ -71,19 +73,19 @@ export default function ForgotPasswordScreen() {
             >
               <Mail size={40} color={Colors.text} />
             </LinearGradient>
-            <Text style={styles.title}>Şifreni Sıfırla</Text>
+            <Text style={styles.title}>{t('auth.reset_password')}</Text>
             <Text style={styles.subtitle}>
-              E-posta adresini gir, sana şifre sıfırlama bağlantısı gönderelim.
+              {t('auth.reset_password_desc')}
             </Text>
           </View>
 
           <View style={styles.form}>
-            <Text style={styles.label}>E-posta</Text>
+            <Text style={styles.label}>{t('common.email')}</Text>
             <View style={styles.inputContainer}>
               <Mail size={20} color={Colors.textSecondary} style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
-                placeholder="E-posta adresini gir"
+                placeholder={t('auth.enter_email')}
                 placeholderTextColor={Colors.textMuted}
                 value={email}
                 onChangeText={setEmail}
@@ -106,15 +108,15 @@ export default function ForgotPasswordScreen() {
                 style={styles.resetButtonGradient}
               >
                 <Text style={styles.resetButtonText}>
-                  {resetPasswordMutation.isPending ? 'Gönderiliyor...' : 'Şifremi Sıfırla'}
+                  {resetPasswordMutation.isPending ? t('auth.sending') : t('auth.reset_password_action')}
                 </Text>
               </LinearGradient>
             </TouchableOpacity>
 
             <View style={styles.footer}>
-              <Text style={styles.footerText}>Şifreni hatırladın mı? </Text>
+              <Text style={styles.footerText}>{t('auth.remembered_password')} </Text>
               <TouchableOpacity onPress={() => router.back()}>
-                <Text style={styles.footerLink}>Giriş Yap</Text>
+                <Text style={styles.footerLink}>{t('auth.login_action')}</Text>
               </TouchableOpacity>
             </View>
           </View>

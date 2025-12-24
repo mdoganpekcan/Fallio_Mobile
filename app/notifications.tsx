@@ -7,8 +7,10 @@ import { TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { notificationService } from '@/services/notifications';
 import { useAppStore } from '@/store/useAppStore';
+import { useTranslation } from 'react-i18next';
 
 export default function NotificationsScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const user = useAppStore((state) => state.user);
   const [pushEnabled, setPushEnabled] = React.useState(true);
@@ -17,15 +19,15 @@ export default function NotificationsScreen() {
 
   const handleRegisterPush = async () => {
     if (!user) {
-      Alert.alert('Hata', 'Devam etmek için giriş yapın.');
+      Alert.alert(t('notifications_screen.alerts.error_title'), t('notifications_screen.alerts.login_required'));
       return;
     }
     const token = await notificationService.getPushToken();
     if (token) {
       await notificationService.saveDeviceToken(user.id, token);
-      Alert.alert('Bilgi', 'Bildirimler için kayıt tamamlandı.');
+      Alert.alert(t('notifications_screen.alerts.info_title'), t('notifications_screen.alerts.register_success'));
     } else {
-      Alert.alert('Hata', 'Bildirim izni alınamadı.');
+      Alert.alert(t('notifications_screen.alerts.error_title'), t('notifications_screen.alerts.permission_error'));
     }
   };
 
@@ -42,7 +44,7 @@ export default function NotificationsScreen() {
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <ArrowLeft size={24} color={Colors.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Bildirim Ayarları</Text>
+        <Text style={styles.headerTitle}>{t('notifications_screen.title')}</Text>
         <View style={{ width: 40 }} />
       </View>
 
@@ -50,8 +52,8 @@ export default function NotificationsScreen() {
         <View style={styles.card}>
           <View style={styles.row}>
             <View style={styles.textGroup}>
-              <Text style={styles.title}>Push Bildirimleri</Text>
-              <Text style={styles.subtitle}>Genel bildirimleri aç/kapat</Text>
+              <Text style={styles.title}>{t('notifications_screen.push.title')}</Text>
+              <Text style={styles.subtitle}>{t('notifications_screen.push.subtitle')}</Text>
             </View>
             <Switch
               value={pushEnabled}
@@ -62,8 +64,8 @@ export default function NotificationsScreen() {
           </View>
           <View style={styles.row}>
             <View style={styles.textGroup}>
-              <Text style={styles.title}>Fal Sonuçları</Text>
-              <Text style={styles.subtitle}>Yeni fal sonucu geldiğinde bilgilendir</Text>
+              <Text style={styles.title}>{t('notifications_screen.fortune.title')}</Text>
+              <Text style={styles.subtitle}>{t('notifications_screen.fortune.subtitle')}</Text>
             </View>
             <Switch
               value={fortuneEnabled}
@@ -74,8 +76,8 @@ export default function NotificationsScreen() {
           </View>
           <View style={styles.row}>
             <View style={styles.textGroup}>
-              <Text style={styles.title}>Kampanya ve Duyurular</Text>
-              <Text style={styles.subtitle}>Fırsat ve kampanyaları bildir</Text>
+              <Text style={styles.title}>{t('notifications_screen.promo.title')}</Text>
+              <Text style={styles.subtitle}>{t('notifications_screen.promo.subtitle')}</Text>
             </View>
             <Switch
               value={promoEnabled}

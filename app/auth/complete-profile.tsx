@@ -19,10 +19,12 @@ import { supabase } from '@/services/supabase';
 import { calculateZodiacSign } from '@/types';
 import { useAppStore } from '@/store/useAppStore';
 import { authService } from '@/services/auth';
+import { useTranslation } from 'react-i18next';
 
 type Gender = 'male' | 'female' | 'other';
 
 export default function CompleteProfileScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { user, setUser } = useAppStore();
   const [birthDate, setBirthDate] = useState('');
@@ -43,7 +45,7 @@ export default function CompleteProfileScreen() {
 
   const handleSave = async () => {
     if (!birthDate || birthDate.length !== 10 || !gender) {
-      Alert.alert('Hata', 'Lütfen geçerli bir doğum tarihi ve cinsiyet giriniz.');
+      Alert.alert(t('auth.errors.error_title'), t('auth.errors.invalid_birth_date'));
       return;
     }
 
@@ -53,7 +55,7 @@ export default function CompleteProfileScreen() {
       const isoDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
       const zodiacSign = calculateZodiacSign(isoDate);
 
-      if (!user?.id) throw new Error('Kullanıcı bulunamadı');
+      if (!user?.id) throw new Error(t('auth.errors.user_not_found'));
 
       // Update profiles table (Use upsert to ensure row exists)
       const { error: profileError } = await supabase
@@ -85,7 +87,7 @@ export default function CompleteProfileScreen() {
 
     } catch (error: any) {
       console.error('Profile update error:', error);
-      Alert.alert('Hata', error.message || 'Profil güncellenirken bir hata oluştu.');
+      Alert.alert(t('auth.errors.error_title'), error.message || t('auth.errors.profile_update_error'));
     } finally {
       setLoading(false);
     }
@@ -112,15 +114,15 @@ export default function CompleteProfileScreen() {
       >
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={styles.header}>
-            <Text style={styles.title}>Profilini Tamamla</Text>
+            <Text style={styles.title}>{t('auth.complete_profile')}</Text>
             <Text style={styles.subtitle}>
-              Size özel fal yorumları yapabilmemiz için doğum tarihi ve cinsiyet bilgilerinize ihtiyacımız var.
+              {t('auth.complete_profile_desc')}
             </Text>
           </View>
 
           <View style={styles.form}>
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Doğum Tarihi (GG.AA.YYYY)</Text>
+              <Text style={styles.label}>{t('auth.birth_date_label')}</Text>
               <View style={styles.inputContainer}>
                 <Calendar color={Colors.textSecondary} size={20} style={styles.inputIcon} />
                 <TextInput
@@ -136,7 +138,7 @@ export default function CompleteProfileScreen() {
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Cinsiyet</Text>
+              <Text style={styles.label}>{t('auth.gender')}</Text>
               <View style={styles.genderContainer}>
                 <TouchableOpacity
                   style={[
@@ -151,7 +153,7 @@ export default function CompleteProfileScreen() {
                       gender === 'female' && styles.genderTextActive,
                     ]}
                   >
-                    Kadın
+                    {t('auth.genders.female')}
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -167,7 +169,7 @@ export default function CompleteProfileScreen() {
                       gender === 'male' && styles.genderTextActive,
                     ]}
                   >
-                    Erkek
+                    {t('auth.genders.male')}
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -183,7 +185,7 @@ export default function CompleteProfileScreen() {
                       gender === 'other' && styles.genderTextActive,
                     ]}
                   >
-                    Diğer
+                    {t('auth.genders.other')}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -201,7 +203,7 @@ export default function CompleteProfileScreen() {
                 style={styles.gradientButton}
               >
                 <Text style={styles.buttonText}>
-                  {loading ? 'Kaydediliyor...' : 'Kaydet ve Devam Et'}
+                  {loading ? t('auth.saving') : t('auth.save')}
                 </Text>
               </LinearGradient>
             </TouchableOpacity>

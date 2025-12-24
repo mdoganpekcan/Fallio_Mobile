@@ -1,0 +1,478 @@
+{
+  "common": {
+    "welcome": "Bem-vindo",
+    "login": "Entrar",
+    "register": "Registrar",
+    "email": "E-mail",
+    "password": "Senha",
+    "submit": "Enviar",
+    "cancel": "Cancelar",
+    "save": "Salvar",
+    "loading": "Carregando...",
+    "error": "Ocorreu um erro",
+    "success": "Sucesso",
+    "guest": "Convidado",
+    "info": "Info",
+    "close": "Fechar"
+  },
+  "colors": {
+    "red": "Vermelho",
+    "orange": "Laranja",
+    "yellow": "Amarelo",
+    "green": "Verde",
+    "blue": "Azul",
+    "navy": "Azul Marinho",
+    "purple": "Roxo",
+    "pink": "Rosa",
+    "brown": "Marrom",
+    "black": "Preto",
+    "white": "Branco",
+    "gray": "Cinza"
+  },
+  "tabs": {
+    "home": "Início",
+    "fortunes": "Minhas Fortunas",
+    "credits": "Créditos",
+    "profile": "Perfil"
+  },
+  "auth": {
+    "login_title": "Entre na sua conta",
+    "register_title": "Criar uma nova conta",
+    "forgot_password": "Esqueceu a Senha",
+    "dont_have_account": "Não tem uma conta? Registre-se",
+    "already_have_account": "Já tem uma conta? Entre",
+    "have_account_question": "Já tem uma conta?",
+    "login_action": "Entrar",
+    "welcome_back": "Bem-vindo de Volta",
+    "enter_email": "Digite seu e-mail",
+    "enter_password": "Digite sua senha",
+    "forgot_password_q": "Esqueceu a Senha?",
+    "logging_in": "Entrando...",
+    "or": "ou",
+    "google_login": "Continuar com Google",
+    "no_account": "Não tem uma conta?",
+    "register_link": "Registrar",
+    "errors": {
+      "email_password_required": "E-mail e senha são obrigatórios",
+      "login_failed": "Falha no login.",
+      "invalid_credentials": "E-mail ou senha inválidos. Por favor verifique suas credenciais.",
+      "email_not_confirmed": "Seu endereço de e-mail ainda não foi confirmado. Por favor verifique sua caixa de entrada.",
+      "login_error_title": "Erro de Login",
+      "error_title": "Erro",
+      "google_login_error": "Falha no login com Google",
+      "fill_all_fields": "Por favor preencha todos os campos",
+      "register_error": "Ocorreu um erro durante o registro",
+      "email_in_use": "Este endereço de e-mail já está em uso. Por favor entre.",
+      "register_error_title": "Erro de Registro",
+      "gallery_error": "Não foi possível abrir a galeria. Por favor verifique as permissões ou tente novamente.",
+      "enter_email": "Por favor digite seu endereço de e-mail",
+      "reset_error": "Ocorreu um erro ao redefinir a senha",
+      "invalid_birth_date": "Por favor insira uma data de nascimento e gênero válidos.",
+      "user_not_found": "Usuário não encontrado",
+      "profile_update_error": "Ocorreu um erro ao atualizar o perfil."
+    },
+    "create_account": "Criar Conta",
+    "welcome_family": "Bem-vindo à família Falio",
+    "add_profile_photo": "Adicionar Foto de Perfil",
+    "full_name": "Nome Completo",
+    "enter_full_name": "Digite seu nome completo",
+    "create_password": "Criar senha",
+    "birth_date": "Data de Nascimento",
+    "date_format": "DD.MM.AAAA",
+    "zodiac_sign": "Seu Signo:",
+    "gender": "Gênero",
+    "genders": {
+      "female": "Feminino",
+      "male": "Masculino",
+      "other": "Outro"
+    },
+    "registering": "Registrando...",
+    "continue": "Continuar",
+    "legal_text": "Ao continuar, você concorda com nossos <1>Termos de Uso</1> e <3>Política de Privacidade</3>.",
+    "reset_password": "Redefinir Senha",
+    "reset_password_desc": "Digite seu endereço de e-mail e enviaremos um link para redefinir sua senha.",
+    "sending": "Enviando...",
+    "reset_password_action": "Redefinir Senha",
+    "remembered_password": "Lembrou sua senha?",
+    "email_sent_title": "E-mail Enviado",
+    "email_sent_desc": "Um link de redefinição de senha foi enviado para o seu endereço de e-mail.",
+    "ok": "OK",
+    "complete_profile": "Completar Perfil",
+    "complete_profile_desc": "Precisamos da sua data de nascimento e gênero para fornecer leituras de fortuna personalizadas.",
+    "birth_date_label": "Data de Nascimento (DD.MM.AAAA)",
+    "save": "Salvar",
+    "saving": "Salvando..."
+  },
+  "onboarding": {
+    "slide1_title": "Descubra Seu Futuro",
+    "slide1_desc": "Obtenha leituras personalizadas de astrologia e fortuna com Falio. Sabedoria antiga e verdadeiros videntes esperam por você.",
+    "slide2_title": "Videntes Reais",
+    "slide2_desc": "Descubra seu futuro com a abordagem intuitiva e empática de nossos videntes experientes e especialistas.",
+    "slide3_title": "Comece Agora",
+    "slide3_desc": "Suas leituras pessoais de astrologia e fortuna estão esperando por você.",
+    "next": "Próximo",
+    "start": "Começar",
+    "skip": "Pular"
+  },
+  "home": {
+    "welcome": "Bem-vindo",
+    "horoscopeTitle": "Seu Horóscopo",
+    "horoscopePlaceholder": "Selecione seu signo no seu perfil para ver seu horóscopo diário.",
+    "fortuneTitle": "Obter uma Leitura de Fortuna",
+    "premiumTitle": "Atualize para Falio Premium",
+    "premiumDescription": "Obtenha leituras ilimitadas, interpretação prioritária e mais com Premium.",
+    "premiumButton": "Ver Premium",
+    "periods": {
+      "daily": "Diário",
+      "weekly": "Semanal",
+      "monthly": "Mensal"
+    },
+    "categories": {
+      "love": "Amor",
+      "money": "Dinheiro",
+      "family": "Família",
+      "career": "Carreira",
+      "health": "Saúde",
+      "general": "Geral"
+    },
+    "horoscopeLoading": "Seu horóscopo está sendo preparado.",
+    "readMore": "Ler Mais...",
+    "premiumFeatures": {
+      "noAds": "Experiência sem Anúncios",
+      "dailyBonus": "Créditos de Bônus Diário",
+      "priority": "Prioridade e Resposta Rápida"
+    },
+    "upgradeNow": "Atualizar Agora"
+  },
+  "fortuneTypes": {
+    "coffee": {
+      "name": "Leitura de Café",
+      "description": "Descubra a tradição da leitura de café",
+      "detailedDescription": "Descubra a tradição da leitura de café com intérpretes reais. Envie suas fotos, obtenha sua leitura pessoal."
+    },
+    "tarot": {
+      "name": "Leitura de Tarot",
+      "description": "Conheça seu futuro com as cartas de Tarot",
+      "detailedDescription": "Esta leitura ajuda você a entender potenciais e desafios em sua vida amorosa."
+    },
+    "palm": {
+      "name": "Quiromancia",
+      "description": "Descubra os segredos das linhas da sua palma",
+      "detailedDescription": "Descubra os segredos das linhas da sua palma e aprenda o que elas dizem sobre seu destino."
+    },
+    "dream": {
+      "name": "Interpretação de Sonhos",
+      "description": "Conheça o significado dos seus sonhos",
+      "detailedDescription": "Conte-nos seu sonho, deixe-nos interpretá-lo. Compartilhe seu sonho conosco para descobrir os segredos por trás dos seus sonhos."
+    },
+    "love": {
+      "name": "Leitura de Amor",
+      "description": "Obtenha insights sobre sua vida amorosa",
+      "detailedDescription": "Descubra insights profundos sobre sua vida romântica, relacionamentos e futuro parceiro. Deixe as estrelas guiarem a jornada do seu coração."
+    },
+    "card": {
+      "name": "Leitura de Cartas",
+      "description": "Leia sua fortuna com cartas de baralho",
+      "detailedDescription": "Descubra a arte tradicional da adivinhação com cartas de baralho."
+    },
+    "color": {
+      "name": "Leitura de Cores",
+      "description": "Descubra sua alma com cores",
+      "detailedDescription": "Concentre-se na cor que você sente mais próxima e escolha a cor que reflete sua energia."
+    }
+  },
+  "zodiac": {
+    "Koç": "Áries",
+    "Boğa": "Touro",
+    "İkizler": "Gêmeos",
+    "Yengeç": "Câncer",
+    "Aslan": "Leão",
+    "Başak": "Virgem",
+    "Terazi": "Libra",
+    "Akrep": "Escorpião",
+    "Yay": "Sagitário",
+    "Oğlak": "Capricórnio",
+    "Kova": "Aquário",
+    "Balık": "Peixes"
+  },
+  "fortunes": {
+    "title": "Minhas Fortunas",
+    "filters": {
+      "all": "Todas",
+      "unread": "Não lidas"
+    },
+    "empty": {
+      "title": "Sem Fortunas Passadas",
+      "description": "Você ainda não tem fortunas passadas. Quando você obtiver uma nova leitura, ela aparecerá aqui."
+    },
+    "status": {
+      "pending": "Pendente",
+      "completed": "Concluído"
+    },
+    "teller": "Vidente"
+  },
+  "credits": {
+    "title": "Créditos e Assinatura",
+    "freeCredits": {
+      "title": "Ganhar Créditos Grátis",
+      "watchAd": "Assistir Anúncio",
+      "earn": "Ganhe +{{amount}} Créditos",
+      "loading": "Carregando Anúncio..."
+    },
+    "premium": {
+      "title": "Desbloqueie Seu Potencial",
+      "description": "Desbloqueie os segredos do seu destino com recursos Premium.",
+      "features": {
+        "unlimited": "Leituras de Fortuna Ilimitadas",
+        "noAds": "Experiência sem Anúncios",
+        "specialContent": "Acesso a Conteúdo Exclusivo"
+      },
+      "subscriptionTitle": "Assinatura Premium",
+      "active": "Você é um Membro Premium",
+      "activeDesc": "Sua assinatura está ativa.",
+      "subscribe": "Assinar",
+      "noPlans": "Não há planos de assinatura disponíveis no momento."
+    },
+    "packages": {
+      "title": "Pacotes de Créditos",
+      "noPackages": "Não há pacotes de créditos disponíveis no momento."
+    },
+    "messages": {
+      "success": "Sucesso",
+      "creditsAdded": "Créditos adicionados à sua conta.",
+      "premiumActivated": "Assinatura Premium ativada!",
+      "error": "Erro",
+      "purchaseFailed": "A compra falhou.",
+      "adLoading": "O anúncio está carregando, por favor aguarde um momento.",
+      "adError": "Ocorreu um erro ao mostrar o anúncio."
+    }
+  },
+  "settings": {
+    "title": "Configurações da Conta",
+    "theme": {
+      "title": "Tema",
+      "dark": "Escuro",
+      "light": "Claro",
+      "system": "Sistema"
+    },
+    "language": {
+      "title": "Idioma"
+    },
+    "notifications": {
+      "title": "Notificações",
+      "enable": "Habilitar Notificações"
+    }
+  },
+  "notifications_screen": {
+    "title": "Configurações de Notificação",
+    "alerts": {
+      "error_title": "Erro",
+      "info_title": "Info",
+      "login_required": "Por favor entre para continuar.",
+      "register_success": "Registro para notificações concluído.",
+      "permission_error": "Não foi possível obter permissão de notificação."
+    },
+    "push": {
+      "title": "Notificações Push",
+      "subtitle": "Alternar notificações gerais"
+    },
+    "fortune": {
+      "title": "Resultados de Fortuna",
+      "subtitle": "Notificar quando o novo resultado de fortuna estiver pronto"
+    },
+    "promo": {
+      "title": "Campanhas e Anúncios",
+      "subtitle": "Notificar sobre oportunidades e campanhas"
+    }
+  },
+  "profile": {
+    "title": "Perfil",
+    "common": {
+      "unspecified": "Não especificado",
+      "invalid_date": "Data Inválida",
+      "zodiac_sign": "Signo {{sign}}"
+    },
+    "menu": {
+      "edit_profile": "Editar Perfil",
+      "account_settings": "Configurações da Conta",
+      "notification_settings": "Configurações de Notificação",
+      "privacy_policy": "Política de Privacidade",
+      "terms_of_use": "Termos de Uso"
+    },
+    "social": {
+      "follow_us": "Siga-nos"
+    },
+    "actions": {
+      "logout": "Sair",
+      "delete_account": "Excluir Minha Conta"
+    },
+    "alerts": {
+      "gallery_permission_error": "O acesso à galeria é necessário.",
+      "avatar_success": "Sua foto de perfil foi atualizada.",
+      "avatar_error": "Ocorreu um erro ao enviar a foto.",
+      "logout_title": "Sair",
+      "logout_message": "Tem certeza de que deseja sair?",
+      "logout_cancel": "Cancelar",
+      "logout_confirm": "Sair",
+      "logout_error": "Ocorreu um erro ao sair.",
+      "delete_account_title": "Excluir Conta",
+      "delete_account_message": "Tem certeza de que deseja excluir permanentemente sua conta e todos os seus dados? Esta ação não pode ser desfeita.",
+      "delete_account_confirm": "Excluir Conta",
+      "delete_account_error": "Ocorreu um erro ao excluir a conta. Por favor tente novamente mais tarde."
+    }
+  },
+  "fortune": {
+    "type": {
+      "required_credits": "Créditos Necessários: {{cost}}",
+      "start_now": "Começar Leitura Agora",
+      "choose_teller": "Escolher Vidente"
+    },
+    "submit": {
+      "errors": {
+        "login_required": "Por favor entre",
+        "missing_photos": "Por favor adicione todas as fotos necessárias",
+        "insufficient_credits": "Créditos insuficientes. Por favor compre créditos.",
+        "submit_error": "Ocorreu um erro ao enviar a fortuna",
+        "camera_permission": "Permissão de câmera necessária."
+      },
+      "metadata": {
+        "selected_cards": "Cartas selecionadas: {{cards}}",
+        "selected_color": "Cor selecionada: {{color}}",
+        "category": "Categoria: {{category}}"
+      },
+      "alerts": {
+        "max_photos": "Você adicionou fotos suficientes.",
+        "upload_photo_title": "Enviar Foto",
+        "upload_photo_message": "Como você gostaria de enviar a foto?",
+        "camera": "Câmera",
+        "gallery": "Galeria"
+      },
+      "buy_credits": "Comprar Créditos",
+      "photos": "Fotos",
+      "photo": "Foto",
+      "photo_labels": {
+        "cup_inside": "Interior da Xícara",
+        "cup_saucer": "Pires da Xícara",
+        "general_view": "Visão Geral",
+        "palm": "Foto da Palma"
+      },
+      "select_cards": "Selecionar Cartas (3)",
+      "select_cards_desc": "Ouça seu coração e escolha 3 cartas",
+      "select_color": "Selecionar Cor",
+      "select_color_desc": "Escolha a cor que você sente mais próxima de você",
+      "select_category": "Selecionar Categoria",
+      "tell_dream": "Conte Seu Sonho",
+      "note_optional": "Nota (Opcional)",
+      "placeholders": {
+        "dream": "Descreva seu sonho em detalhes...",
+        "tarot": "Escreva sua intenção ou pergunta...",
+        "default": "Você pode adicionar uma nota sobre sua fortuna..."
+      },
+      "sending": "Enviando...",
+      "send": "Enviar Fortuna"
+    },
+    "result": {
+      "title": "Resultado da Fortuna",
+      "teller_default": "Vidente",
+      "waiting_message": "Aguardando leitura de fortuna...",
+      "rating_title": "Como foi a leitura?",
+      "like": "Gostei",
+      "dislike": "Não gostei",
+      "retry": "Obter Outra Leitura",
+      "share_message": "Falio - {{type}}\n\n{{result}}",
+      "alerts": {
+        "rating_wait": "Você pode avaliar quando a leitura de fortuna for concluída."
+      }
+    }
+  },
+  "fortune_tellers": {
+    "title": "Videntes",
+    "search_placeholder": "Pesquisar videntes...",
+    "empty": "Nenhum vidente encontrado",
+    "filters": {
+      "title": "Filtros",
+      "sort_by": "Ordenar Por",
+      "rating": "Avaliação",
+      "price": "Preço",
+      "views": "Visualizações",
+      "min_rating": "Avaliação Mínima",
+      "apply": "Aplicar"
+    }
+  },
+  "legal": {
+    "privacy": {
+      "title": "Política de Privacidade",
+      "sections": [
+        {
+          "title": "1. Controlador de Dados e Dados Coletados",
+          "body": "Como Falio (\"Aplicativo\"), processamos seus dados pessoais como controlador de dados de acordo com a Lei de Proteção de Dados Pessoais Nº 6698 (\"KVKK\") e legislação pertinente. Os dados coletados incluem:\n\n• Informações de Identidade: Nome, sobrenome, data de nascimento, gênero.\n• Informações de Contato: Endereço de e-mail.\n• Registros Visuais e de Áudio: Fotos enviadas para interpretação de fortuna.\n• Informações de Segurança de Transação: Endereço IP, informações do dispositivo, registros de log.\n• Informações de Marketing: Registros de cookies, hábitos de uso."
+        },
+        {
+          "title": "2. Finalidades do Processamento de Dados Pessoais",
+          "body": "Seus dados pessoais são processados para as seguintes finalidades:\n\n• Realizar transações de associação e fornecer login de usuário.\n• Fornecer serviço de interpretação de fortuna e entregar resultados.\n• Executar transações de compra e assinatura no aplicativo.\n• Atender solicitações de suporte ao cliente.\n• Cumprir obrigações legais e informar autoridades autorizadas.\n• Garantir a segurança do aplicativo e prevenir transações fraudulentas."
+        },
+        {
+          "title": "3. Transferência de Dados Pessoais",
+          "body": "Seus dados podem ser compartilhados com nossos parceiros de negócios (instituições de pagamento, provedores de serviços de servidor) com a finalidade de fornecer o serviço e com instituições e organizações públicas autorizadas em caso de obrigação legal. Seus dados são armazenados em servidores seguros (Supabase, etc.)."
+        },
+        {
+          "title": "4. Armazenamento e Destruição de Dados",
+          "body": "Seus dados pessoais são armazenados pelo período exigido pela finalidade do processamento e levando em consideração os prazos legais de prescrição. Ao final do período ou mediante sua solicitação, seus dados serão excluídos, destruídos ou anonimizados. As fotos de fortuna podem ser excluídas automaticamente do sistema dentro de um determinado período de tempo após a conclusão do processo de interpretação."
+        },
+        {
+          "title": "5. Direitos do Titular dos Dados",
+          "body": "De acordo com o Artigo 11 da KVKK;\n\n• Saber se seus dados pessoais estão sendo processados,\n• Solicitar informações se processados,\n• Saber a finalidade do processamento e se são usados de acordo com sua finalidade,\n• Conhecer os terceiros a quem são transferidos nacional ou internacionalmente,\n• Solicitar correção se incompletos ou processados incorretamente,\n• Solicitar exclusão ou destruição.\n\nVocê pode fazer uma solicitação em relação a esses direitos na seção \"Fale Conosco\" no aplicativo ou em nosso endereço de e-mail de suporte."
+        },
+        {
+          "title": "6. Cookies",
+          "body": "Cookies e tecnologias semelhantes podem ser usados para melhorar a experiência do aplicativo e coletar dados analíticos. Você pode gerenciar suas preferências de cookies nas configurações do seu dispositivo."
+        },
+        {
+          "title": "7. Alterações",
+          "body": "Esta Política de Privacidade pode ser atualizada dependendo de regulamentações legais ou alterações no serviço. O texto atual entra em vigor na data em que é publicado no aplicativo."
+        }
+      ]
+    },
+    "terms": {
+      "title": "Termos de Uso",
+      "sections": [
+        {
+          "title": "1. Partes e Assunto",
+          "body": "Estes Termos de Uso (\"Acordo\") são celebrados entre o aplicativo móvel Falio (\"Aplicativo\") e o usuário que é membro do Aplicativo (\"Usuário\"). Ao baixar ou usar o Aplicativo, considera-se que você aceitou estes termos."
+        },
+        {
+          "title": "2. Escopo do Serviço",
+          "body": "O Aplicativo oferece interpretações de fortuna para fins de entretenimento de acordo com as fotos e informações enviadas pelos usuários. O conteúdo oferecido é puramente para fins de entretenimento; não tem a natureza de conselho médico, jurídico, financeiro ou psicológico. O Usuário não deve tomar decisões sobre sua vida com base nas interpretações."
+        },
+        {
+          "title": "3. Associação e Segurança da Conta",
+          "body": "O Usuário declara que as informações fornecidas ao criar uma associação são corretas e atualizadas. O usuário é responsável pela segurança da conta (senha, etc.). Informações de conta pertencentes a outra pessoa não podem ser usadas. O Aplicativo reserva-se o direito de suspender ou encerrar a conta em situações suspeitas."
+        },
+        {
+          "title": "4. Regras de Uso e Proibições",
+          "body": "O Usuário não pode usar o Aplicativo para fins contrários à lei e à moralidade. As seguintes ações são proibidas:\n\n• Enviar conteúdo que seja perturbador para outros, insultuoso ou ameaçador.\n• Usar software ou código que danifique a estrutura técnica do Aplicativo.\n• Compartilhar conteúdo que viole direitos autorais.\n• Realizar transações com informações enganosas ou falsas."
+        },
+        {
+          "title": "5. Serviços Pagos e Reembolsos",
+          "body": "Alguns serviços dentro do Aplicativo (compra de créditos, assinatura premium, etc.) podem ser pagos. As transações de compra são realizadas via App Store / Google Play. Como é de natureza de conteúdo digital, o direito de arrependimento e reembolso não é possível após a realização do serviço. No entanto, em caso de erro técnico, aplicam-se as regras da plataforma."
+        },
+        {
+          "title": "6. Direitos de Propriedade Intelectual",
+          "body": "O design, software, logotipo e conteúdo do Aplicativo pertencem à Falio. Os usuários não podem copiar, distribuir ou usar esses materiais para fins comerciais sem permissão."
+        },
+        {
+          "title": "7. Isenção de Responsabilidade",
+          "body": "O Aplicativo não garante que o serviço será ininterrupto ou livre de erros. Não pode ser responsabilizado por interrupções causadas por problemas técnicos, trabalhos de manutenção ou força maior. As interpretações de fortuna são subjetivas e não prometem certeza."
+        },
+        {
+          "title": "8. Rescisão do Acordo",
+          "body": "O Usuário pode rescindir o acordo excluindo sua conta a qualquer momento. O Aplicativo pode encerrar unilateralmente a conta do usuário se detectar comportamento contrário às regras."
+        },
+        {
+          "title": "9. Resolução de Disputas",
+          "body": "A Lei Turca aplica-se a disputas decorrentes deste Acordo e os Tribunais e Escritórios de Execução de Istambul são autorizados."
+        }
+      ]
+    }
+  }
+}

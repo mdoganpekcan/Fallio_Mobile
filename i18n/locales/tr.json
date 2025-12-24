@@ -1,0 +1,478 @@
+{
+  "common": {
+    "welcome": "Hoşgeldiniz",
+    "login": "Giriş Yap",
+    "register": "Kayıt Ol",
+    "email": "E-posta",
+    "password": "Şifre",
+    "submit": "Gönder",
+    "cancel": "İptal",
+    "save": "Kaydet",
+    "loading": "Yükleniyor...",
+    "error": "Bir hata oluştu",
+    "success": "Başarılı",
+    "guest": "Misafir",
+    "info": "Bilgi",
+    "close": "Kapat"
+  },
+  "colors": {
+    "red": "Kırmızı",
+    "orange": "Turuncu",
+    "yellow": "Sarı",
+    "green": "Yeşil",
+    "blue": "Mavi",
+    "navy": "Lacivert",
+    "purple": "Mor",
+    "pink": "Pembe",
+    "brown": "Kahverengi",
+    "black": "Siyah",
+    "white": "Beyaz",
+    "gray": "Gri"
+  },
+  "tabs": {
+    "home": "Ana Sayfa",
+    "fortunes": "Fallarım",
+    "credits": "Kredi",
+    "profile": "Profil"
+  },
+  "auth": {
+    "login_title": "Hesabınıza Giriş Yapın",
+    "register_title": "Yeni Hesap Oluşturun",
+    "forgot_password": "Şifremi Unuttum",
+    "dont_have_account": "Hesabınız yok mu? Kayıt olun",
+    "already_have_account": "Zaten hesabınız var mı? Giriş yapın",
+    "have_account_question": "Zaten bir hesabın var mı?",
+    "login_action": "Giriş Yap",
+    "welcome_back": "Tekrar Hoş Geldin",
+    "enter_email": "E-posta adresini gir",
+    "enter_password": "Şifreni gir",
+    "forgot_password_q": "Şifremi Unuttum?",
+    "logging_in": "Giriş yapılıyor...",
+    "or": "veya",
+    "google_login": "Google ile Giriş Yap",
+    "no_account": "Hesabın yok mu?",
+    "register_link": "Kayıt Ol",
+    "errors": {
+      "email_password_required": "E-posta ve şifre gereklidir",
+      "login_failed": "Giriş yapılamadı.",
+      "invalid_credentials": "E-posta veya şifre hatalı. Lütfen bilgilerinizi kontrol edin.",
+      "email_not_confirmed": "E-posta adresiniz henüz onaylanmamış. Lütfen gelen kutunuzu kontrol edin.",
+      "login_error_title": "Giriş Hatası",
+      "error_title": "Hata",
+      "google_login_error": "Google ile giriş yapılamadı",
+      "fill_all_fields": "Lütfen tüm alanları doldurun",
+      "register_error": "Kayıt sırasında bir hata oluştu",
+      "email_in_use": "Bu e-posta adresi zaten kullanımda. Lütfen giriş yapın.",
+      "register_error_title": "Kayıt Hatası",
+      "gallery_error": "Galeri açılamadı. Lütfen izinleri kontrol edin veya tekrar deneyin.",
+      "enter_email": "Lütfen e-posta adresinizi girin",
+      "reset_error": "Şifre sıfırlama sırasında bir hata oluştu",
+      "invalid_birth_date": "Lütfen geçerli bir doğum tarihi ve cinsiyet giriniz.",
+      "user_not_found": "Kullanıcı bulunamadı",
+      "profile_update_error": "Profil güncellenirken bir hata oluştu."
+    },
+    "create_account": "Hesap Oluştur",
+    "welcome_family": "Falio ailesine hoş geldin",
+    "add_profile_photo": "Profil Fotoğrafı Ekle",
+    "full_name": "Ad Soyad",
+    "enter_full_name": "Ad ve soyadını gir",
+    "create_password": "Şifre oluştur",
+    "birth_date": "Doğum Tarihi",
+    "date_format": "GG.AA.YYYY",
+    "zodiac_sign": "Burcunuz:",
+    "gender": "Cinsiyet",
+    "genders": {
+      "female": "Kadın",
+      "male": "Erkek",
+      "other": "Diğer"
+    },
+    "registering": "Kaydediliyor...",
+    "continue": "Devam Et",
+    "legal_text": "Devam ederek <1>Kullanım Koşulları</1> ve <3>Gizlilik Politikası</3>'nı kabul etmiş olursunuz.",
+    "reset_password": "Şifreni Sıfırla",
+    "reset_password_desc": "E-posta adresini gir, sana şifre sıfırlama bağlantısı gönderelim.",
+    "sending": "Gönderiliyor...",
+    "reset_password_action": "Şifremi Sıfırla",
+    "remembered_password": "Şifreni hatırladın mı?",
+    "email_sent_title": "E-posta Gönderildi",
+    "email_sent_desc": "Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.",
+    "ok": "Tamam",
+    "complete_profile": "Profilini Tamamla",
+    "complete_profile_desc": "Size özel fal yorumları yapabilmemiz için doğum tarihi ve cinsiyet bilgilerinize ihtiyacımız var.",
+    "birth_date_label": "Doğum Tarihi (GG.AA.YYYY)",
+    "save": "Kaydet",
+    "saving": "Kaydediliyor..."
+  },
+  "onboarding": {
+    "slide1_title": "Geleceğini Keşfet",
+    "slide1_desc": "Falio ile kişiselleştirilmiş astroloji ve fal yorumları al. Kadim bilgelik ve gerçek falcılar seni bekliyor.",
+    "slide2_title": "Gerçek Falcılar",
+    "slide2_desc": "Deneyimli ve uzman falcılarımızın sezgisel ve empatik yaklaşımıyla geleceğini keşfet.",
+    "slide3_title": "Hemen Başla",
+    "slide3_desc": "Kişisel astroloji ve fal yorumların seni bekliyor.",
+    "next": "İleri",
+    "start": "Başla",
+    "skip": "Atla"
+  },
+  "home": {
+    "welcome": "Hoş geldin",
+    "horoscopeTitle": "Burç Yorumun",
+    "horoscopePlaceholder": "Günlük burç yorumunuzu görmek için profilinizden burcunuzu seçin.",
+    "fortuneTitle": "Fal Baktır",
+    "premiumTitle": "Falio Premium'a Geç",
+    "premiumDescription": "Sınırsız fal, öncelikli yorum ve daha fazlası için Premium'a geçin.",
+    "premiumButton": "Premium'u İncele",
+    "periods": {
+      "daily": "Günlük",
+      "weekly": "Haftalık",
+      "monthly": "Aylık"
+    },
+    "categories": {
+      "love": "Aşk",
+      "money": "Para",
+      "family": "Aile",
+      "career": "İş",
+      "health": "Sağlık",
+      "general": "Genel"
+    },
+    "horoscopeLoading": "Burç yorumun hazırlanıyor.",
+    "readMore": "Devamını Oku...",
+    "premiumFeatures": {
+      "noAds": "Reklamsız Deneyim",
+      "dailyBonus": "Günlük Bonus Kredi",
+      "priority": "Öncelikli & Hızlı Yanıt"
+    },
+    "upgradeNow": "Hemen Yükselt"
+  },
+  "fortuneTypes": {
+    "coffee": {
+      "name": "Kahve Falı",
+      "description": "Geleneksel kahve falı geleneğini keşfedin",
+      "detailedDescription": "Geleneksel kahve falı geleneğini gerçek yorumcularla keşfedin. Fotoğraflarını gönder, kişisel fal yorumunu al."
+    },
+    "tarot": {
+      "name": "Tarot Falı",
+      "description": "Tarot kartlarıyla geleceğinizi öğrenin",
+      "detailedDescription": "Bu fal, aşk hayatınızdaki potansiyelleri ve zorlukları anlamanıza yardımcı olur."
+    },
+    "palm": {
+      "name": "El Falı",
+      "description": "Avucunuzdaki çizgilerin sırlarını keşfedin",
+      "detailedDescription": "Avucunuzun içindeki çizgilerin sırlarını keşfedin ve kaderiniz hakkında neler söylediğini öğrenin."
+    },
+    "dream": {
+      "name": "Rüya Yorumu",
+      "description": "Rüyalarınızın anlamını öğrenin",
+      "detailedDescription": "Rüyanı Anlat, Yorumlayalım. Hayallerinin ardındaki sırları keşfetmek için rüyanı bizimle paylaş."
+    },
+    "love": {
+      "name": "Aşk Falı",
+      "description": "Aşk hayatınız hakkında bilgi edinin",
+      "detailedDescription": "Romantik hayatınız, ilişkileriniz ve gelecekteki partneriniz hakkında derinlemesine içgörüleri keşfedin. Kalbinizin yolculuğuna yıldızların rehberlik etmesine izin verin."
+    },
+    "card": {
+      "name": "İskambil Falı",
+      "description": "İskambil kartlarıyla falınıza bakın",
+      "detailedDescription": "İskambil kartları ile geleneksel fal bakma sanatını keşfedin."
+    },
+    "color": {
+      "name": "Renk Falı",
+      "description": "Renklerle ruhunuzu keşfedin",
+      "detailedDescription": "Sana en yakın gelen renge odaklan ve enerjini yansıtacak rengi seç."
+    }
+  },
+  "zodiac": {
+    "Koç": "Koç",
+    "Boğa": "Boğa",
+    "İkizler": "İkizler",
+    "Yengeç": "Yengeç",
+    "Aslan": "Aslan",
+    "Başak": "Başak",
+    "Terazi": "Terazi",
+    "Akrep": "Akrep",
+    "Yay": "Yay",
+    "Oğlak": "Oğlak",
+    "Kova": "Kova",
+    "Balık": "Balık"
+  },
+  "fortunes": {
+    "title": "Fallarım",
+    "filters": {
+      "all": "Tümü",
+      "unread": "Okunmamış"
+    },
+    "empty": {
+      "title": "Geçmiş Falınız Yok",
+      "description": "Henüz geçmiş bir falınız bulunmuyor. Yeni bir fal baktırdığınızda burada görünecektir."
+    },
+    "status": {
+      "pending": "Beklemede",
+      "completed": "Tamamlandı"
+    },
+    "teller": "Falcı"
+  },
+  "credits": {
+    "title": "Kredi & Abonelik",
+    "freeCredits": {
+      "title": "Ücretsiz Kredi Kazan",
+      "watchAd": "Reklam İzle",
+      "earn": "+{{amount}} Kredi Kazan",
+      "loading": "Reklam Yükleniyor..."
+    },
+    "premium": {
+      "title": "Potansiyelini Ortaya Çıkar",
+      "description": "Premium özelliklerle kaderinin sırlarını çöz.",
+      "features": {
+        "unlimited": "Sınırsız Fal Yorumu",
+        "noAds": "Reklamsız Deneyim",
+        "specialContent": "Özel İçeriklere Erişim"
+      },
+      "subscriptionTitle": "Premium Abonelik",
+      "active": "Premium Üyesiniz",
+      "activeDesc": "Aboneliğiniz aktif.",
+      "subscribe": "Abone Ol",
+      "noPlans": "Şu anda abonelik planı bulunmuyor."
+    },
+    "packages": {
+      "title": "Kredi Paketleri",
+      "noPackages": "Şu anda kredi paketi bulunmuyor."
+    },
+    "messages": {
+      "success": "Başarılı",
+      "creditsAdded": "Kredi hesabınıza eklendi.",
+      "premiumActivated": "Premium üyelik aktif edildi!",
+      "error": "Hata",
+      "purchaseFailed": "Satın alma başarısız.",
+      "adLoading": "Reklam şu anda yükleniyor, lütfen biraz bekleyin.",
+      "adError": "Reklam gösterilirken bir sorun oluştu."
+    }
+  },
+  "settings": {
+    "title": "Hesap Ayarları",
+    "theme": {
+      "title": "Tema",
+      "dark": "Koyu",
+      "light": "Açık",
+      "system": "Sistem"
+    },
+    "language": {
+      "title": "Dil"
+    },
+    "notifications": {
+      "title": "Bildirimler",
+      "enable": "Bildirimleri Aç"
+    }
+  },
+  "notifications_screen": {
+    "title": "Bildirim Ayarları",
+    "alerts": {
+      "error_title": "Hata",
+      "info_title": "Bilgi",
+      "login_required": "Devam etmek için giriş yapın.",
+      "register_success": "Bildirimler için kayıt tamamlandı.",
+      "permission_error": "Bildirim izni alınamadı."
+    },
+    "push": {
+      "title": "Push Bildirimleri",
+      "subtitle": "Genel bildirimleri aç/kapat"
+    },
+    "fortune": {
+      "title": "Fal Sonuçları",
+      "subtitle": "Yeni fal sonucu geldiğinde bilgilendir"
+    },
+    "promo": {
+      "title": "Kampanya ve Duyurular",
+      "subtitle": "Fırsat ve kampanyaları bildir"
+    }
+  },
+  "profile": {
+    "title": "Profil",
+    "common": {
+      "unspecified": "Belirtilmemiş",
+      "invalid_date": "Geçersiz Tarih",
+      "zodiac_sign": "{{sign}} Burcu"
+    },
+    "menu": {
+      "edit_profile": "Profili Düzenle",
+      "account_settings": "Hesap Ayarları",
+      "notification_settings": "Bildirim Ayarları",
+      "privacy_policy": "Gizlilik Sözleşmesi",
+      "terms_of_use": "Kullanım Koşulları"
+    },
+    "social": {
+      "follow_us": "Bizi Takip Edin"
+    },
+    "actions": {
+      "logout": "Çıkış Yap",
+      "delete_account": "Hesabımı Sil"
+    },
+    "alerts": {
+      "gallery_permission_error": "Galeri erişimi gereklidir.",
+      "avatar_success": "Profil fotoğrafınız güncellendi.",
+      "avatar_error": "Fotoğraf yüklenirken bir hata oluştu.",
+      "logout_title": "Çıkış",
+      "logout_message": "Çıkış yapmak istediğinizden emin misiniz?",
+      "logout_cancel": "Vazgeç",
+      "logout_confirm": "Çıkış Yap",
+      "logout_error": "Çıkış yapılırken bir hata oluştu.",
+      "delete_account_title": "Hesabı Sil",
+      "delete_account_message": "Hesabınızı ve tüm verilerinizi kalıcı olarak silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+      "delete_account_confirm": "Hesabı Sil",
+      "delete_account_error": "Hesap silinirken bir hata oluştu. Lütfen daha sonra tekrar deneyin."
+    }
+  },
+  "fortune": {
+    "type": {
+      "required_credits": "Gerekli Kredi: {{cost}}",
+      "start_now": "Hemen Fal Bak",
+      "choose_teller": "Falcı Seç"
+    },
+    "submit": {
+      "errors": {
+        "login_required": "Lütfen giriş yapın",
+        "missing_photos": "Gerekli tüm fotoğrafları ekleyin",
+        "insufficient_credits": "Yeterli krediniz yok. Lütfen kredi satın alın.",
+        "submit_error": "Fal gönderilirken bir hata oluştu",
+        "camera_permission": "Kamera izni gerekli."
+      },
+      "metadata": {
+        "selected_cards": "Seçilen kartlar: {{cards}}",
+        "selected_color": "Seçilen renk: {{color}}",
+        "category": "Kategori: {{category}}"
+      },
+      "alerts": {
+        "max_photos": "Yeterli sayıda fotoğraf eklediniz.",
+        "upload_photo_title": "Fotoğraf Yükle",
+        "upload_photo_message": "Fotoğrafı nasıl yüklemek istersiniz?",
+        "camera": "Kamera",
+        "gallery": "Galeri"
+      },
+      "buy_credits": "Kredi Satın Al",
+      "photos": "Fotoğraflar",
+      "photo": "Fotoğraf",
+      "photo_labels": {
+        "cup_inside": "Fincan İçi",
+        "cup_saucer": "Fincan Tabağı",
+        "general_view": "Genel Görünüm",
+        "palm": "El Fotoğrafı"
+      },
+      "select_cards": "Kart Seç (3 Adet)",
+      "select_cards_desc": "Kalbinizin sesini dinleyerek 3 kart seçin",
+      "select_color": "Renk Seç",
+      "select_color_desc": "Size en yakın gelen rengi seçin",
+      "select_category": "Kategori Seç",
+      "tell_dream": "Rüyanı Anlat",
+      "note_optional": "Not (Opsiyonel)",
+      "placeholders": {
+        "dream": "Rüyanızı detaylı bir şekilde anlatın...",
+        "tarot": "Niyetinizi veya sorunuzu yazın...",
+        "default": "Falınızla ilgili not ekleyebilirsiniz..."
+      },
+      "sending": "Gönderiliyor...",
+      "send": "Falını Gönder"
+    },
+    "result": {
+      "title": "Fal Sonucu",
+      "teller_default": "Falcı",
+      "waiting_message": "Fal yorumu bekleniyor...",
+      "rating_title": "Yorumu nasıl buldun?",
+      "like": "Beğendim",
+      "dislike": "Beğenmedim",
+      "retry": "Yeniden Fal Baktır",
+      "share_message": "Falio - {{type}}\n\n{{result}}",
+      "alerts": {
+        "rating_wait": "Fal sonucu tamamlandığında oylama yapabilirsiniz."
+      }
+    }
+  },
+  "fortune_tellers": {
+    "title": "Falcılar",
+    "search_placeholder": "Falcı ara...",
+    "empty": "Falcı bulunamadı",
+    "filters": {
+      "title": "Filtreler",
+      "sort_by": "Sırala",
+      "rating": "Puan",
+      "price": "Fiyat",
+      "views": "Görüntülenme",
+      "min_rating": "Minimum Puan",
+      "apply": "Uygula"
+    }
+  },
+  "legal": {
+    "privacy": {
+      "title": "Gizlilik Sözleşmesi",
+      "sections": [
+        {
+          "title": "1. Veri Sorumlusu ve Toplanan Veriler",
+          "body": "Falio (\"Uygulama\") olarak, veri sorumlusu sıfatıyla kişisel verilerinizi 6698 sayılı Kişisel Verilerin Korunması Kanunu (\"KVKK\") ve ilgili mevzuata uygun olarak işlemekteyiz. Toplanan veriler şunlardır:\n\n• Kimlik Bilgileri: Ad, soyad, doğum tarihi, cinsiyet.\n• İletişim Bilgileri: E-posta adresi.\n• Görsel ve İşitsel Kayıtlar: Fal yorumu için yüklenen fotoğraflar.\n• İşlem Güvenliği Bilgileri: IP adresi, cihaz bilgileri, log kayıtları.\n• Pazarlama Bilgileri: Çerez kayıtları, kullanım alışkanlıkları."
+        },
+        {
+          "title": "2. Kişisel Verilerin İşlenme Amaçları",
+          "body": "Kişisel verileriniz aşağıdaki amaçlarla işlenmektedir:\n\n• Üyelik işlemlerinin gerçekleştirilmesi ve kullanıcı girişinin sağlanması.\n• Fal yorumlama hizmetinin sunulması ve sonuçların iletilmesi.\n• Uygulama içi satın alma ve abonelik işlemlerinin yürütülmesi.\n• Müşteri destek taleplerinin karşılanması.\n• Yasal yükümlülüklerin yerine getirilmesi ve yetkili makamlara bilgi verilmesi.\n• Uygulama güvenliğinin sağlanması ve hileli işlemlerin önlenmesi."
+        },
+        {
+          "title": "3. Kişisel Verilerin Aktarılması",
+          "body": "Verileriniz, hizmetin sağlanması amacıyla iş ortaklarımızla (ödeme kuruluşları, sunucu hizmeti sağlayıcıları) ve yasal zorunluluk durumunda yetkili kamu kurum ve kuruluşlarıyla paylaşılabilir. Verileriniz, güvenli sunucularda (Supabase vb.) saklanmaktadır."
+        },
+        {
+          "title": "4. Veri Saklama ve İmha",
+          "body": "Kişisel verileriniz, işleme amacının gerektirdiği süre boyunca ve yasal zamanaşımı süreleri dikkate alınarak saklanır. Süre sonunda veya talebiniz üzerine verileriniz silinir, yok edilir veya anonim hale getirilir. Fal fotoğrafları, yorumlama işlemi tamamlandıktan sonra belirli bir süre içinde sistemden otomatik olarak silinebilir."
+        },
+        {
+          "title": "5. İlgili Kişinin Hakları",
+          "body": "KVKK’nın 11. maddesi uyarınca;\n\n• Kişisel verilerinizin işlenip işlenmediğini öğrenme,\n• İşlenmişse buna ilişkin bilgi talep etme,\n• İşlenme amacını ve amacına uygun kullanılıp kullanılmadığını öğrenme,\n• Yurt içinde veya yurt dışında aktarıldığı üçüncü kişileri bilme,\n• Eksik veya yanlış işlenmişse düzeltilmesini isteme,\n• Silinmesini veya yok edilmesini talep etme haklarına sahipsiniz.\n\nBu haklarınızı kullanmak için uygulama içindeki \"Bize Ulaşın\" bölümünden veya destek e-posta adresimizden talepte bulunabilirsiniz."
+        },
+        {
+          "title": "6. Çerezler (Cookies)",
+          "body": "Uygulama deneyimini iyileştirmek ve analitik veriler toplamak amacıyla çerezler ve benzeri teknolojiler kullanılabilir. Çerez tercihlerinizi cihaz ayarlarınızdan yönetebilirsiniz."
+        },
+        {
+          "title": "7. Değişiklikler",
+          "body": "Bu Gizlilik Politikası, yasal düzenlemelere veya hizmet değişikliklerine bağlı olarak güncellenebilir. Güncel metin uygulama üzerinden yayınlandığı tarihte yürürlüğe girer."
+        }
+      ]
+    },
+    "terms": {
+      "title": "Kullanım Koşulları",
+      "sections": [
+        {
+          "title": "1. Taraflar ve Konu",
+          "body": "İşbu Kullanım Koşulları (\"Sözleşme\"), Falio mobil uygulaması (\"Uygulama\") ile Uygulama'ya üye olan kullanıcı (\"Kullanıcı\") arasında akdedilmiştir. Uygulama'yı indirerek veya kullanarak bu koşulları kabul etmiş sayılırsınız."
+        },
+        {
+          "title": "2. Hizmetin Kapsamı",
+          "body": "Uygulama, kullanıcıların gönderdiği fotoğraflar ve bilgiler doğrultusunda eğlence amaçlı fal yorumları sunar. Sunulan içerikler tamamen eğlence amaçlıdır; tıbbi, hukuki, finansal veya psikolojik tavsiye niteliği taşımaz. Kullanıcı, yorumlara dayanarak hayatıyla ilgili kararlar almamalıdır."
+        },
+        {
+          "title": "3. Üyelik ve Hesap Güvenliği",
+          "body": "Kullanıcı, üyelik oluştururken verdiği bilgilerin doğru ve güncel olduğunu beyan eder. Hesap güvenliğinden (şifre vb.) kullanıcı sorumludur. Başkasına ait hesap bilgileri kullanılamaz. Uygulama, şüpheli durumlarda hesabı askıya alma veya kapatma hakkını saklı tutar."
+        },
+        {
+          "title": "4. Kullanım Kuralları ve Yasaklar",
+          "body": "Kullanıcı, Uygulama'yı hukuka ve ahlaka aykırı amaçlarla kullanamaz. Aşağıdaki eylemler yasaktır:\n\n• Başkalarını rahatsız edici, hakaret içeren veya tehditkar içerik göndermek.\n• Uygulama'nın teknik yapısına zarar verecek yazılım veya kod kullanmak.\n• Telif haklarını ihlal eden içerik paylaşmak.\n• Yanıltıcı veya sahte bilgilerle işlem yapmak."
+        },
+        {
+          "title": "5. Ücretli Hizmetler ve İadeler",
+          "body": "Uygulama içindeki bazı hizmetler (kredi satın alma, premium üyelik vb.) ücretli olabilir. Satın alma işlemleri App Store / Google Play üzerinden gerçekleştirilir. Dijital içerik niteliğinde olduğundan, hizmet ifa edildikten sonra cayma hakkı ve iade mümkün değildir. Ancak teknik bir hata durumunda platform kuralları geçerlidir."
+        },
+        {
+          "title": "6. Fikri Mülkiyet Hakları",
+          "body": "Uygulama'nın tasarımı, yazılımı, logosu ve içeriği Falio'ya aittir. Kullanıcılar, bu materyalleri izinsiz kopyalayamaz, dağıtamaz veya ticari amaçla kullanamaz."
+        },
+        {
+          "title": "7. Sorumluluk Reddi",
+          "body": "Uygulama, hizmetin kesintisiz veya hatasız olacağını garanti etmez. Teknik sorunlar, bakım çalışmaları veya mücbir sebeplerden kaynaklanan kesintilerden sorumlu tutulamaz. Fal yorumları subjektiftir ve kesinlik vaat etmez."
+        },
+        {
+          "title": "8. Sözleşmenin Feshi",
+          "body": "Kullanıcı, dilediği zaman hesabını silerek sözleşmeyi feshedebilir. Uygulama, kurallara aykırı davranış tespit etmesi halinde kullanıcı hesabını tek taraflı olarak kapatabilir."
+        },
+        {
+          "title": "9. Uyuşmazlık Çözümü",
+          "body": "İşbu Sözleşme'den doğacak uyuşmazlıklarda Türk Hukuku uygulanır ve İstanbul Mahkemeleri ve İcra Daireleri yetkilidir."
+        }
+      ]
+    }
+  }
+}
