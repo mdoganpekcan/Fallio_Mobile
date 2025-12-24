@@ -1,5 +1,6 @@
 import { supabase } from './supabase';
 import { FortuneTeller } from '@/types';
+import { fortuneTypes } from '@/constants/fortuneTypes';
 
 export interface FortuneTellerFilters {
   specialty?: string;
@@ -15,9 +16,12 @@ export const fortuneTellerService = {
 
     // Only apply specialty filter if it's not empty and not 'all'
     if (filters?.specialty && filters.specialty !== 'all') {
-      // Use text search or array contains depending on how expertise is stored
-      // Assuming expertise is text[]
-      query = query.contains('expertise', [filters.specialty]);
+      // Map the ID (e.g. 'coffee') to the Display Name (e.g. 'Kahve Falı')
+      // because the database stores display names in the expertise array.
+      const fortuneType = fortuneTypes.find(f => f.id === filters.specialty);
+      const specialtyName = fortuneType ? fortuneType.name : filters.specialty;
+      
+      query = query.contains('expertise', [specialtyName]);
     }
 
     if (filters?.minRating) {
