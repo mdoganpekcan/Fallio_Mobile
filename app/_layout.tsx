@@ -13,7 +13,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { notificationService } from "@/services/notifications";
 import { revenueCatService } from "@/services/revenueCat";
 import { configService } from "@/services/config";
-import { initI18n } from '@/i18n';
+import { initI18n } from '@/i18n/setup';
 
 SplashScreen.preventAutoHideAsync();
 WebBrowser.maybeCompleteAuthSession();
