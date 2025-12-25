@@ -13,7 +13,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { notificationService } from "@/services/notifications";
 import { revenueCatService } from "@/services/revenueCat";
 import { configService } from "@/services/config";
-import '@/i18n'; // Initialize i18n
+import { initI18n } from '@/i18n';
 
 SplashScreen.preventAutoHideAsync();
 WebBrowser.maybeCompleteAuthSession();
@@ -62,6 +62,9 @@ function RootLayoutNav() {
   useEffect(() => {
     const initAuth = async () => {
       try {
+        // 0. Initialize i18n
+        await initI18n();
+
         // 1. Load App Config
         const config = await configService.getAppConfig();
         if (config) {
