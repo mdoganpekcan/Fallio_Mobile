@@ -22,6 +22,7 @@ import { useAppStore } from '@/store/useAppStore';
 import { walletService } from '@/services/wallet';
 import { supabase } from '@/services/supabase';
 import { useTranslation } from 'react-i18next';
+import { imageService } from '@/services/image';
 
 export default function FortuneSubmitScreen() {
   const { t } = useTranslation();
@@ -154,7 +155,13 @@ export default function FortuneSubmitScreen() {
             quality: 0.8,
           });
           if (!result.canceled && result.assets[0]) {
-            setImages([...images, result.assets[0].uri]);
+            try {
+              const compressed = await imageService.compressImage(result.assets[0].uri);
+              setImages([...images, compressed.uri]);
+            } catch (error) {
+              console.error('Compression error:', error);
+              setImages([...images, result.assets[0].uri]); // Fallback
+            }
           }
         },
       },
@@ -167,7 +174,13 @@ export default function FortuneSubmitScreen() {
             quality: 0.8,
           });
           if (!result.canceled && result.assets[0]) {
-            setImages([...images, result.assets[0].uri]);
+            try {
+              const compressed = await imageService.compressImage(result.assets[0].uri);
+              setImages([...images, compressed.uri]);
+            } catch (error) {
+              console.error('Compression error:', error);
+              setImages([...images, result.assets[0].uri]); // Fallback
+            }
           }
         },
       },

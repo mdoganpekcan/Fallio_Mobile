@@ -22,6 +22,7 @@ import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
+import { imageService } from '@/services/image';
 
 export default function ProfileScreen() {
   const { t } = useTranslation();
@@ -71,7 +72,8 @@ export default function ProfileScreen() {
     if (!result.canceled && result.assets[0]) {
       setIsUploading(true);
       try {
-        await uploadAvatarMutation.mutateAsync(result.assets[0].uri);
+        const compressed = await imageService.compressImage(result.assets[0].uri, { maxWidth: 500 });
+        await uploadAvatarMutation.mutateAsync(compressed.uri);
         Alert.alert(t('common.success'), t('profile.alerts.avatar_success'));
       } catch {
         Alert.alert(t('auth.errors.error_title'), t('profile.alerts.avatar_error'));

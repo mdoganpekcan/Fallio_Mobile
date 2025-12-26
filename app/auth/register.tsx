@@ -22,6 +22,7 @@ import { profileService } from '@/services/profiles';
 import { useMutation } from '@tanstack/react-query';
 import { useAppStore } from '@/store/useAppStore';
 import { useTranslation, Trans } from 'react-i18next';
+import { imageService } from '@/services/image';
 
 type Gender = 'male' | 'female' | 'other';
 
@@ -103,7 +104,13 @@ export default function RegisterScreen() {
       });
 
       if (!result.canceled && result.assets[0]) {
-        setAvatarUri(result.assets[0].uri);
+        try {
+          const compressed = await imageService.compressImage(result.assets[0].uri, { maxWidth: 500 });
+          setAvatarUri(compressed.uri);
+        } catch (error) {
+          console.error('Compression error:', error);
+          setAvatarUri(result.assets[0].uri);
+        }
       }
     } catch (error) {
       console.error('ImagePicker Error:', error);
