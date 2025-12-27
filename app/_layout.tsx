@@ -29,10 +29,10 @@ function useProtectedRoute(user: any) {
     if (!navigationState?.key || !segments.length) return;
 
     const inAuthGroup = segments[0] === 'auth' || segments[0] === 'onboarding';
-    
+
     // Allow access to auth/callback even if not logged in (it handles the login)
     if (segments[0] === 'auth' && segments[1] === 'callback') return;
-    
+
     // Allow access to reset-password even if not logged in
     if (segments[0] === 'auth' && segments[1] === 'reset-password') return;
 
@@ -44,7 +44,7 @@ function useProtectedRoute(user: any) {
 
       if (!isProfileComplete) {
         if (!inCompleteProfile) {
-           router.replace('/auth/complete-profile' as any);
+          router.replace('/auth/complete-profile' as any);
         }
       } else if (inAuthGroup) {
         router.replace('/(tabs)' as any);
@@ -73,7 +73,7 @@ function RootLayoutNav() {
             Alert.alert(
               "Bakım Modu",
               "Uygulamamız şu anda bakım çalışması nedeniyle hizmet verememektedir. Lütfen daha sonra tekrar deneyiniz.",
-              [{ text: "Tamam", onPress: () => {} }]
+              [{ text: "Tamam", onPress: () => { } }]
             );
             // Opsiyonel: Kullanıcıyı bakım ekranına yönlendir veya etkileşimi kısıtla
           }
@@ -109,14 +109,14 @@ function RootLayoutNav() {
 
   useEffect(() => {
     if (!user) return;
-    
+
     // Register for push notifications
     notificationService.registerForPushNotifications(user.id).catch((err) =>
       console.warn('[Notifications] register error:', err)
     );
 
     // Initialize RevenueCat with user ID
-    revenueCatService.login(user.id).catch((err) => 
+    revenueCatService.login(user.id).catch((err) =>
       console.warn('[RevenueCat] login error:', err)
     );
   }, [user]);
@@ -153,75 +153,82 @@ function RootLayoutNav() {
         <Stack.Screen name="auth/reset-password" options={{ headerShown: false }} />
         <Stack.Screen name="auth/complete-profile" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen 
-          name="fortune/[type]" 
-          options={{ 
+        <Stack.Screen
+          name="fortune/[type]"
+          options={{
             headerShown: false,
             presentation: 'card',
-          }} 
+          }}
         />
-        <Stack.Screen 
-          name="fortune/submit/[type]" 
-          options={{ 
+        <Stack.Screen
+          name="fortune/submit/[type]"
+          options={{
             headerShown: false,
             presentation: 'card',
-          }} 
+          }}
         />
-        <Stack.Screen 
-          name="fortune/result/[id]" 
-          options={{ 
+        <Stack.Screen
+          name="fortune/result/[id]"
+          options={{
             headerShown: false,
             presentation: 'card',
-          }} 
+          }}
         />
-        <Stack.Screen 
-          name="fortune/loading" 
-          options={{ 
+        <Stack.Screen
+          name="fortune/loading"
+          options={{
             headerShown: false,
             presentation: 'card',
-          }} 
+          }}
         />
-        <Stack.Screen 
-          name="fortune-tellers" 
-          options={{ 
+        <Stack.Screen
+          name="fortune-tellers"
+          options={{
             headerShown: false,
             presentation: 'card',
-          }} 
+          }}
         />
-        <Stack.Screen 
-          name="settings" 
-          options={{ 
+        <Stack.Screen
+          name="settings"
+          options={{
             headerShown: false,
             presentation: 'card',
-          }} 
+          }}
         />
-        <Stack.Screen 
-          name="content/privacy" 
-          options={{ 
+        <Stack.Screen
+          name="content/privacy"
+          options={{
             headerShown: false,
             presentation: 'modal',
-          }} 
+          }}
         />
-        <Stack.Screen 
-          name="content/terms" 
-          options={{ 
+        <Stack.Screen
+          name="content/terms"
+          options={{
             headerShown: false,
             presentation: 'modal',
-          }} 
+          }}
         />
-        <Stack.Screen 
-          name="notifications" 
-          options={{ 
+        <Stack.Screen
+          name="notifications"
+          options={{
             headerShown: false,
             presentation: 'card',
-          }} 
+          }}
         />
       </Stack>
     </>
   );
 }
 
-export default function RootLayout() {
+import * as Sentry from '@sentry/react-native';
+
+Sentry.init({
+  dsn: 'https://05f9ece7068e9c3b70e31102a419019f@o4510608881025024.ingest.de.sentry.io/4510608892035152',
+  debug: false,
+});
+
+function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <QueryClientProvider client={queryClient}>
@@ -230,3 +237,5 @@ export default function RootLayout() {
     </GestureHandlerRootView>
   );
 }
+
+export default Sentry.wrap(RootLayout);
