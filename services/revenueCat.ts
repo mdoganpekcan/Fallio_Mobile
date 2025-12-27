@@ -66,12 +66,12 @@ class RevenueCatService {
       }
       return null;
     } catch (e: any) {
+      console.error('[RevenueCat] Error fetching offerings FULL OBJECT:', JSON.stringify(e, null, 2));
       // Suppress ConfigurationError if products are not set up yet
       if (e.code === 'ConfigurationError' || e.message?.includes('ConfigurationError')) {
-        console.warn('[RevenueCat] Offerings not configured yet. Ignoring error.');
+        console.warn('[RevenueCat] Offerings not configured yet. Ignoring error. Please check RevenueCat Dashboard > Offerings.');
         return null;
       }
-      console.error('[RevenueCat] Error fetching offerings:', e);
       return null;
     }
   }
