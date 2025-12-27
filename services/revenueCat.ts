@@ -4,7 +4,7 @@ import { Platform } from 'react-native';
 // RevenueCat Dashboard'dan alacağınız API Anahtarları
 // https://app.revenuecat.com/
 const API_KEYS = {
-  ios: 'test_FLmNXnvhMuwIQLaqDfXfRgpgMLw', // TODO: iOS API Key'inizi buraya girin
+  ios: 'appl_placeholder_for_future_release',
   android: 'goog_frfgrLlLzhceSzZHzaPJOKxnXmw',
 };
 
@@ -30,7 +30,7 @@ class RevenueCatService {
       } else if (Platform.OS === 'android') {
         await Purchases.configure({ apiKey: API_KEYS.android, appUserID: userId });
       }
-      
+
       this.isInitialized = true;
       console.log('[RevenueCat] Initialized successfully');
     } catch (error) {
