@@ -20,7 +20,7 @@ export const fortuneTellerService = {
       // because the database stores display names in the expertise array.
       const fortuneType = fortuneTypes.find(f => f.id === filters.specialty);
       const specialtyName = fortuneType ? fortuneType.name : filters.specialty;
-      
+
       query = query.contains('expertise', [specialtyName]);
     }
 
@@ -39,7 +39,7 @@ export const fortuneTellerService = {
       price: 'price',
       views: 'created_at',
     };
-    
+
     query = query.order(columnMap[sortBy], { ascending: sortOrder === 'asc' });
 
     const { data, error } = await query;
@@ -52,7 +52,7 @@ export const fortuneTellerService = {
     // If no data found, return mock data for testing if needed, or empty array
     if (!data || data.length === 0) {
       console.log('No fortune tellers found, returning empty array');
-      return []; 
+      return [];
     }
 
     return data.map((item: any) => ({
@@ -62,7 +62,7 @@ export const fortuneTellerService = {
       expertise: item.expertise || [],
       rating: item.rating,
       views: item.views || 0,
-      price: item.price,
+      price: item.price_credits ?? item.price ?? 50,
       isOnline: item.is_online,
       bio: item.bio,
       isAI: item.is_ai,
