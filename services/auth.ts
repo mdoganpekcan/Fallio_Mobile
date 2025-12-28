@@ -15,12 +15,11 @@ export interface RegisterData {
 
 export const authService = {
   async ensureUserRecords(authUser: { id: string; email?: string | null }, extra?: Partial<RegisterData>) {
-    // Use RPC to create user records securely (bypassing RLS)
     console.log('[Auth] Creating user records via RPC...');
-    
+
     const zodiacSign = extra?.birthDate ? calculateZodiacSign(extra.birthDate) : null;
 
-    const { data: rpcData, error: rpcError } = await supabase.rpc('create_user_record', {
+    const { data: rpcData, error: rpcError } = await supabase.rpc('create_user_record' as any, {
       p_auth_user_id: authUser.id,
       p_email: authUser.email || '',
       p_full_name: extra?.fullName || '',
@@ -32,99 +31,70 @@ export const authService = {
 
     if (rpcError) {
       console.error('[Auth] RPC create_user_record failed:', rpcError);
-      
-      // If RPC failed, it might be because the user already exists (e.g. created by trigger).
-      // We should try to UPDATE the existing profile with the extra data we have.
+
       if (extra) {
-         try {
-            // 1. Get the user ID from auth_user_id
-            const { data: existingUser } = await supabase
-              .from('users')
-              .select('id')
-              .eq('auth_user_id', authUser.id)
-              .maybeSingle();
+        try {
+          const { data: existingProfile } = await supabase
+            .from('profiles')
+            .select('id')
+            .eq('id', authUser.id)
+            .maybeSingle();
 
-            if (existingUser) {
-               console.log('[Auth] Updating existing user profile with extra data...');
-               // Update profiles table
-               await supabase.from('profiles').update({
-                  birthdate: extra.birthDate || null,
-                  gender: extra.gender || null,
-                  // If we have other fields like bio, job etc.
-               }).eq('user_id', existingUser.id);
+          if (existingProfile) {
+            console.log('[Auth] Updating existing profile with extra data...');
+            const profileUpdates: Database['public']['Tables']['profiles']['Update'] = {};
+            if (extra.birthDate) profileUpdates.birth_date = extra.birthDate;
+            if (extra.gender) profileUpdates.gender = extra.gender;
+            if (extra.fullName) profileUpdates.full_name = extra.fullName;
+            if (extra.avatarUrl) profileUpdates.avatar_url = extra.avatarUrl;
+            if (zodiacSign) profileUpdates.zodiac_sign = zodiacSign;
 
-               // Update users table (zodiac_sign, full_name, avatar_url)
-               const userUpdates: any = {};
-               if (extra.fullName) userUpdates.full_name = extra.fullName;
-               if (extra.avatarUrl) userUpdates.avatar_url = extra.avatarUrl;
-               if (zodiacSign) userUpdates.zodiac_sign = zodiacSign;
-
-               if (Object.keys(userUpdates).length > 0) {
-                  await supabase.from('users').update(userUpdates).eq('id', existingUser.id);
-               }
-               
-               // Return the updated user
-               const { data: updatedUser } = await supabase
-                 .from('users')
-                 .select('*')
-                 .eq('id', existingUser.id)
-                 .single();
-                 
-               if (updatedUser) return updatedUser;
+            if (Object.keys(profileUpdates).length > 0) {
+              await supabase.from('profiles').update(profileUpdates).eq('id', authUser.id);
             }
-         } catch (updateError) {
-            console.error('[Auth] Failed to update existing profile:', updateError);
-         }
+
+            const { data: updatedUser } = await supabase
+              .from('profiles')
+              .select('*')
+              .eq('id', authUser.id)
+              .single();
+
+            if (updatedUser) return updatedUser;
+          }
+        } catch (updateError) {
+          console.error('[Auth] Failed to update existing profile:', updateError);
+        }
       }
 
-      // Fallback: just return what we have
       const { data: existingUser } = await supabase
-        .from('users')
+        .from('profiles')
         .select('*')
-        .eq('auth_user_id', authUser.id)
+        .eq('id', authUser.id)
         .maybeSingle();
-        
+
       if (existingUser) return existingUser;
-      
+
       throw new Error(`User creation failed: ${rpcError.message}`);
     }
 
-    // Fetch the created user to return it
     const { data: newUser, error: fetchError } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', rpcData.id)
-        .single();
-
-    // CRITICAL FIX: Ensure profile data is also synced to 'profiles' table
-    // The RPC only updates 'users' table, but 'getUser' reads from 'profiles'.
-    if (extra?.birthDate || extra?.gender) {
-       console.log('[Auth] Syncing profile data to profiles table...');
-       const { error: profileError } = await supabase.from('profiles').upsert({
-          user_id: rpcData.id,
-          birthdate: extra.birthDate || null,
-          gender: extra.gender || null,
-          email: authUser.email || '', // profiles table might require email
-          full_name: extra.fullName || ''
-       }, { onConflict: 'user_id' });
-       
-       if (profileError) {
-          console.error('[Auth] Failed to sync profile data:', profileError);
-       }
-    }
+      .from('profiles')
+      .select('*')
+      .eq('id', (rpcData as any).id)
+      .single();
 
     if (fetchError) {
-      // RLS politikaları veya oturum durumu nedeniyle kullanıcı okunamıyor olabilir.
-      // Bu bir hata değil, sadece veriyi geri döndüremediğimiz anlamına gelir.
       console.log('[Auth] User created but could not be fetched (likely due to RLS/Email Confirmation):', fetchError.message);
-      // Fallback userRow object matching 'users' table structure
-      return { 
-        id: rpcData.id, 
+      return {
+        id: (rpcData as any).id,
         email: authUser.email || '',
         full_name: extra?.fullName || '',
         avatar_url: extra?.avatarUrl || null,
-        zodiac_sign: zodiacSign || null,
-        created_at: new Date().toISOString()
+        zodiac_sign: zodiacSign || '',
+        created_at: new Date().toISOString(),
+        birth_date: extra?.birthDate || '',
+        gender: extra?.gender || 'other',
+        updated_at: new Date().toISOString()
       };
     }
     return newUser;
@@ -217,56 +187,39 @@ export const authService = {
     if (!user) return null;
 
     try {
-      // First try to get the existing user record
-      let { data: userRow, error: fetchError } = await supabase
-        .from('users')
+      let { data: profileRow, error: fetchError } = await supabase
+        .from('profiles')
         .select('*')
         .eq('id', user.id)
         .single();
 
-      // If user record doesn't exist, create it
-      if (fetchError || !userRow) {
-        console.log('[Auth] User record not found, creating...');
-        userRow = await this.ensureUserRecords({ id: user.id, email: user.email }, extraData);
+      if (fetchError || !profileRow) {
+        console.log('[Auth] Profile record not found, creating...');
+        profileRow = await this.ensureUserRecords({ id: user.id, email: user.email }, extraData);
       } else if (extraData && Object.keys(extraData).length > 0) {
-        // If we have extra data (e.g. from Google Sign In), update the profile
-        // But ONLY if we actually have extra data.
-        // This prevents overwriting existing data with empty strings on normal app launch.
-        console.log('[Auth] Updating existing user with extra data...');
-        await this.updateProfile(user.id, extraData);
-        
-        // Refetch to get updated data
-        const { data: updatedUser } = await supabase
-          .from('users')
-          .select('*')
-          .eq('id', user.id)
-          .single();
-        if (updatedUser) userRow = updatedUser;
+        console.log('[Auth] Updating existing profile with extra data...');
+        profileRow = await this.updateProfile(user.id, extraData);
       }
 
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('user_id', userRow.id)
-        .maybeSingle();
+      if (!profileRow) return null;
 
       const { data: wallet } = await supabase
-        .from('wallet')
+        .from('user_wallet')
         .select('*')
-        .eq('user_id', userRow.id)
+        .eq('user_id', profileRow.id)
         .maybeSingle();
 
       return {
-        id: userRow.id,
-        email: userRow.email,
-        name: userRow.full_name,
-        photoUrl: userRow.avatar_url,
-        birthDate: profile?.birthdate || '',
-        zodiacSign: userRow.zodiac_sign || '',
-        gender: profile?.gender || 'other',
+        id: profileRow.id,
+        email: profileRow.email,
+        name: profileRow.full_name,
+        photoUrl: profileRow.avatar_url || undefined,
+        birthDate: profileRow.birth_date,
+        zodiacSign: profileRow.zodiac_sign,
+        gender: profileRow.gender as any,
         credits: wallet?.credits || 0,
-        isPremium: false,
-        createdAt: userRow.created_at,
+        isPremium: !!wallet?.subscription_type,
+        createdAt: profileRow.created_at,
       };
     } catch (error) {
       console.error('[Auth] Get user fetch error:', error);
@@ -284,29 +237,29 @@ export const authService = {
         // Note: provider_token is only available if configured in Supabase and requested in scopes
         const providerToken = (session as any).provider_token;
         if (providerToken && session.user.app_metadata.provider === 'google') {
-           try {
-             console.log('[Auth] Attempting to fetch Google People data...');
-             const response = await fetch('https://people.googleapis.com/v1/people/me?personFields=birthdays', {
-               headers: {
-                 Authorization: `Bearer ${providerToken}`
-               }
-             });
-             
-             if (response.ok) {
-               const data = await response.json();
-               const birthday = data.birthdays?.find((b: any) => b.date);
-               if (birthday && birthday.date) {
-                 const { year, month, day } = birthday.date;
-                 if (year && month && day) {
-                   const birthDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                   console.log('[Auth] Found Google birthdate:', birthDate);
-                   extraData = { birthDate };
-                 }
-               }
-             }
-           } catch (e) {
-             console.error('[Auth] Failed to fetch Google birthdate:', e);
-           }
+          try {
+            console.log('[Auth] Attempting to fetch Google People data...');
+            const response = await fetch('https://people.googleapis.com/v1/people/me?personFields=birthdays', {
+              headers: {
+                Authorization: `Bearer ${providerToken}`
+              }
+            });
+
+            if (response.ok) {
+              const data = await response.json();
+              const birthday = data.birthdays?.find((b: any) => b.date);
+              if (birthday && birthday.date) {
+                const { year, month, day } = birthday.date;
+                if (year && month && day) {
+                  const birthDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                  console.log('[Auth] Found Google birthdate:', birthDate);
+                  extraData = { birthDate };
+                }
+              }
+            }
+          } catch (e) {
+            console.error('[Auth] Failed to fetch Google birthdate:', e);
+          }
         }
 
         const user = await this.getUser(extraData);
@@ -319,7 +272,7 @@ export const authService = {
 
   async signInWithGoogle(redirectTo?: string) {
     console.log('[Auth] Sign in with Google');
-    
+
     // Use the correct scheme for production/development
     // For Expo Go: exp://...
     // For Production: falioapp://...
@@ -328,7 +281,7 @@ export const authService = {
 
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { 
+      options: {
         redirectTo: redirectUrl,
         skipBrowserRedirect: true,
         scopes: 'https://www.googleapis.com/auth/user.birthday.read'
@@ -358,50 +311,37 @@ export const authService = {
     console.log('[Auth] Deleting account...');
     // Call the RPC function to delete the user account
     const { error } = await supabase.rpc('delete_user_account');
-    
+
     if (error) {
       console.error('[Auth] Delete account error:', error);
       throw error;
     }
-    
+
     // Sign out after deletion
     await this.signOut();
   },
 
   async updateProfile(userId: string, updates: Partial<RegisterData>) {
     console.log('[Auth] Updating profile for:', userId);
-    
+
     const zodiacSign = updates.birthDate ? calculateZodiacSign(updates.birthDate) : null;
 
-    // Update profiles table
-    const profileUpdates: any = {};
+    const profileUpdates: Database['public']['Tables']['profiles']['Update'] = {};
     if (updates.birthDate) profileUpdates.birth_date = updates.birthDate;
     if (updates.gender) profileUpdates.gender = updates.gender;
+    if (updates.fullName) profileUpdates.full_name = updates.fullName;
+    if (updates.avatarUrl) profileUpdates.avatar_url = updates.avatarUrl;
+    if (zodiacSign) profileUpdates.zodiac_sign = zodiacSign;
 
     if (Object.keys(profileUpdates).length > 0) {
-        const { error: profileError } = await supabase
-            .from('profiles')
-            .update(profileUpdates)
-            .eq('user_id', userId);
-            
-        if (profileError) throw profileError;
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update(profileUpdates)
+        .eq('id', userId);
+
+      if (profileError) throw profileError;
     }
 
-    // Update users table
-    const userUpdates: any = {};
-    if (updates.fullName) userUpdates.full_name = updates.fullName;
-    if (updates.avatarUrl) userUpdates.avatar_url = updates.avatarUrl;
-    if (zodiacSign) userUpdates.zodiac_sign = zodiacSign;
-
-    if (Object.keys(userUpdates).length > 0) {
-        const { error: userError } = await supabase
-            .from('users')
-            .update(userUpdates)
-            .eq('id', userId);
-
-        if (userError) throw userError;
-    }
-    
     return this.getUser();
   },
 };

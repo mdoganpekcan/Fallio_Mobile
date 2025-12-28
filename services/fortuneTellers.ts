@@ -1,6 +1,9 @@
 import { supabase } from './supabase';
 import { FortuneTeller } from '@/types';
 import { fortuneTypes } from '@/constants/fortuneTypes';
+import { Database } from '@/types/supabase';
+
+type FortuneTellerRow = Database['public']['Tables']['fortune_tellers']['Row'];
 
 export interface FortuneTellerFilters {
   specialty?: string;
@@ -40,7 +43,7 @@ export const fortuneTellerService = {
       views: 'created_at',
     };
 
-    query = query.order(columnMap[sortBy], { ascending: sortOrder === 'asc' });
+    query = query.order(columnMap[sortBy] as any, { ascending: sortOrder === 'asc' });
 
     const { data, error } = await query;
 
@@ -55,16 +58,15 @@ export const fortuneTellerService = {
       return [];
     }
 
-    return data.map((item: any) => ({
+    return (data as FortuneTellerRow[]).map((item) => ({
       id: item.id,
       name: item.name,
-      avatarUrl: item.avatar_url,
+      avatarUrl: item.avatar_url || undefined,
       expertise: item.expertise || [],
       rating: item.rating,
-      views: item.views || 0,
-      price: item.price_credits ?? item.price ?? 50,
+      price: item.price,
       isOnline: item.is_online,
-      bio: item.bio,
+      bio: item.bio || undefined,
       isAI: item.is_ai,
     }));
   },
@@ -140,17 +142,18 @@ export const fortuneTellerService = {
       return null;
     }
 
+    const item = data as FortuneTellerRow;
+
     return {
-      id: data.id,
-      name: data.name,
-      avatarUrl: data.avatar_url,
-      expertise: data.expertise || [],
-      rating: data.rating,
-      views: data.views || 0,
-      price: data.price,
-      isOnline: data.is_online,
-      bio: data.bio,
-      isAI: data.is_ai,
+      id: item.id,
+      name: item.name,
+      avatarUrl: item.avatar_url || undefined,
+      expertise: item.expertise || [],
+      rating: item.rating,
+      price: item.price,
+      isOnline: item.is_online,
+      bio: item.bio || undefined,
+      isAI: item.is_ai,
     };
   },
 

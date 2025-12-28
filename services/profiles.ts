@@ -1,80 +1,46 @@
 import { supabase } from './supabase';
 import * as FileSystem from 'expo-file-system';
 import { decode } from 'base64-arraybuffer';
+import { Database } from '@/types/supabase';
 
-export interface UpdateProfileData {
-  fullName?: string;
-  birthDate?: string;
-  gender?: 'male' | 'female' | 'other';
-  avatarUrl?: string;
-  zodiacSign?: string;
-  bio?: string;
-  job?: string;
-  relationshipStatus?: string;
-}
+export type UpdateProfileData = Database['public']['Tables']['profiles']['Update'];
 
 export const profileService = {
   async getProfile(userId: string) {
     console.log('[Profile] Fetching profile for user:', userId);
-    const { data: userRow, error } = await supabase
-      .from('users')
+    const { data: profile, error } = await supabase
+      .from('profiles')
       .select('*')
       .eq('id', userId)
       .single();
 
-    if (error || !userRow) {
+    if (error || !profile) {
       console.error('[Profile] Fetch error:', error);
       throw error || new Error('User not found');
     }
 
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('user_id', userId)
-      .single();
-
     return {
-      id: userRow.id,
-      email: userRow.email,
-      fullName: userRow.full_name,
-      avatarUrl: userRow.avatar_url,
-      birthDate: profile?.birthdate || '',
-      zodiacSign: userRow.zodiac_sign,
-      gender: profile?.gender || 'other',
-      bio: profile?.bio,
-      job: profile?.job,
-      relationshipStatus: profile?.relationship_status,
-      createdAt: userRow.created_at,
-      updatedAt: profile?.updated_at,
+      id: profile.id,
+      email: profile.email,
+      fullName: profile.full_name,
+      avatarUrl: profile.avatar_url || undefined,
+      birthDate: profile.birth_date,
+      zodiacSign: profile.zodiac_sign,
+      gender: profile.gender,
+      createdAt: profile.created_at,
+      updatedAt: profile.updated_at,
     };
   },
 
   async updateProfile(userId: string, updates: UpdateProfileData) {
     console.log('[Profile] Updating profile for user:', userId);
 
-    const userUpdate: any = {};
-    const profileUpdate: any = {};
+    if (Object.keys(updates).length > 0) {
+      const { error } = await supabase
+        .from('profiles')
+        .update(updates)
+        .eq('id', userId);
 
-    if (updates.fullName) userUpdate.full_name = updates.fullName;
-    if (updates.avatarUrl !== undefined) userUpdate.avatar_url = updates.avatarUrl;
-    if (updates.zodiacSign) userUpdate.zodiac_sign = updates.zodiacSign;
-
-    if (updates.birthDate) profileUpdate.birthdate = updates.birthDate;
-    if (updates.gender) profileUpdate.gender = updates.gender;
-    if (updates.bio !== undefined) profileUpdate.bio = updates.bio;
-    if (updates.job !== undefined) profileUpdate.job = updates.job;
-    if (updates.relationshipStatus !== undefined) profileUpdate.relationship_status = updates.relationshipStatus;
-
-    if (Object.keys(userUpdate).length > 0) {
-      const { error } = await supabase.from('users').update(userUpdate).eq('id', userId);
-      if (error) {
-        console.error('[Profile] User update error:', error);
-        throw error;
-      }
-    }
-
-    if (Object.keys(profileUpdate).length > 0) {
-      const { error } = await supabase.from('profiles').update(profileUpdate).eq('user_id', userId);
       if (error) {
         console.error('[Profile] Profile update error:', error);
         throw error;
@@ -97,7 +63,7 @@ export const profileService = {
       const base64 = await FileSystem.readAsStringAsync(uri, {
         encoding: FileSystem.EncodingType.Base64,
       });
-      
+
       const arrayBuffer = decode(base64);
 
       const { data, error } = await supabase.storage
@@ -117,7 +83,7 @@ export const profileService = {
         .getPublicUrl(data.path);
 
       // Update user profile with new avatar URL
-      await this.updateProfile(userId, { avatarUrl: publicUrl });
+      await this.updateProfile(userId, { avatar_url: publicUrl });
 
       return publicUrl;
     } catch (error) {

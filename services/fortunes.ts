@@ -1,6 +1,21 @@
 import { supabase } from './supabase';
 import { Fortune } from '@/types';
 import { FortuneType } from '@/constants/fortuneTypes';
+import { Database } from '@/types/supabase';
+
+type FortuneRow = Database['public']['Tables']['fortunes']['Row'] & {
+  fortune_tellers: {
+    id: string;
+    name: string;
+    avatar_url: string | null;
+    expertise: string[];
+    rating: number;
+    price: number;
+    is_online: boolean;
+    is_ai: boolean;
+  } | null;
+  fortune_images: { url: string }[] | null;
+};
 
 export interface CreateFortuneData {
   userId: string;
@@ -38,22 +53,22 @@ export const fortuneService = {
       throw error;
     }
 
-    return (data || []).map((item: any) => ({
+    return ((data as unknown as FortuneRow[]) || []).map((item) => ({
       id: item.id,
       userId: item.user_id,
-      fortuneTellerId: item.teller_id,
+      fortuneTellerId: item.teller_id || undefined,
       fortuneTellerName: item.fortune_tellers?.name,
-      fortuneTellerAvatar: item.fortune_tellers?.avatar_url,
-      type: item.type,
-      status: item.status,
-      images: item.fortune_images?.map((img: any) => img.url) || [],
-      note: item.user_note,
-      result: item.response,
+      fortuneTellerAvatar: item.fortune_tellers?.avatar_url || undefined,
+      type: item.type as FortuneType,
+      status: item.status as any,
+      images: item.fortune_images?.map((img) => img.url) || [],
+      note: item.user_note || undefined,
+      result: item.response || undefined,
       createdAt: item.created_at,
-      completedAt: item.completed_at,
+      completedAt: item.completed_at || undefined,
       isRead: item.is_read ?? false,
-      userRating: item.user_rating ?? null,
-      metadata: item.metadata,
+      userRating: (item.user_rating as 1 | -1) ?? null,
+      metadata: item.metadata as any,
     }));
   },
 
@@ -78,6 +93,7 @@ export const fortuneService = {
         user_note: data.note,
         status: 'pending',
         metadata: data.metadata || {},
+        credits_cost: 0, // Bu alan veritabanında zorunlu görünüyor, varsayılan 0 ekledim
       })
       .select()
       .single();
@@ -100,35 +116,31 @@ export const fortuneService = {
     console.log('[Fortune] Created successfully:', fortune.id);
 
     // --- AI TETİKLEME ---
-    // Fal oluşturulduktan sonra, eğer AI falcısı ise hemen işlemesi için backend'i dürtüyoruz.
     try {
-      // Not: Bu URL'i kendi Vercel URL'inizle değiştirin veya .env'den çekin
-      const API_URL = 'https://fallio-web.vercel.app/api/cron/process-fortunes'; 
+      const API_URL = 'https://fallio-web.vercel.app/api/cron/process-fortunes';
       const ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
 
-      // Arka planda çalışsın, cevabı beklemeye gerek yok (fire and forget)
       fetch(API_URL, {
         headers: {
           'Authorization': `Bearer ${ANON_KEY}`
         }
       }).catch(err => console.log('[Fortune] AI trigger failed (non-fatal):', err));
-      
+
     } catch (e) {
-      // Tetikleme hatası falın oluşmasını engellememeli
       console.log('[Fortune] AI trigger error:', e);
     }
 
     return {
       id: fortune.id,
       userId: fortune.user_id,
-      fortuneTellerId: fortune.teller_id,
-      type: fortune.type,
-      status: fortune.status,
+      fortuneTellerId: fortune.teller_id || undefined,
+      type: fortune.type as FortuneType,
+      status: fortune.status as any,
       images: data.images || [],
-      note: fortune.user_note,
+      note: fortune.user_note || undefined,
       createdAt: fortune.created_at,
       isRead: false,
-      metadata: fortune.metadata,
+      metadata: fortune.metadata as any,
     };
   },
   async markAsRead(fortuneId: string): Promise<void> {
@@ -144,7 +156,7 @@ export const fortuneService = {
 
   async uploadImage(userId: string, uri: string, type: FortuneType): Promise<string> {
     console.log('[Fortune] Uploading image for:', type);
-    
+
     try {
       const fileExt = uri.split('.').pop() || 'jpg';
       const fileName = `${userId}/${type}/${Date.now()}.${fileExt}`;
@@ -203,21 +215,24 @@ export const fortuneService = {
       return null;
     }
 
+    const item = data as unknown as FortuneRow;
+
     return {
-      id: data.id,
-      userId: data.user_id,
-      fortuneTellerId: data.teller_id,
-      fortuneTellerName: data.fortune_tellers?.name,
-      fortuneTellerAvatar: data.fortune_tellers?.avatar_url,
-      type: data.type,
-      status: data.status,
-      images: data.fortune_images?.map((img: any) => img.url) || [],
-      note: data.user_note,
-      result: data.response,
-      createdAt: data.created_at,
-      completedAt: data.completed_at,
-      isRead: data.is_read ?? false,
-      userRating: data.user_rating ?? null,
+      id: item.id,
+      userId: item.user_id,
+      fortuneTellerId: item.teller_id || undefined,
+      fortuneTellerName: item.fortune_tellers?.name,
+      fortuneTellerAvatar: item.fortune_tellers?.avatar_url || undefined,
+      type: item.type as FortuneType,
+      status: item.status as any,
+      images: item.fortune_images?.map((img) => img.url) || [],
+      note: item.user_note || undefined,
+      result: item.response || undefined,
+      createdAt: item.created_at,
+      completedAt: item.completed_at || undefined,
+      isRead: item.is_read ?? false,
+      userRating: (item.user_rating as 1 | -1) ?? null,
+      metadata: item.metadata as any,
     };
   },
 
