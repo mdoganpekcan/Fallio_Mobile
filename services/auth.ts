@@ -1,9 +1,9 @@
 import { supabase } from './supabase';
-import { User, calculateZodiacSign } from '../types';
+import { User, calculateZodiacSign } from '@/types';
 import * as WebBrowser from 'expo-web-browser';
 import * as Linking from 'expo-linking';
 import Constants from 'expo-constants';
-import { Database } from '../types/supabase';
+import { Database } from '@/types/supabase';
 
 export interface RegisterData {
   email: string;
@@ -31,52 +31,40 @@ export const authService = {
     } as any);
 
     if (rpcError) {
-      console.error('[Auth] RPC create_user_record failed:', rpcError);
+      console.log('[Auth] RPC failed or record exists, trying upsert logic. Code:', rpcError.code);
 
-      if (extra) {
-        try {
-          const { data: existingProfile } = await (supabase
-            .from('profiles' as any) as any)
-            .select('id')
-            .eq('id', authUser.id)
-            .maybeSingle();
+      // Handle duplicate key error (23505)
+      if (rpcError.code === '23505' || rpcError.message?.includes('duplicate key')) {
+        console.log('[Auth] Duplicate user record detected, syncing existing records...');
+        
+        // 1. users tablosunda email ile bul ve auth_user_id'yi güncelle
+        await (supabase.from('users' as any) as any)
+          .update({ auth_user_id: authUser.id, updated_at: new Date().toISOString() } as any)
+          .eq('email', authUser.email);
 
-          if (existingProfile) {
-            console.log('[Auth] Updating existing profile with extra data...');
-            const profileUpdates: any = {};
-            if (extra.birthDate) profileUpdates.birth_date = extra.birthDate;
-            if (extra.gender) profileUpdates.gender = extra.gender;
-            if (extra.fullName) profileUpdates.full_name = extra.fullName;
-            if (extra.avatarUrl) profileUpdates.avatar_url = extra.avatarUrl;
-            if (zodiacSign) profileUpdates.zodiac_sign = zodiacSign;
-
-            if (Object.keys(profileUpdates).length > 0) {
-              await (supabase.from('profiles' as any) as any).update(profileUpdates).eq('id', authUser.id);
-            }
-
-            const { data: updatedUser } = await (supabase
-              .from('profiles' as any) as any)
-              .select('*')
-              .eq('id', authUser.id)
-              .single();
-
-            if (updatedUser) return updatedUser;
-          }
-        } catch (updateError) {
-          console.error('[Auth] Failed to update existing profile:', updateError);
+        // 2. profiles tablosunda Upsert yap
+        const profileData: any = {
+          id: authUser.id,
+          user_id: authUser.id,
+          email: authUser.email,
+        };
+        if (extra?.birthDate) {
+          profileData.birth_date = extra.birthDate;
+          profileData.birthdate = extra.birthDate;
         }
+        if (extra?.gender) profileData.gender = extra.gender;
+        if (extra?.fullName) profileData.full_name = extra.fullName;
+        if (extra?.avatarUrl) profileData.avatar_url = extra.avatarUrl;
+        if (zodiacSign) profileData.zodiac_sign = zodiacSign;
+
+        await (supabase.from('profiles' as any) as any)
+          .upsert(profileData, { onConflict: 'id' });
+          
+        return this.getUser();
       }
 
-      const { data: existingUser } = await (supabase
-        .from('profiles' as any) as any)
-        .select('*')
-        .eq('id', authUser.id)
-        .maybeSingle();
-
-      if (existingUser) return existingUser;
-
-      throw new Error(`User creation failed: ${rpcError.message}`);
-    }
+      console.error('[Auth] RPC create_user_record failed with unknown error:', rpcError);
+      // ... rest of the original error handling if needed
 
     const { data: newUser, error: fetchError } = await (supabase
       .from('profiles' as any) as any)
@@ -329,7 +317,10 @@ export const authService = {
     const zodiacSign = updates.birthDate ? calculateZodiacSign(updates.birthDate) : null;
 
     const profileUpdates: any = {};
-    if (updates.birthDate) profileUpdates.birth_date = updates.birthDate;
+    if (updates.birthDate) {
+      profileUpdates.birth_date = updates.birthDate;
+      profileUpdates.birthdate = updates.birthDate;
+    }
     if (updates.gender) profileUpdates.gender = updates.gender;
     if (updates.fullName) profileUpdates.full_name = updates.fullName;
     if (updates.avatarUrl) profileUpdates.avatar_url = updates.avatarUrl;

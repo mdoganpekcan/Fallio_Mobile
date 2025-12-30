@@ -1,7 +1,7 @@
 import { supabase } from './supabase';
-import { Fortune } from '../types';
-import { FortuneType } from '../constants/fortuneTypes';
-import { Database } from '../types/supabase';
+import { Fortune } from '@/types';
+import { FortuneType } from '@/constants/fortuneTypes';
+import { Database } from '@/types/supabase';
 
 type FortuneRow = Database['public']['Tables']['fortunes']['Row'] & {
   fortune_tellers: {

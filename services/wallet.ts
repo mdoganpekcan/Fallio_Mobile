@@ -1,6 +1,6 @@
 import { supabase } from './supabase';
-import { useAppStore } from '../store/useAppStore';
-import { Database } from '../types/supabase';
+import { useAppStore } from '@/store/useAppStore';
+import { Database } from '@/types/supabase';
 
 type WalletRow = Database['public']['Tables']['wallet']['Row'];
 
