@@ -227,7 +227,7 @@ export default function FortuneResultScreen() {
       >
         <View ref={shareViewRef} collapsable={false}>
           <FortuneShareCard 
-            userName={user?.full_name || 'Gezgin'}
+            userName={user?.name || 'Gezgin'}
             fortuneType={t(fortuneInfo.name)}
             fortuneResult={fortune.result || ''}
             fortuneTeller={fortuneTeller?.name || t('fortune.result.teller_default')}

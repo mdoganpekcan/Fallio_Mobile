@@ -26,7 +26,8 @@ export const walletService = {
         .insert({
           user_id: userId,
           credits: welcomeCredits,
-        })
+          diamonds: 0,
+        } as any)
         .select()
         .single();
 
@@ -35,12 +36,14 @@ export const walletService = {
         throw createError;
       }
       return {
-        credits: newWallet.credits,
+        credits: (newWallet as any).credits,
+        diamonds: (newWallet as any).diamonds || 0,
       };
     }
 
     return {
-      credits: data.credits,
+      credits: (data as any).credits,
+      diamonds: (data as any).diamonds || 0,
     };
   },
 
@@ -57,14 +60,14 @@ export const walletService = {
       throw error || new Error('Wallet not found');
     }
 
-    const newCredits = data.credits + amount;
+    const newCredits = (data as any).credits + amount;
     if (newCredits < 0) {
       throw new Error('Yetersiz kredi');
     }
 
     const { error: updateError } = await supabase
       .from('wallet')
-      .update({ credits: newCredits, updated_at: new Date().toISOString() })
+      .update({ credits: newCredits, updated_at: new Date().toISOString() } as any)
       .eq('user_id', userId);
 
     if (updateError) {
@@ -98,7 +101,7 @@ export const walletService = {
         user_id: userId,
         fortune_type: fortuneType,
         usage_date: today
-      });
+      } as any);
 
     if (error) {
       console.error('[Wallet] Record daily usage error:', error);

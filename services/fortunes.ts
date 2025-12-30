@@ -95,7 +95,7 @@ export const fortuneService = {
         user_note: data.note,
         status: 'pending',
         metadata: data.metadata || {},
-      })
+      } as any)
       .select()
       .single();
 
@@ -108,9 +108,9 @@ export const fortuneService = {
       for (const uri of data.images) {
         const publicUrl = await this.uploadImage(user.id, uri, data.type);
         await supabase.from('fortune_images').insert({
-          fortune_id: fortune.id,
+          fortune_id: (fortune as any).id,
           url: publicUrl,
-        });
+        } as any);
       }
     }
 
@@ -151,7 +151,7 @@ export const fortuneService = {
   async markAsRead(fortuneId: string): Promise<void> {
     const { error } = await supabase
       .from('fortunes')
-      .update({ is_read: true })
+      .update({ is_read: true } as any)
       .eq('id', fortuneId);
     if (error) {
       console.error('[Fortune] Mark as read error:', error);
@@ -245,7 +245,7 @@ export const fortuneService = {
   async rateFortuneResponse(fortuneId: string, rating: 1 | -1): Promise<void> {
     const { error } = await supabase
       .from('fortunes')
-      .update({ user_rating: rating })
+      .update({ user_rating: rating } as any)
       .eq('id', fortuneId);
     if (error) {
       console.error('[Fortune] Rating update error:', error);

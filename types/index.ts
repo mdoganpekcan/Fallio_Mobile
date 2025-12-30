@@ -26,6 +26,7 @@ export interface User {
   zodiacSign: string;
   gender: 'male' | 'female' | 'other';
   credits: number;
+  diamonds: number;
   isPremium: boolean;
   createdAt: string;
 }

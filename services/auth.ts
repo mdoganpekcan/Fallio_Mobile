@@ -1,8 +1,9 @@
 import { supabase } from './supabase';
-import { User, calculateZodiacSign } from '@/types';
+import { User, calculateZodiacSign } from '../types';
 import * as WebBrowser from 'expo-web-browser';
 import * as Linking from 'expo-linking';
 import Constants from 'expo-constants';
+import { Database } from '../types/supabase';
 
 export interface RegisterData {
   email: string;
@@ -19,7 +20,7 @@ export const authService = {
 
     const zodiacSign = extra?.birthDate ? calculateZodiacSign(extra.birthDate) : null;
 
-    const { data: rpcData, error: rpcError } = await supabase.rpc('create_user_record' as any, {
+    const { data: rpcData, error: rpcError } = await supabase.rpc('create_user_record', {
       p_auth_user_id: authUser.id,
       p_email: authUser.email || '',
       p_full_name: extra?.fullName || '',
@@ -27,7 +28,7 @@ export const authService = {
       p_zodiac_sign: zodiacSign || '',
       p_birth_date: extra?.birthDate || null,
       p_gender: extra?.gender || null
-    });
+    } as any);
 
     if (rpcError) {
       console.error('[Auth] RPC create_user_record failed:', rpcError);
@@ -42,7 +43,7 @@ export const authService = {
 
           if (existingProfile) {
             console.log('[Auth] Updating existing profile with extra data...');
-            const profileUpdates: Database['public']['Tables']['profiles']['Update'] = {};
+            const profileUpdates: any = {};
             if (extra.birthDate) profileUpdates.birth_date = extra.birthDate;
             if (extra.gender) profileUpdates.gender = extra.gender;
             if (extra.fullName) profileUpdates.full_name = extra.fullName;
@@ -204,22 +205,23 @@ export const authService = {
       if (!profileRow) return null;
 
       const { data: wallet } = await supabase
-        .from('user_wallet')
+        .from('wallet')
         .select('*')
         .eq('user_id', profileRow.id)
         .maybeSingle();
 
       return {
         id: profileRow.id,
-        email: profileRow.email,
-        name: profileRow.full_name,
-        photoUrl: profileRow.avatar_url || undefined,
-        birthDate: profileRow.birth_date,
-        zodiacSign: profileRow.zodiac_sign,
-        gender: profileRow.gender as any,
+        email: profileRow.email || '',
+        name: (profileRow as any).full_name || '',
+        photoUrl: (profileRow as any).avatar_url || undefined,
+        birthDate: (profileRow as any).birth_date || (profileRow as any).birthdate || '',
+        zodiacSign: (profileRow as any).zodiac_sign || '',
+        gender: (profileRow as any).gender as any || 'other',
         credits: wallet?.credits || 0,
-        isPremium: !!wallet?.subscription_type,
-        createdAt: profileRow.created_at,
+        diamonds: (wallet as any)?.diamonds || 0,
+        isPremium: !!(wallet as any)?.subscription_type,
+        createdAt: profileRow.created_at || new Date().toISOString(),
       };
     } catch (error) {
       console.error('[Auth] Get user fetch error:', error);
@@ -326,7 +328,7 @@ export const authService = {
 
     const zodiacSign = updates.birthDate ? calculateZodiacSign(updates.birthDate) : null;
 
-    const profileUpdates: Database['public']['Tables']['profiles']['Update'] = {};
+    const profileUpdates: any = {};
     if (updates.birthDate) profileUpdates.birth_date = updates.birthDate;
     if (updates.gender) profileUpdates.gender = updates.gender;
     if (updates.fullName) profileUpdates.full_name = updates.fullName;
