@@ -17,6 +17,7 @@ import FortuneTellerCard from '@/components/FortuneTellerCard';
 import { useQuery } from '@tanstack/react-query';
 import { fortuneTellerService, FortuneTellerFilters } from '@/services/fortuneTellers';
 import { useTranslation } from 'react-i18next';
+import { Skeleton } from '@/components/Skeleton';
 
 export default function FortuneTellersScreen() {
   const { t } = useTranslation();
@@ -73,9 +74,31 @@ export default function FortuneTellersScreen() {
       </View>
 
       {isLoading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={Colors.primary} />
-        </View>
+        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+          <View style={styles.content}>
+            {[1, 2, 3, 4, 5].map((i) => (
+              <View key={i} style={{ 
+                backgroundColor: Colors.card, 
+                borderRadius: BorderRadius.lg, 
+                padding: Spacing.md, 
+                marginBottom: Spacing.md,
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: Spacing.md
+              }}>
+                <Skeleton width={80} height={80} borderRadius={BorderRadius.md} />
+                <View style={{ flex: 1, gap: 8 }}>
+                  <Skeleton width="60%" height={20} />
+                  <Skeleton width="40%" height={15} />
+                  <View style={{ flexDirection: 'row', gap: 8 }}>
+                    <Skeleton width={40} height={15} />
+                    <Skeleton width={40} height={15} />
+                  </View>
+                </View>
+              </View>
+            ))}
+          </View>
+        </ScrollView>
       ) : (
         <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
           <View style={styles.content}>

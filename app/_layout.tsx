@@ -122,6 +122,23 @@ function RootLayoutNav() {
   }, [user]);
 
   useEffect(() => {
+    if (isLoading) return;
+
+    // Handle notification responses (when user clicks on a notification)
+    const responseListener = notificationService.addNotificationResponseReceivedListener(response => {
+      const data = response.notification.request.content.data;
+      if (data?.url) {
+        console.log('[Notifications] Deep linking to:', data.url);
+        router.push(data.url as any);
+      }
+    });
+
+    return () => {
+      responseListener.remove();
+    };
+  }, [isLoading]);
+
+  useEffect(() => {
     // Initialize RevenueCat on app launch (anonymous)
     revenueCatService.init().catch((err) =>
       console.warn('[RevenueCat] init error:', err)

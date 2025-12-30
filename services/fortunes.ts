@@ -119,8 +119,11 @@ export const fortuneService = {
     try {
       const API_URL = 'https://fallio-web.vercel.app/api/cron/process-fortunes';
       const ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+      
+      const { i18n } = require('react-i18next');
+      const language = i18n.language || 'tr';
 
-      fetch(API_URL, {
+      fetch(`${API_URL}?lang=${language}`, {
         headers: {
           'Authorization': `Bearer ${ANON_KEY}`
         }

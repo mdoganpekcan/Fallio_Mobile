@@ -21,6 +21,7 @@ import { walletService } from '@/services/wallet';
 import { horoscopeService } from '@/services/horoscope';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
+import { Skeleton } from '@/components/Skeleton';
 import { useTranslation } from 'react-i18next';
 
 type HoroscopeCategory = 'general' | 'love' | 'career' | 'health';
@@ -88,7 +89,11 @@ export default function HomeScreen() {
               <Text style={styles.creditIcon}>💎</Text>
             </View>
             <View>
-              <Text style={styles.creditAmount}>{displayCredits}</Text>
+              {wallet === undefined ? (
+                <Skeleton width={60} height={20} style={{ marginBottom: 4 }} />
+              ) : (
+                <Text style={styles.creditAmount}>{displayCredits}</Text>
+              )}
               <Text style={styles.creditLabel}>{t('tabs.credits')}</Text>
             </View>
           </View>
@@ -120,47 +125,42 @@ export default function HomeScreen() {
           </View>
 
           <View style={styles.horoscopeCard}>
-          <View style={styles.horoscopeHeader}>
-            <TouchableOpacity 
-              style={[styles.horoscopeIconRow, selectedCategory === 'love' && styles.activeCategory]}
-              onPress={() => setSelectedCategory('love')}
-            >
-              <Text style={styles.horoscopeCategory}>❤️ {t('home.categories.love')}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-              style={[styles.horoscopeIconRow, selectedCategory === 'career' && styles.activeCategory]}
-              onPress={() => setSelectedCategory('career')}
-            >
-              <Text style={styles.horoscopeCategory}>💰 {t('home.categories.career')}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-              style={[styles.horoscopeIconRow, selectedCategory === 'health' && styles.activeCategory]}
-              onPress={() => setSelectedCategory('health')}
-            >
-              <Text style={styles.horoscopeCategory}>🛡️ {t('home.categories.health')}</Text>
-            </TouchableOpacity>
-             <TouchableOpacity 
-              style={[styles.horoscopeIconRow, selectedCategory === 'general' && styles.activeCategory]}
-              onPress={() => setSelectedCategory('general')}
-            >
-              <Text style={styles.horoscopeCategory}>✨ {t('home.categories.general')}</Text>
-            </TouchableOpacity>
+            <View style={styles.horoscopeHeader}>
+              {(['love', 'career', 'health', 'general'] as HoroscopeCategory[]).map((cat) => (
+                <TouchableOpacity
+                  key={cat}
+                  style={[styles.horoscopeIconRow, selectedCategory === cat && styles.activeCategory]}
+                  onPress={() => setSelectedCategory(cat)}
+                >
+                  <Text style={styles.horoscopeCategory}>
+                    {cat === 'love' ? '❤️' : cat === 'career' ? '💰' : cat === 'health' ? '🛡️' : '✨'} {t(`home.categories.${cat}`)}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            {horoscope === undefined ? (
+              <View>
+                <Skeleton width="100%" height={16} style={{ marginBottom: 8 }} />
+                <Skeleton width="90%" height={16} style={{ marginBottom: 8 }} />
+                <Skeleton width="95%" height={16} style={{ marginBottom: 8 }} />
+                <Skeleton width="60%" height={16} />
+              </View>
+            ) : (
+              <>
+                <Text style={styles.horoscopeText} numberOfLines={4}>
+                  {horoscope?.[selectedCategory] || t('home.horoscopePlaceholder')}
+                </Text>
+
+                <TouchableOpacity
+                  style={styles.readMoreButton}
+                  onPress={() => setModalVisible(true)}
+                >
+                  <Text style={styles.readMoreText}>{t('home.readMore')}</Text>
+                </TouchableOpacity>
+              </>
+            )}
           </View>
-
-          <Text style={styles.horoscopeText} numberOfLines={4}>
-            {horoscope?.[selectedCategory] ||
-              (user?.zodiacSign
-                ? t('home.horoscopeLoading')
-                : t('home.horoscopePlaceholder'))}
-          </Text>
-
-          <TouchableOpacity 
-            style={styles.readMoreButton}
-            onPress={() => setModalVisible(true)}
-          >
-            <Text style={styles.readMoreText}>{t('home.readMore')}</Text>
-          </TouchableOpacity>
-        </View>
         </View>
 
         <View style={styles.section}>

@@ -16,6 +16,7 @@ import { fortuneService } from '@/services/fortunes';
 import { useAppStore } from '@/store/useAppStore';
 import { getFortuneTypeInfo } from '@/constants/fortuneTypes';
 import { useTranslation } from 'react-i18next';
+import { Skeleton } from '@/components/Skeleton';
 
 type FortuneFilter = 'all' | 'unread';
 
@@ -85,9 +86,18 @@ export default function FortunesScreen() {
       </View>
 
       {isLoading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={Colors.primary} />
-        </View>
+        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <View key={i} style={styles.fortuneItem}>
+              <Skeleton width={56} height={56} borderRadius={BorderRadius.md} style={{ marginRight: Spacing.md }} />
+              <View style={{ flex: 1, gap: 8 }}>
+                <Skeleton width="50%" height={18} />
+                <Skeleton width="30%" height={14} />
+              </View>
+              <Skeleton width={20} height={20} borderRadius={10} />
+            </View>
+          ))}
+        </ScrollView>
       ) : (
         <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
           {filteredFortunes.length === 0 ? (
