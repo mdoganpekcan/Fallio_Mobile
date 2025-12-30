@@ -35,8 +35,8 @@ export const authService = {
 
       if (extra) {
         try {
-          const { data: existingProfile } = await supabase
-            .from('profiles')
+          const { data: existingProfile } = await (supabase
+            .from('profiles' as any) as any)
             .select('id')
             .eq('id', authUser.id)
             .maybeSingle();
@@ -51,11 +51,11 @@ export const authService = {
             if (zodiacSign) profileUpdates.zodiac_sign = zodiacSign;
 
             if (Object.keys(profileUpdates).length > 0) {
-              await supabase.from('profiles').update(profileUpdates).eq('id', authUser.id);
+              await (supabase.from('profiles' as any) as any).update(profileUpdates).eq('id', authUser.id);
             }
 
-            const { data: updatedUser } = await supabase
-              .from('profiles')
+            const { data: updatedUser } = await (supabase
+              .from('profiles' as any) as any)
               .select('*')
               .eq('id', authUser.id)
               .single();
@@ -67,8 +67,8 @@ export const authService = {
         }
       }
 
-      const { data: existingUser } = await supabase
-        .from('profiles')
+      const { data: existingUser } = await (supabase
+        .from('profiles' as any) as any)
         .select('*')
         .eq('id', authUser.id)
         .maybeSingle();
@@ -78,8 +78,8 @@ export const authService = {
       throw new Error(`User creation failed: ${rpcError.message}`);
     }
 
-    const { data: newUser, error: fetchError } = await supabase
-      .from('profiles')
+    const { data: newUser, error: fetchError } = await (supabase
+      .from('profiles' as any) as any)
       .select('*')
       .eq('id', (rpcData as any).id)
       .single();
@@ -188,8 +188,8 @@ export const authService = {
     if (!user) return null;
 
     try {
-      let { data: profileRow, error: fetchError } = await supabase
-        .from('profiles')
+      let { data: profileRow, error: fetchError }: any = await (supabase
+        .from('profiles' as any) as any)
         .select('*')
         .eq('id', user.id)
         .single();
@@ -204,24 +204,24 @@ export const authService = {
 
       if (!profileRow) return null;
 
-      const { data: wallet } = await supabase
-        .from('wallet')
+      const { data: wallet }: any = await (supabase
+        .from('wallet' as any) as any)
         .select('*')
-        .eq('user_id', profileRow.id)
+        .eq('user_id', (profileRow as any).id)
         .maybeSingle();
 
       return {
-        id: profileRow.id,
-        email: profileRow.email || '',
+        id: (profileRow as any).id,
+        email: (profileRow as any).email || '',
         name: (profileRow as any).full_name || '',
         photoUrl: (profileRow as any).avatar_url || undefined,
         birthDate: (profileRow as any).birth_date || (profileRow as any).birthdate || '',
         zodiacSign: (profileRow as any).zodiac_sign || '',
         gender: (profileRow as any).gender as any || 'other',
-        credits: wallet?.credits || 0,
+        credits: (wallet as any)?.credits || 0,
         diamonds: (wallet as any)?.diamonds || 0,
         isPremium: !!(wallet as any)?.subscription_type,
-        createdAt: profileRow.created_at || new Date().toISOString(),
+        createdAt: (profileRow as any).created_at || new Date().toISOString(),
       };
     } catch (error) {
       console.error('[Auth] Get user fetch error:', error);
@@ -248,7 +248,7 @@ export const authService = {
             });
 
             if (response.ok) {
-              const data = await response.json();
+              const data: any = await response.json();
               const birthday = data.birthdays?.find((b: any) => b.date);
               if (birthday && birthday.date) {
                 const { year, month, day } = birthday.date;
@@ -336,8 +336,8 @@ export const authService = {
     if (zodiacSign) profileUpdates.zodiac_sign = zodiacSign;
 
     if (Object.keys(profileUpdates).length > 0) {
-      const { error: profileError } = await supabase
-        .from('profiles')
+      const { error: profileError } = await (supabase
+        .from('profiles' as any) as any)
         .update(profileUpdates)
         .eq('id', userId);
 

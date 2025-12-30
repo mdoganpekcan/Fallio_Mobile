@@ -1,7 +1,7 @@
 import { supabase } from './supabase';
-import { Fortune } from '@/types';
-import { FortuneType } from '@/constants/fortuneTypes';
-import { Database } from '@/types/supabase';
+import { Fortune } from '../types';
+import { FortuneType } from '../constants/fortuneTypes';
+import { Database } from '../types/supabase';
 
 type FortuneRow = Database['public']['Tables']['fortunes']['Row'] & {
   fortune_tellers: {
@@ -30,8 +30,8 @@ export interface CreateFortuneData {
 export const fortuneService = {
   async getUserFortunes(userId: string): Promise<Fortune[]> {
     console.log('[Fortune] Fetching fortunes for user:', userId);
-    const { data, error } = await supabase
-      .from('fortunes')
+    const { data, error }: any = await (supabase
+      .from('fortunes' as any) as any)
       .select(`
         *,
         fortune_tellers (
@@ -86,8 +86,8 @@ export const fortuneService = {
       throw userError || new Error('Oturum bulunamadı');
     }
 
-    const { data: fortune, error } = await supabase
-      .from('fortunes')
+    const { data: fortune, error }: any = await (supabase
+      .from('fortunes' as any) as any)
       .insert({
         user_id: user.id,
         teller_id: data.fortuneTellerId,
@@ -107,14 +107,14 @@ export const fortuneService = {
     if (data.images?.length) {
       for (const uri of data.images) {
         const publicUrl = await this.uploadImage(user.id, uri, data.type);
-        await supabase.from('fortune_images').insert({
+        await (supabase.from('fortune_images' as any) as any).insert({
           fortune_id: (fortune as any).id,
           url: publicUrl,
         } as any);
       }
     }
 
-    console.log('[Fortune] Created successfully:', fortune.id);
+    console.log('[Fortune] Created successfully:', (fortune as any).id);
 
     // --- AI TETİKLEME ---
     try {
@@ -135,22 +135,22 @@ export const fortuneService = {
     }
 
     return {
-      id: fortune.id,
-      userId: fortune.user_id,
-      fortuneTellerId: fortune.teller_id || undefined,
-      type: fortune.type as FortuneType,
-      status: fortune.status as any,
+      id: (fortune as any).id,
+      userId: (fortune as any).user_id,
+      fortuneTellerId: (fortune as any).teller_id || undefined,
+      type: (fortune as any).type as FortuneType,
+      status: (fortune as any).status as any,
       images: data.images || [],
-      note: fortune.user_note || undefined,
-      createdAt: fortune.created_at,
+      note: (fortune as any).user_note || undefined,
+      createdAt: (fortune as any).created_at,
       isRead: false,
-      metadata: fortune.metadata as any,
+      metadata: (fortune as any).metadata as any,
     };
   },
 
   async markAsRead(fortuneId: string): Promise<void> {
-    const { error } = await supabase
-      .from('fortunes')
+    const { error } = await (supabase
+      .from('fortunes' as any) as any)
       .update({ is_read: true } as any)
       .eq('id', fortuneId);
     if (error) {
@@ -197,8 +197,8 @@ export const fortuneService = {
   },
 
   async getFortuneById(fortuneId: string): Promise<Fortune | null> {
-    const { data, error } = await supabase
-      .from('fortunes')
+    const { data, error }: any = await (supabase
+      .from('fortunes' as any) as any)
       .select(`
         *,
         fortune_tellers (
@@ -243,8 +243,8 @@ export const fortuneService = {
   },
 
   async rateFortuneResponse(fortuneId: string, rating: 1 | -1): Promise<void> {
-    const { error } = await supabase
-      .from('fortunes')
+    const { error } = await (supabase
+      .from('fortunes' as any) as any)
       .update({ user_rating: rating } as any)
       .eq('id', fortuneId);
     if (error) {
