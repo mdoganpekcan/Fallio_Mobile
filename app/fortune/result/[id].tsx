@@ -20,6 +20,12 @@ import { fortuneTellerService } from '@/services/fortuneTellers';
 import { getFortuneTypeInfo } from '@/constants/fortuneTypes';
 import { useTranslation } from 'react-i18next';
 
+import { useRef } from 'react';
+import * as Sharing from 'expo-sharing';
+import { captureRef } from 'react-native-view-shot';
+import { useAppStore } from '@/store/useAppStore';
+import { FortuneShareCard } from '@/components/FortuneShareCard';
+import { FortuneAudioPlayer } from '@/components/FortuneAudioPlayer';
 import Markdown from 'react-native-markdown-display';
 
 export default function FortuneResultScreen() {
@@ -28,6 +34,9 @@ export default function FortuneResultScreen() {
   const queryClient = useQueryClient();
   const { id } = useLocalSearchParams<{ id: string }>();
   const [userRating, setUserRating] = useState<1 | -1 | null>(null);
+  const user = useAppStore(state => state.user);
+  const shareViewRef = useRef<View>(null);
+  const [isSharing, setIsSharing] = useState(false);
 
   const { data: fortune, isLoading } = useQuery({
     queryKey: ['fortune', id],
@@ -74,12 +83,36 @@ export default function FortuneResultScreen() {
   };
 
   const handleShare = async () => {
+    if (isSharing) return;
+    
     try {
-      await Share.share({
-        message: t('fortune.result.share_message', { type: t(fortuneInfo.name), result: fortune.result }),
+      setIsSharing(true);
+      console.log('[Share] Capturing view...');
+      
+      const uri = await captureRef(shareViewRef, {
+        format: 'png',
+        quality: 0.8,
       });
-    } catch {
-      return;
+
+      console.log('[Share] Image captured:', uri);
+
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(uri, {
+          mimeType: 'image/png',
+          dialogTitle: t('fortune.result.share_title') || 'Falını Paylaş',
+          UTI: 'public.png',
+        });
+      } else {
+        // Fallback to text share if file sharing is not available
+        await Share.share({
+          message: t('fortune.result.share_message', { type: t(fortuneInfo.name), result: fortune.result }),
+        });
+      }
+    } catch (error) {
+      console.error('[Share] Error:', error);
+      Alert.alert(t('common.error'), t('fortune.result.alerts.share_failed'));
+    } finally {
+      setIsSharing(false);
     }
   };
 
@@ -131,6 +164,13 @@ export default function FortuneResultScreen() {
           >
             {fortune.result || t('fortune.result.waiting_message')}
           </Markdown>
+
+          {fortune.result && (
+            <FortuneAudioPlayer 
+              text={fortune.result} 
+              language={i18n.language} 
+            />
+          )}
         </View>
 
         {fortune.result && (
@@ -179,6 +219,28 @@ export default function FortuneResultScreen() {
 
         <View style={{ height: 32 }} />
       </ScrollView>
+
+      {/* Hidden view for capturing share image */}
+      <View 
+        collapsable={false} 
+        style={styles.hiddenCaptureContainer}
+      >
+        <View ref={shareViewRef} collapsable={false}>
+          <FortuneShareCard 
+            userName={user?.full_name || 'Gezgin'}
+            fortuneType={t(fortuneInfo.name)}
+            fortuneResult={fortune.result || ''}
+            fortuneTeller={fortuneTeller?.name || t('fortune.result.teller_default')}
+          />
+        </View>
+      </View>
+
+      {isSharing && (
+        <View style={styles.shareOverlay}>
+          <ActivityIndicator size="large" color={Colors.primary} />
+          <Text style={styles.shareOverlayText}>{t('fortune.result.preparing_share') || 'Görsel Hazırlanıyor...'}</Text>
+        </View>
+      )}
     </SafeAreaView>
   );
 }
@@ -321,5 +383,22 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  hiddenCaptureContainer: {
+    position: 'absolute',
+    left: -2000, // Move way off-screen
+    top: 0,
+  },
+  shareOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+  },
+  shareOverlayText: {
+    ...Typography.bodyBold,
+    color: Colors.text,
+    marginTop: Spacing.md,
   },
 });

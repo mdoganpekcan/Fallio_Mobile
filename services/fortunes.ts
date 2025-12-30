@@ -10,6 +10,7 @@ type FortuneRow = Database['public']['Tables']['fortunes']['Row'] & {
     avatar_url: string | null;
     expertise: string[];
     rating: number;
+    price_credits: number | null;
     price: number;
     is_online: boolean;
     is_ai: boolean;
@@ -39,6 +40,7 @@ export const fortuneService = {
           avatar_url,
           expertise,
           rating,
+          price_credits,
           price,
           is_online,
           is_ai
@@ -93,7 +95,6 @@ export const fortuneService = {
         user_note: data.note,
         status: 'pending',
         metadata: data.metadata || {},
-        credits_cost: 0, // Bu alan veritabanında zorunlu görünüyor, varsayılan 0 ekledim
       })
       .select()
       .single();
@@ -146,6 +147,7 @@ export const fortuneService = {
       metadata: fortune.metadata as any,
     };
   },
+
   async markAsRead(fortuneId: string): Promise<void> {
     const { error } = await supabase
       .from('fortunes')
@@ -205,6 +207,7 @@ export const fortuneService = {
           avatar_url,
           expertise,
           rating,
+          price_credits,
           price,
           is_online,
           is_ai
@@ -248,9 +251,5 @@ export const fortuneService = {
       console.error('[Fortune] Rating update error:', error);
       throw error;
     }
-  },
-
-  async simulateFortuneResponse(fortuneId: string): Promise<void> {
-    console.log('[Fortune] simulateFortuneResponse skipped (awaiting real teller response)');
   },
 };

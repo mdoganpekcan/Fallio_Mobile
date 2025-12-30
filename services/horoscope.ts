@@ -46,11 +46,16 @@ export const horoscopeService = {
 
     const dbSign = zodiacMap[zodiacSign] || zodiacSign.toLowerCase();
 
+    // Get current language from i18next
+    const { i18n } = require('react-i18next');
+    const language = i18n.language || 'tr';
+
     const { data, error } = await supabase
       .from('horoscopes')
       .select('*')
       .eq('sign', dbSign)
       .eq('scope', scope)
+      .eq('language', language)
       .order('effective_date', { ascending: false })
       .limit(1)
       .maybeSingle();
@@ -61,15 +66,33 @@ export const horoscopeService = {
     }
 
     if (!data) {
-      return null;
+      // Fallback: If no localized version, try to get anything for this sign/scope
+      const { data: fallbackData } = await supabase
+        .from('horoscopes')
+        .select('*')
+        .eq('sign', dbSign)
+        .eq('scope', scope)
+        .order('effective_date', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      
+      if (!fallbackData) return null;
+      return {
+        zodiacSign: fallbackData.sign,
+        general: fallbackData.general || "",
+        love: fallbackData.love || undefined,
+        career: fallbackData.money || undefined,
+        health: fallbackData.health || undefined,
+        date: fallbackData.effective_date,
+      };
     }
 
     return {
-      zodiacSign: data.sign, // This will be 'koc', 'boga' etc.
-      general: data.general,
-      love: data.love,
-      career: data.money,
-      health: data.health,
+      zodiacSign: data.sign,
+      general: data.general || "",
+      love: data.love || undefined,
+      career: data.money || undefined,
+      health: data.health || undefined,
       date: data.effective_date,
     };
   },

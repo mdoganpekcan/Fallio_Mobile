@@ -22,6 +22,7 @@ import { horoscopeService } from '@/services/horoscope';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { Skeleton } from '@/components/Skeleton';
+import { DailyRewardModal } from '@/components/DailyRewardModal';
 import { useTranslation } from 'react-i18next';
 
 type HoroscopeCategory = 'general' | 'love' | 'career' | 'health';
@@ -92,12 +93,34 @@ export default function HomeScreen() {
               {wallet === undefined ? (
                 <Skeleton width={60} height={20} style={{ marginBottom: 4 }} />
               ) : (
-                <Text style={styles.creditAmount}>{displayCredits}</Text>
+                <Text style={styles.creditAmount}>{wallet?.credits || 0}</Text>
               )}
               <Text style={styles.creditLabel}>{t('tabs.credits')}</Text>
             </View>
           </View>
+
+          <View style={[styles.creditCard, { backgroundColor: '#1A1629' }]}>
+            <View style={[styles.creditIconContainer, { backgroundColor: '#2D2747' }]}>
+              <Text style={styles.creditIcon}>✨</Text>
+            </View>
+            <View>
+              {wallet === undefined ? (
+                <Skeleton width={60} height={20} style={{ marginBottom: 4 }} />
+              ) : (
+                <Text style={styles.creditAmount}>{wallet?.diamonds || 0}</Text>
+              )}
+              <Text style={styles.creditLabel}>{t('common.diamonds') || 'Elmas'}</Text>
+            </View>
+          </View>
         </View>
+
+        <DailyRewardModal 
+          userId={user?.id || ''} 
+          onClaimed={() => {
+            console.log('[Home] Daily reward claimed, refetching...');
+            refetchWallet();
+          }} 
+        />
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>{t('home.horoscopeTitle')}</Text>
