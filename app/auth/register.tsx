@@ -169,7 +169,7 @@ export default function RegisterScreen() {
                 {avatarUri ? (
                   <View style={styles.avatar}>
                     <View style={styles.avatarImageContainer}>
-                      <Text style={styles.avatarPlaceholder}>👤</Text>
+                      <Text style={styles.avatarPlaceholder}>✅</Text>
                     </View>
                   </View>
                 ) : (

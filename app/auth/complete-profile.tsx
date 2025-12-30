@@ -62,7 +62,7 @@ export default function CompleteProfileScreen() {
         .from('profiles')
         .upsert({
           user_id: user.id,
-          birthdate: isoDate,
+          birth_date: isoDate,
           gender: gender
         }, { onConflict: 'user_id' });
 

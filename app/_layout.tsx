@@ -39,7 +39,7 @@ function useProtectedRoute(user: any) {
     if (!user && !inAuthGroup) {
       router.replace('/onboarding' as any);
     } else if (user) {
-      const isProfileComplete = !!user.birthDate;
+      const isProfileComplete = !!user.birthDate && !!user.gender;
       const inCompleteProfile = segments[0] === 'auth' && segments[1] === 'complete-profile';
 
       if (!isProfileComplete) {

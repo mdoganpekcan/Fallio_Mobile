@@ -29,7 +29,7 @@ export const profileService = {
       email: user.email,
       fullName: user.full_name,
       avatarUrl: user.avatar_url || undefined,
-      birthDate: user.birth_date || profileData?.birth_date,
+      birthDate: user.birth_date || profileData?.birth_date || profileData?.birthdate,
       zodiacSign: user.zodiac_sign,
       gender: user.gender || profileData?.gender,
       city: user.city,
@@ -89,7 +89,7 @@ export const profileService = {
       const contentType = `image/${fileExt === 'jpg' ? 'jpeg' : fileExt}`;
 
       const base64 = await FileSystem.readAsStringAsync(uri, {
-        encoding: FileSystem.EncodingType.Base64,
+        encoding: 'base64',
       });
 
       const arrayBuffer = decode(base64);
