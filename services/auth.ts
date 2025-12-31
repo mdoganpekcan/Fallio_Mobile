@@ -37,9 +37,17 @@ export const authService = {
       if (rpcError.code === '23505' || rpcError.message?.includes('duplicate key')) {
         console.log('[Auth] Duplicate user record detected, syncing existing records...');
         
-        // 1. users tablosunda email ile bul ve auth_user_id'yi güncelle
+        // 1. users tablosunda email ile bul ve eksik verileri güncelle
+        const userUpdates: any = { 
+          auth_user_id: authUser.id, 
+          updated_at: new Date().toISOString() 
+        };
+        if (extra?.birthDate) userUpdates.birth_date = extra.birthDate;
+        if (extra?.gender) userUpdates.gender = extra.gender;
+        if (extra?.fullName) userUpdates.full_name = extra.fullName;
+
         await (supabase.from('users' as any) as any)
-          .update({ auth_user_id: authUser.id, updated_at: new Date().toISOString() } as any)
+          .update(userUpdates)
           .eq('email', authUser.email);
 
         // 2. profiles tablosunda Upsert yap
@@ -152,7 +160,7 @@ export const authService = {
     console.log('[Auth] Resetting password for:', email);
     // Use the scheme defined in app.json
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: 'rork-app://auth/reset-password',
+      redirectTo: 'fallio://auth/reset-password',
     });
 
     if (error) {
@@ -262,12 +270,10 @@ export const authService = {
   },
 
   async signInWithGoogle(redirectTo?: string) {
-    console.log('[Auth] Sign in with Google');
+    console.log('[Auth] Sign in with Google via Vercel Callback');
 
-    // Use the correct scheme for production/development
-    // For Expo Go: exp://...
-    // For Production: falioapp://...
-    const redirectUrl = Linking.createURL('/auth/callback');
+    // Web tabanlı yönlendirme kullanıyoruz (Vercel)
+    const redirectUrl = 'https://fallio-web.vercel.app/auth/callback';
     console.log('[Auth] Redirect URL:', redirectUrl);
 
     const { data, error } = await supabase.auth.signInWithOAuth({
@@ -285,12 +291,11 @@ export const authService = {
     }
 
     if (data?.url) {
+      // openAuthSessionAsync, redirectUrl'e dönüşü yakalayacaktır
       const result = await WebBrowser.openAuthSessionAsync(data.url, redirectUrl);
+      
       if (result.type === 'success' && result.url) {
-        // Parse the URL to get the access_token and refresh_token
-        // Supabase handles the session automatically if the URL is passed back correctly,
-        // but sometimes we need to manually set the session if deep linking is tricky.
-        // However, usually just opening the URL is enough if the redirect goes back to the app.
+        // Otomatik oturum açma akışı Supabase tarafından yönetilir
       }
     }
     return data;

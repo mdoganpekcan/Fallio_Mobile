@@ -5,7 +5,7 @@
     "version": "0.1.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "rork-app",
+    "scheme": "fallio",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
