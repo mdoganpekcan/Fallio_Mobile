@@ -64,7 +64,8 @@ export const authService = {
       }
 
       console.error('[Auth] RPC create_user_record failed with unknown error:', rpcError);
-      // ... rest of the original error handling if needed
+      throw new Error(`Kullanıcı kaydı oluşturulamadı: ${rpcError.message}`);
+    }
 
     const { data: newUser, error: fetchError } = await (supabase
       .from('profiles' as any) as any)
