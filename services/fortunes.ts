@@ -116,24 +116,6 @@ export const fortuneService = {
 
     console.log('[Fortune] Created successfully:', (fortune as any).id);
 
-    // --- AI TETİKLEME ---
-    try {
-      const API_URL = 'https://fallio-web.vercel.app/api/cron/process-fortunes';
-      const ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
-      
-      const { i18n } = require('react-i18next');
-      const language = i18n.language || 'tr';
-
-      fetch(`${API_URL}?lang=${language}`, {
-        headers: {
-          'Authorization': `Bearer ${ANON_KEY}`
-        }
-      }).catch(err => console.log('[Fortune] AI trigger failed (non-fatal):', err));
-
-    } catch (e) {
-      console.log('[Fortune] AI trigger error:', e);
-    }
-
     return {
       id: (fortune as any).id,
       userId: (fortune as any).user_id,

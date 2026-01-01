@@ -9,8 +9,8 @@ export const earningService = {
    * Fetch active earning rules (daily login, ad watch, etc.)
    */
   async getEarningRules(): Promise<EarningRule[]> {
-    const { data, error } = await supabase
-      .from('earning_rules')
+    const { data, error } = await (supabase
+      .from('earning_rules' as any) as any)
       .select('*')
       .eq('active', true);
 
@@ -29,8 +29,8 @@ export const earningService = {
     
     // Using a custom metadata or a separate table if available, 
     // but for now let's check logs or a 'daily_checkins' metadata in profiles
-    const { data, error } = await supabase
-      .from('profiles')
+    const { data, error }: any = await (supabase
+      .from('profiles' as any) as any)
       .select('last_login')
       .eq('user_id', userId)
       .single();
@@ -48,8 +48,8 @@ export const earningService = {
     console.log('[Earning] Claiming reward for:', ruleType);
     
     // 1. Get the rule
-    const { data: rule, error: ruleError } = await supabase
-      .from('earning_rules')
+    const { data: rule, error: ruleError }: any = await (supabase
+      .from('earning_rules' as any) as any)
       .select('*')
       .eq('type', ruleType)
       .eq('active', true)
@@ -64,9 +64,9 @@ export const earningService = {
 
     // 3. Update last_login to today if it's daily reward
     if (ruleType === 'daily_login') {
-      await supabase
-        .from('profiles')
-        .update({ last_login: new Date().toISOString() })
+      await (supabase
+        .from('profiles' as any) as any)
+        .update({ last_login: new Date().toISOString() } as any)
         .eq('user_id', userId);
     }
 
