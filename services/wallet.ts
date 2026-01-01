@@ -80,6 +80,52 @@ export const walletService = {
     return newBalance;
   },
 
+  async updateDiamonds(userId: string, amount: number, transactionType: string = 'diamond_reward'): Promise<number> {
+    console.log('[Wallet] Updating diamonds via RPC:', userId, 'amount:', amount);
+    
+    const { data, error } = await supabase.rpc('handle_diamond_transaction', {
+      p_user_id: userId,
+      p_amount: amount,
+      p_transaction_type: transactionType
+    });
+
+    if (error) {
+      console.error('[Wallet] Diamond Transaction error:', error);
+      if (error.message.includes('INSUFFICIENT_DIAMONDS')) {
+        throw new Error('Yetersiz elmas');
+      }
+      throw error;
+    }
+
+    const newBalance = data?.[0]?.new_diamonds ?? 0;
+    console.log('[Wallet] Diamond transaction successful. New balance:', newBalance);
+    return newBalance;
+  },
+
+  async exchangeDiamonds(userId: string, diamondsQty: number, rate: number = 10): Promise<{ diamonds: number; credits: number }> {
+    console.log('[Wallet] Exchanging diamonds for credits via RPC:', userId, 'qty:', diamondsQty);
+    
+    const { data, error } = await supabase.rpc('exchange_diamonds_for_credits', {
+      p_user_id: userId,
+      p_diamonds_qty: diamondsQty,
+      p_rate: rate
+    });
+
+    if (error) {
+      console.error('[Wallet] Exchange error:', error);
+      if (error.message.includes('INSUFFICIENT_DIAMONDS')) {
+        throw new Error('Yetersiz elmas');
+      } else if (error.message.includes('INVALID_QUANTITY')) {
+        throw new Error(`Miktar ${rate}'un katı olmalıdır.`);
+      }
+      throw error;
+    }
+
+    const { new_diamonds, new_credits } = data?.[0] || { new_diamonds: 0, new_credits: 0 };
+    console.log('[Wallet] Exchange successful. New diamonds:', new_diamonds, 'New credits:', new_credits);
+    return { diamonds: new_diamonds, credits: new_credits };
+  },
+
   async getDailyFreeUsageCount(userId: string): Promise<number> {
     const today = new Date().toISOString().split("T")[0];
     const { count, error }: any = await (

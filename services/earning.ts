@@ -59,27 +59,8 @@ export const earningService = {
       throw new Error('Ödül kuralı bulunamadı');
     }
 
-    // 2. Perform the update in wallet (Atomically)
-    // In a real app, this should be a stored procedure (RPC) for security
-    const { data: wallet, error: walletFetchError } = await supabase
-      .from('wallet')
-      .select('diamonds')
-      .eq('user_id', userId)
-      .single();
-
-    if (walletFetchError) throw walletFetchError;
-
-    const newDiamonds = (wallet?.diamonds || 0) + rule.diamonds;
-
-    const { error: updateError } = await supabase
-      .from('wallet')
-      .update({ 
-        diamonds: newDiamonds, 
-        updated_at: new Date().toISOString() 
-      })
-      .eq('user_id', userId);
-
-    if (updateError) throw updateError;
+    // 2. Perform the update in wallet (Atomically via RPC)
+    const newDiamonds = await walletService.updateDiamonds(userId, rule.diamonds, `reward_${ruleType}`);
 
     // 3. Update last_login to today if it's daily reward
     if (ruleType === 'daily_login') {
@@ -89,7 +70,6 @@ export const earningService = {
         .eq('user_id', userId);
     }
 
-    // 4. Record transaction (optional but better for logs)
     return { success: true, amount: rule.diamonds };
   },
 
@@ -99,30 +79,8 @@ export const earningService = {
    */
   async exchangeDiamondsToCredits(userId: string, diamondsQty: number): Promise<void> {
     const rate = 10; // 10 diamonds = 1 credit
-    if (diamondsQty % rate !== 0) throw new Error(`Elmas miktarı ${rate}'un katı olmalıdır.`);
-
-    const creditsToGain = diamondsQty / rate;
-
-    // This should ideally be a safe RPC call
-    const { data: wallet, error: walletError } = await supabase
-      .from('wallet')
-      .select('diamonds, credits')
-      .eq('user_id', userId)
-      .single();
-
-    if (walletError || !wallet) throw new Error('Cüzdan bulunamadı');
-
-    if (wallet.diamonds < diamondsQty) throw new Error('Yetersiz elmas');
-
-    const { error: updateError } = await supabase
-      .from('wallet')
-      .update({
-        diamonds: wallet.diamonds - diamondsQty,
-        credits: wallet.credits + creditsToGain,
-        updated_at: new Date().toISOString()
-      })
-      .eq('user_id', userId);
-
-    if (updateError) throw updateError;
+    
+    // Call the safe RPC method through walletService
+    await walletService.exchangeDiamonds(userId, diamondsQty, rate);
   }
 };
