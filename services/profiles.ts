@@ -29,7 +29,7 @@ export const profileService = {
       email: user.email,
       fullName: user.full_name,
       avatarUrl: user.avatar_url || undefined,
-      birthDate: user.birth_date || profileData?.birth_date || profileData?.birthdate,
+      birthDate: user.birth_date || profileData?.birth_date,
       zodiacSign: user.zodiac_sign,
       gender: user.gender || profileData?.gender,
       city: user.city,

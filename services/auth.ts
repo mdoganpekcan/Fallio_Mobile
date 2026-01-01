@@ -58,7 +58,6 @@ export const authService = {
         };
         if (extra?.birthDate) {
           profileData.birth_date = extra.birthDate;
-          profileData.birthdate = extra.birthDate;
         }
         if (extra?.gender) profileData.gender = extra.gender;
         if (extra?.fullName) profileData.full_name = extra.fullName;
