@@ -34,7 +34,9 @@ export const authService = {
       console.log('[Auth] RPC failed or record exists, trying upsert logic. Code:', rpcError.code);
 
       // Handle duplicate key error (23505)
-      if (rpcError.code === '23505' || rpcError.message?.includes('duplicate key')) {
+      if (rpcError.code === '23505' || 
+          rpcError.message?.includes('duplicate key') || 
+          rpcError.message?.includes('does not exist')) {
         console.log('[Auth] Duplicate user record detected, syncing existing records...');
         
         // 1. users tablosunda email ile bul ve eksik verileri güncelle
@@ -324,7 +326,6 @@ export const authService = {
     const profileUpdates: any = {};
     if (updates.birthDate) {
       profileUpdates.birth_date = updates.birthDate;
-      profileUpdates.birthdate = updates.birthDate;
     }
     if (updates.gender) profileUpdates.gender = updates.gender;
     if (updates.fullName) profileUpdates.full_name = updates.fullName;

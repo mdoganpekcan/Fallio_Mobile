@@ -9,6 +9,7 @@ import {
   Platform,
   ScrollView,
   Alert,
+  Image,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
@@ -169,7 +170,12 @@ export default function RegisterScreen() {
                 {avatarUri ? (
                   <View style={styles.avatar}>
                     <View style={styles.avatarImageContainer}>
-                      <Text style={styles.avatarPlaceholder}>✅</Text>
+                      {/* Use a simple Image component here, make sure to import Image from react-native */}
+                      <Image 
+                        source={{ uri: avatarUri }} 
+                        style={{ width: '100%', height: '100%', borderRadius: BorderRadius.full }}
+                        resizeMode="cover"
+                      />
                     </View>
                   </View>
                 ) : (
