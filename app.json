@@ -66,9 +66,9 @@
       [
         "@sentry/react-native/expo",
         {
-          "organization": "fallio",
+          "url": "https://sentry.io/",
           "project": "fallio-mobile",
-          "url": "https://sentry.io/"
+          "organization": "moiv-interactive"
         }
       ]
     ],
