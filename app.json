@@ -19,7 +19,8 @@
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "Fal göndermek için fotoğraf galerisine erişim izni gereklidir.",
         "NSCameraUsageDescription": "Fal fotoğrafı çekmek için kamera erişim izni gereklidir.",
-        "NSMicrophoneUsageDescription": "Uygulama içi sesli özellikler için mikrofon erişimi gereklidir."
+        "NSMicrophoneUsageDescription": "Uygulama içi sesli özellikler için mikrofon erişimi gereklidir.",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
