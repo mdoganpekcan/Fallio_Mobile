@@ -234,4 +234,26 @@ export const fortuneService = {
       throw error;
     }
   },
+
+  async createFortuneSecure(data: CreateFortuneData): Promise<{ id: string; isFree: boolean; cost: number }> {
+    const { data: result, error } = await supabase.rpc('create_fortune_secure', {
+      p_user_id: data.userId,
+      p_type: data.type,
+      p_teller_id: data.fortuneTellerId || null,
+      p_note: data.note,
+      p_metadata: data.metadata || {},
+      p_images: data.images || []
+    });
+
+    if (error) {
+      console.error('[Fortune] Secure creation error:', error);
+      throw error;
+    }
+
+    return {
+      id: result.id,
+      isFree: result.is_free,
+      cost: result.cost
+    };
+  },
 };

@@ -51,28 +51,6 @@ export default function FortuneSubmitScreen() {
         throw new Error(t('fortune.submit.errors.missing_photos'));
       }
 
-      const creditCost = appConfig?.fortune_costs?.[type as FortuneType] ?? fortuneInfo.credit;
-      let isFree = false;
-
-      // Günlük Ücretsiz Fal Kontrolü
-      if (appConfig?.daily_free_fortune_limit && appConfig.daily_free_fortune_limit > 0) {
-        const today = new Date().toISOString().split('T')[0];
-        const { count, error } = await supabase
-          .from('daily_free_usages')
-          .select('*', { count: 'exact', head: true })
-          .eq('user_id', user.id)
-          .eq('usage_date', today);
-        
-        if (!error && count !== null && count < appConfig.daily_free_fortune_limit) {
-          isFree = true;
-        }
-      }
-
-      const wallet = await walletService.getWallet(user.id);
-      if (!isFree && wallet.credits < creditCost) {
-        throw new Error(t('fortune.submit.errors.insufficient_credits'));
-      }
-
       const metaDetails: string[] = [];
       const metadata: Record<string, any> = {};
 
@@ -90,7 +68,8 @@ export default function FortuneSubmitScreen() {
       }
       const composedNote = [note.trim(), ...metaDetails].filter(Boolean).join('\n');
 
-      const fortune = await fortuneService.createFortune({
+      // Secure Atomic Transaction (RPC)
+      const result = await fortuneService.createFortuneSecure({
         userId: user.id,
         type: type as FortuneType,
         fortuneTellerId: selectedTellerId,
@@ -99,21 +78,13 @@ export default function FortuneSubmitScreen() {
         metadata,
       });
 
-      if (isFree) {
-        // Ücretsiz kullanım hakkını düş
-        await supabase.from('daily_free_usages').insert({
-          user_id: user.id,
-          fortune_type: type,
-          usage_date: new Date().toISOString().split('T')[0]
-        });
-      } else {
-        // Krediden düş
-        const newCredits = wallet.credits - creditCost;
-        await walletService.updateCredits(user.id, -creditCost);
-        updateUserCredits(newCredits);
+      // Update local state based on result
+      if (!result.isFree) {
+        const currentCredits = useAppStore.getState().user?.credits || 0; // Fallback to store
+        updateUserCredits(currentCredits - result.cost);
       }
-
-      return fortune;
+      
+      return { id: result.id } as any; // Cast to match expected return type if needed, or adjust
     },
     onSuccess: (fortune) => {
       console.log('[FortuneSubmit] Success:', fortune.id);
