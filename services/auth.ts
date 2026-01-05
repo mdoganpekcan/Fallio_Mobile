@@ -44,7 +44,7 @@ export const authService = {
           auth_user_id: authUser.id, 
           updated_at: new Date().toISOString() 
         };
-        if (extra?.birthDate) userUpdates.birth_date = extra.birthDate;
+        if (extra?.birthDate) userUpdates.birthdate = extra.birthDate;
         if (extra?.gender) userUpdates.gender = extra.gender;
         if (extra?.fullName) userUpdates.full_name = extra.fullName;
 
