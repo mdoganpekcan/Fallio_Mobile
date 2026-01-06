@@ -186,45 +186,71 @@ export const authService = {
     if (!user) return null;
 
     try {
-      let { data: profileRow, error: fetchError }: any = await (supabase
-        .from('profiles' as any) as any)
-        .select('*')
+      // Fetch from users table and join profiles to get complete picture
+      // This solves the issue where data might be in users but not caught by profile-only query
+      const { data: userData, error: fetchError } = await (supabase
+        .from('users' as any) as any)
+        .select('*, profiles(*)')
         .eq('id', user.id)
         .single();
 
-      if (fetchError || !profileRow) {
-        console.log('[Auth] Profile record not found, creating...');
-        profileRow = await this.ensureUserRecords({ id: user.id, email: user.email }, extraData);
+      if (fetchError || !userData) {
+        console.log('[Auth] User record not found in public table, checking/creating...');
+        // Fallback to ensure records exist
+        await this.ensureUserRecords({ id: user.id, email: user.email }, extraData);
+        // Retry fetch
+        const { data: retryData } = await (supabase
+          .from('users' as any) as any)
+          .select('*, profiles(*)')
+          .eq('id', user.id)
+          .single();
+        
+        if (!retryData) return null;
+        return this.mapUserRecord(retryData);
       } else if (extraData && Object.keys(extraData).length > 0) {
         console.log('[Auth] Updating existing profile with extra data...');
-        profileRow = await this.updateProfile(user.id, extraData);
+        await this.updateProfile(user.id, extraData);
+        // Re-fetch to get updated data
+        const { data: updatedData } = await (supabase
+          .from('users' as any) as any)
+          .select('*, profiles(*)')
+          .eq('id', user.id)
+          .single();
+        return this.mapUserRecord(updatedData);
       }
 
-      if (!profileRow) return null;
-
-      const { data: wallet }: any = await (supabase
-        .from('wallet' as any) as any)
-        .select('*')
-        .eq('user_id', (profileRow as any).id)
-        .maybeSingle();
-
-      return {
-        id: (profileRow as any).id,
-        email: (profileRow as any).email || '',
-        name: (profileRow as any).full_name || '',
-        photoUrl: (profileRow as any).avatar_url || undefined,
-        birthDate: (profileRow as any).birth_date || (profileRow as any).birthdate || '',
-        zodiacSign: (profileRow as any).zodiac_sign || '',
-        gender: (profileRow as any).gender as any || 'other',
-        credits: (wallet as any)?.credits || 0,
-        diamonds: (wallet as any)?.diamonds || 0,
-        isPremium: !!(wallet as any)?.subscription_type,
-        createdAt: (profileRow as any).created_at || new Date().toISOString(),
-      };
+      return this.mapUserRecord(userData);
     } catch (error) {
       console.error('[Auth] Get user fetch error:', error);
       return null;
     }
+  },
+
+  // Helper to map DB response to User type
+  mapUserRecord(userData: any): User {
+    const profileData = Array.isArray(userData.profiles) ? userData.profiles[0] : userData.profiles;
+    
+    // Check both tables for critical fields
+    const birthDate = userData.birthdate || userData.birth_date || 
+                     profileData?.birthdate || profileData?.birth_date || '';
+                     
+    const gender = userData.gender || profileData?.gender || 'other';
+
+    const wallet = userData.wallet || {}; // Wallet might need specific join if not in users/profiles
+
+    return {
+      id: userData.id,
+      email: userData.email || '',
+      name: userData.full_name || profileData?.full_name || '',
+      photoUrl: userData.avatar_url || profileData?.avatar_url || undefined,
+      birthDate: birthDate,
+      zodiacSign: userData.zodiac_sign || profileData?.zodiac_sign || '',
+      gender: gender as any,
+      credits: (wallet as any)?.credits || 0, // Note: this assumes wallet join logic if needed later
+      diamonds: (wallet as any)?.diamonds || 0,
+      isPremium: !!(wallet as any)?.subscription_type,
+      createdAt: userData.created_at || new Date().toISOString(),
+    };
   },
 
   onAuthStateChange(callback: (user: User | null) => void) {

@@ -168,7 +168,8 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
-    height: 60,
+    height: 80,
+    marginTop: Spacing.md,
   },
   skipButton: {
     paddingVertical: Spacing.sm,
