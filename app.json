@@ -4,7 +4,7 @@
     "slug": "falio",
     "version": "0.1.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/Fallio_ICON.png",
     "scheme": "fallio",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -25,7 +25,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/Fallio_ICON.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.moiv.fallio",
@@ -39,7 +39,7 @@
       ]
     },
     "web": {
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/Fallio_ICON.png"
     },
     "plugins": [
       [
