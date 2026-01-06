@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Falio - Gerçek Fal Uygulaması",
-    "slug": "falio",
+    "name": "Fallio",
+    "slug": "Fallio - Gerçek Fal Uygulaması",
     "version": "0.1.0",
     "orientation": "portrait",
     "icon": "./assets/images/Fallio_ICON.png",
