@@ -300,13 +300,20 @@ export const authService = {
     console.log('[Auth] Sign in with Google via Vercel Callback');
 
     // Web tabanlı yönlendirme kullanıyoruz (Vercel)
-    const redirectUrl = 'https://fallio-web.vercel.app/auth/callback';
-    console.log('[Auth] Redirect URL:', redirectUrl);
+    // Web tabanlı yönlendirme (Supabase için)
+    const supabaseRedirectUrl = 'https://fallio-web.vercel.app/auth/callback';
+    
+    // Mobil uygulama şema yönlendirmesi (AuthSession için)
+    // Bu URL, web sayfasının en son yönlendireceği adrestir (fallio://auth/callback)
+    const deepLinkUrl = Linking.createURL('/auth/callback') || 'fallio://auth/callback';
+
+    console.log('[Auth] Supabase Redirect:', supabaseRedirectUrl);
+    console.log('[Auth] Deep Link (Expected Return):', deepLinkUrl);
 
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: redirectUrl,
+        redirectTo: supabaseRedirectUrl,
         skipBrowserRedirect: true,
         scopes: 'https://www.googleapis.com/auth/user.birthday.read'
       },
@@ -318,8 +325,8 @@ export const authService = {
     }
 
     if (data?.url) {
-      // openAuthSessionAsync, redirectUrl'e dönüşü yakalayacaktır
-      const result = await WebBrowser.openAuthSessionAsync(data.url, redirectUrl);
+      // openAuthSessionAsync, artık deepLinkUrl'i (fallio://) bekleyecek
+      const result = await WebBrowser.openAuthSessionAsync(data.url, deepLinkUrl);
       
       if (result.type === 'success' && result.url) {
         // Otomatik oturum açma akışı Supabase tarafından yönetilir
