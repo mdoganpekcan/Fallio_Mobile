@@ -59,7 +59,7 @@ export const authService = {
           email: authUser.email,
         };
         if (extra?.birthDate) {
-          profileData.birth_date = extra.birthDate;
+          profileData.birthdate = extra.birthDate;
         }
         if (extra?.gender) profileData.gender = extra.gender;
         if (extra?.fullName) profileData.full_name = extra.fullName;
@@ -325,7 +325,7 @@ export const authService = {
 
     const profileUpdates: any = {};
     if (updates.birthDate) {
-      profileUpdates.birth_date = updates.birthDate;
+      profileUpdates.birthdate = updates.birthDate;
     }
     if (updates.gender) profileUpdates.gender = updates.gender;
     if (updates.fullName) profileUpdates.full_name = updates.fullName;
