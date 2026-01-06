@@ -62,18 +62,19 @@ export default function CompleteProfileScreen() {
         .from('profiles')
         .upsert({
           user_id: user.id,
-          birth_date: isoDate,
+          birthdate: isoDate,
           gender: gender
-        }, { onConflict: 'user_id' });
+        } as any, { onConflict: 'user_id' });
 
       if (profileError) throw profileError;
 
-      // Update users table for zodiac
+      // Update users table for zodiac and birthdate
       const { error: userError } = await supabase
         .from('users')
         .update({
-          zodiac_sign: zodiacSign
-        })
+          zodiac_sign: zodiacSign,
+          birthdate: isoDate
+        } as any)
         .eq('id', user.id);
 
       if (userError) throw userError;
