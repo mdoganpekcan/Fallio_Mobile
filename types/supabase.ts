@@ -696,7 +696,21 @@ export interface Database {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      create_fortune_secure: {
+        Args: {
+          p_user_id: string;
+          p_type: string;
+          p_teller_id: string | null;
+          p_note: string | undefined;
+          p_metadata: Json;
+          p_images: string[];
+        };
+        Returns: {
+          id: string;
+          cost: number;
+          is_free: boolean;
+        };
+      };
     };
     Enums: {
       [_ in never]: never;
