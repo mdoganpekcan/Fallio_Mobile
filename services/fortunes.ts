@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { getLocales } from 'expo-localization';
 import { Fortune } from '@/types';
 import { FortuneType } from '@/constants/fortuneTypes';
 import { Database } from '@/types/supabase';
@@ -241,7 +242,7 @@ export const fortuneService = {
       p_type: data.type,
       p_teller_id: data.fortuneTellerId || null,
       p_note: data.note,
-      p_metadata: data.metadata || {},
+      p_metadata: { ...data.metadata, language: getLocales()[0]?.languageCode ?? 'tr' },
       p_images: data.images || []
     });
 
