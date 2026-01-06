@@ -69,12 +69,12 @@ export default function CompleteProfileScreen() {
       if (profileError) throw profileError;
 
       // Update users table for zodiac and birthdate
-      const { error: userError } = await supabase
-        .from('users')
+      const { error: userError } = await (supabase
+        .from('users') as any)
         .update({
           zodiac_sign: zodiacSign,
           birthdate: isoDate
-        } as any)
+        })
         .eq('id', user.id);
 
       if (userError) throw userError;
@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xxl,
   },
   title: {
-    ...Typography.h1,
+    ...Typography.title,
     color: Colors.text,
     marginBottom: Spacing.sm,
   },
@@ -295,7 +295,7 @@ const styles = StyleSheet.create({
   button: {
     borderRadius: BorderRadius.lg,
     overflow: 'hidden',
-    ...Shadows.md,
+    ...Shadows.medium,
     marginTop: Spacing.md,
   },
   buttonDisabled: {
@@ -308,7 +308,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: Colors.text,
-    ...Typography.h3,
+    ...Typography.subheading,
     fontWeight: '600',
   },
 });
