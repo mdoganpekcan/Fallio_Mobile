@@ -247,7 +247,6 @@ export const authService = {
       zodiacSign: userData.zodiac_sign || profileData?.zodiac_sign || '',
       gender: gender as any,
       credits: (wallet as any)?.credits || 0, // Note: this assumes wallet join logic if needed later
-      diamonds: (wallet as any)?.diamonds || 0,
       isPremium: !!(wallet as any)?.subscription_type,
       createdAt: userData.created_at || new Date().toISOString(),
     };
