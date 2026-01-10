@@ -23,6 +23,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { imageService } from '@/services/image';
+import { SmartBanner } from '@/components/ads/SmartBanner';
 
 export default function ProfileScreen() {
   const { t } = useTranslation();
@@ -255,6 +256,7 @@ export default function ProfileScreen() {
           ))}
         </View>
 
+
         <View style={styles.socialSection}>
           <Text style={styles.socialTitle}>{t('profile.social.follow_us')}</Text>
           <View style={styles.socialLinks}>
@@ -267,6 +269,11 @@ export default function ProfileScreen() {
               </TouchableOpacity>
             ))}
           </View>
+        </View>
+
+        {/* Ad Section */}
+        <View style={{ marginBottom: 20, alignItems: 'center' }}>
+           <SmartBanner />
         </View>
 
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>

@@ -24,6 +24,7 @@ import { StatusBar } from 'expo-status-bar';
 import { Skeleton } from '@/components/Skeleton';
 import { DailyRewardModal } from '@/components/DailyRewardModal';
 import { useTranslation } from 'react-i18next';
+import { SmartBanner } from '@/components/ads/SmartBanner';
 
 type HoroscopeCategory = 'general' | 'love' | 'career' | 'health';
 type HoroscopePeriod = 'daily' | 'weekly' | 'monthly';
@@ -186,6 +187,7 @@ export default function HomeScreen() {
           </View>
         </View>
 
+
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>{t('home.fortuneTitle')}</Text>
 
@@ -200,6 +202,11 @@ export default function HomeScreen() {
               />
             ))}
           </View>
+        </View>
+
+        {/* Ad Section */}
+        <View style={{ marginBottom: 20, marginHorizontal: 20, alignItems: 'center' }}>
+           <SmartBanner />
         </View>
 
         <TouchableOpacity
