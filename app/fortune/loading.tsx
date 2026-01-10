@@ -8,11 +8,18 @@ import {
 import { Colors, Spacing, Typography } from '@/constants/theme';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { adService } from '@/services/ads';
 
 export default function FortuneLoadingScreen() {
   const progressAnim = React.useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
+    // Show Interstitial Ad while loading
+    const showAd = async () => {
+      await adService.showInterstitial();
+    };
+    showAd();
+
     Animated.timing(progressAnim, {
       toValue: 1,
       duration: 3000,

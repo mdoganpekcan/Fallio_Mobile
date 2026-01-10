@@ -14,6 +14,8 @@ import { notificationService } from "@/services/notifications";
 import { revenueCatService } from "@/services/revenueCat";
 import { configService } from "@/services/config";
 import { initI18n } from '@/i18n/setup';
+import { AppState } from 'react-native';
+import { adService } from '@/services/ads';
 
 SplashScreen.preventAutoHideAsync();
 WebBrowser.maybeCompleteAuthSession();
@@ -143,6 +145,19 @@ function RootLayoutNav() {
     revenueCatService.init().catch((err) =>
       console.warn('[RevenueCat] init error:', err)
     );
+
+    // App Resume Ad Logic
+    const subscription = AppState.addEventListener('change', async (nextAppState) => {
+      if (nextAppState === 'active') {
+         // App came to foreground
+         console.log('[Ad] App resumed, attempting to show interstitial...');
+         await adService.showInterstitial();
+      }
+    });
+
+    return () => {
+      subscription.remove();
+    };
   }, []);
 
   if (isLoading) {
