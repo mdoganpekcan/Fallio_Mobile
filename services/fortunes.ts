@@ -3,6 +3,7 @@ import { getLocales } from 'expo-localization';
 import { Fortune } from '@/types';
 import { FortuneType } from '@/constants/fortuneTypes';
 import { Database } from '@/types/supabase';
+import * as StoreReview from 'expo-store-review';
 
 type FortuneRow = Database['public']['Tables']['fortunes']['Row'] & {
   fortune_tellers: {
@@ -233,6 +234,14 @@ export const fortuneService = {
     if (error) {
       console.error('[Fortune] Rating update error:', error);
       throw error;
+    }
+
+    if (rating === 1 && await StoreReview.hasAction()) {
+        try {
+            await StoreReview.requestReview();
+        } catch (e) {
+            console.log('[StoreReview] Error:', e);
+        }
     }
   },
 
