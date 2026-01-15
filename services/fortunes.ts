@@ -243,7 +243,7 @@ export const fortuneService = {
             console.log('[StoreReview] Error:', e);
         }
     }
-  },
+  }, 
 
   async createFortuneSecure(data: CreateFortuneData): Promise<{ id: string; isFree: boolean; cost: number }> {
     // @ts-ignore - Supabase RPC strict typing mismatch workaround
