@@ -13,10 +13,11 @@ const isDev = __DEV__;
 // For now, I will use TestIds for Safety and Reliability during development.
 // ! IMPORTANT: Replace with Real Unit IDs before production release !
 
-const BANNER_ID = isDev ? TestIds.BANNER : 'ca-app-pub-5812875423104468/YOUR_BANNER_UNIT_ID'; 
-const INTERSTITIAL_ID = isDev ? TestIds.INTERSTITIAL : 'ca-app-pub-5812875423104468/YOUR_INTERSTITIAL_UNIT_ID';
-const REWARDED_ID = isDev ? TestIds.REWARDED : 'ca-app-pub-5812875423104468/YOUR_REWARDED_UNIT_ID';
-const APP_OPEN_ID = isDev ? TestIds.APP_OPEN : 'ca-app-pub-5812875423104468/YOUR_APP_OPEN_UNIT_ID';
+// FOR TESTING: Using TestIds even in production flow
+const BANNER_ID = isDev ? TestIds.BANNER : TestIds.BANNER; 
+const INTERSTITIAL_ID = isDev ? TestIds.INTERSTITIAL : TestIds.INTERSTITIAL;
+const REWARDED_ID = isDev ? TestIds.REWARDED : TestIds.REWARDED;
+const APP_OPEN_ID = isDev ? TestIds.APP_OPEN : TestIds.APP_OPEN;
 
 class AdService {
   private interstitial: InterstitialAd | null = null;
