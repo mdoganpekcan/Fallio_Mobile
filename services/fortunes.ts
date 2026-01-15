@@ -246,6 +246,7 @@ export const fortuneService = {
   },
 
   async createFortuneSecure(data: CreateFortuneData): Promise<{ id: string; isFree: boolean; cost: number }> {
+    // @ts-ignore - Supabase RPC strict typing mismatch workaround
     const { data: result, error } = await supabase.rpc('create_fortune_secure', {
       p_user_id: data.userId,
       p_type: data.type,
@@ -253,17 +254,19 @@ export const fortuneService = {
       p_note: data.note,
       p_metadata: { ...data.metadata, language: getLocales()[0]?.languageCode ?? 'tr' },
       p_images: data.images || []
-    });
+    } as any);
 
     if (error) {
       console.error('[Fortune] Secure creation error:', error);
       throw error;
     }
 
+    const res = result as any;
+
     return {
-      id: result.id,
-      isFree: result.is_free,
-      cost: result.cost
+      id: res.id,
+      isFree: res.is_free,
+      cost: res.cost
     };
   },
 };
