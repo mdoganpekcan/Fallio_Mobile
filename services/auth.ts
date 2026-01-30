@@ -309,47 +309,67 @@ export const authService = {
     console.log('[Auth] Supabase Redirect:', supabaseRedirectUrl);
     console.log('[Auth] Deep Link (Expected Return):', deepLinkUrl);
 
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: supabaseRedirectUrl,
-        skipBrowserRedirect: true,
-        scopes: 'https://www.googleapis.com/auth/user.birthday.read'
-      },
-    });
-
-    if (error) {
-      console.error('[Auth] Google sign-in error:', error);
-      throw error;
-    }
-
-    if (data?.url) {
-      // openAuthSessionAsync, artık deepLinkUrl'i (fallio://) bekleyecek
-      const result = await WebBrowser.openAuthSessionAsync(data.url, deepLinkUrl);
-      
-      if (result.type === 'success' && result.url) {
-        // Web tarayıcısından dönen URL'deki tokenları al
-        // URL formatı: fallio://auth/callback#access_token=...&refresh_token=...
-        
-        // Basit hash parsing
-        const hashIndex = result.url.indexOf('#');
+    // URL işleme fonksiyonu
+    const handleAuthUrl = async (url: string) => {
+        if (!url) return;
+        console.log('[Auth] Processing deep link:', url);
+        const hashIndex = url.indexOf('#');
         if (hashIndex > -1) {
-            const hashParams = new URLSearchParams(result.url.substring(hashIndex + 1));
+            const hashParams = new URLSearchParams(url.substring(hashIndex + 1));
             const access_token = hashParams.get('access_token');
             const refresh_token = hashParams.get('refresh_token');
 
             if (access_token && refresh_token) {
-                console.log('[Auth] Detected tokens in redirect URL, setting session manually...');
-                const { error: setSessionError } = await supabase.auth.setSession({
+                console.log('[Auth] Setting session from deep link...');
+                const { error } = await supabase.auth.setSession({
                     access_token,
                     refresh_token,
                 });
-                if (setSessionError) console.error('[Auth] Failed to set session from URL parameters:', setSessionError);
+                if (error) console.error('[Auth] Set session failed:', error);
+                else console.log('[Auth] Session set successfully!');
             }
         }
+    };
+
+    try {
+      // 1. Dışarıdan gelen linkleri dinle (Yedek mekanizma)
+      const linkingSubmission = Linking.addEventListener('url', (event) => {
+        if (event.url.includes('auth/callback')) {
+            handleAuthUrl(event.url);
+        }
+      });
+
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: supabaseRedirectUrl,
+          skipBrowserRedirect: true,
+          scopes: 'https://www.googleapis.com/auth/user.birthday.read'
+        },
+      });
+  
+      if (error) throw error;
+  
+      if (data?.url) {
+        // 2. AuthSession başlat
+        const result = await WebBrowser.openAuthSessionAsync(data.url, deepLinkUrl);
+        
+        // Android'de bazen result.type 'success' dönmeyebilir ama link açılmış olabilir.
+        if (result.type === 'success' && result.url) {
+            await handleAuthUrl(result.url);
+        }
       }
+
+      // Listener'ı temizle (kısa bir gecikme ile, belki olay geç düşer)
+      setTimeout(() => {
+        linkingSubmission.remove();
+      }, 5000);
+
+      return data;
+    } catch (e) {
+      console.error('[Auth] Sign in flow error:', e);
+      throw e;
     }
-    return data;
   },
 
 
