@@ -313,6 +313,28 @@ export const authService = {
     const handleAuthUrl = async (url: string) => {
         if (!url) return;
         console.log('[Auth] Processing deep link:', url);
+        
+        // Parsing logic
+        // URL could be fallio://auth/callback?code=...
+        // Expo Linking.parse handles query params automatically
+        const parsed = Linking.parse(url);
+        const { queryParams } = parsed;
+        
+        // Handle both parsed object or manual extraction fallback
+        const code = queryParams?.code || new URLSearchParams(url.split('?')[1]).get('code');
+        
+        if (code && typeof code === 'string') {
+             console.log('[Auth] Detected auth code, exchanging for session...');
+             const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+             if (error) {
+                 console.error('[Auth] Exchange code failed:', error);
+                 // If PKCE fails, try SetSession if tokens are present (legacy fallback)
+             } else {
+                 console.log('[Auth] Session exchanged successfully!');
+             }
+             return;
+        }
+
         const hashIndex = url.indexOf('#');
         if (hashIndex > -1) {
             const hashParams = new URLSearchParams(url.substring(hashIndex + 1));
@@ -320,7 +342,7 @@ export const authService = {
             const refresh_token = hashParams.get('refresh_token');
 
             if (access_token && refresh_token) {
-                console.log('[Auth] Setting session from deep link...');
+                console.log('[Auth] Setting session from deep link (Tokens)...');
                 const { error } = await supabase.auth.setSession({
                     access_token,
                     refresh_token,
