@@ -328,7 +328,25 @@ export const authService = {
       const result = await WebBrowser.openAuthSessionAsync(data.url, deepLinkUrl);
       
       if (result.type === 'success' && result.url) {
-        // Otomatik oturum açma akışı Supabase tarafından yönetilir
+        // Web tarayıcısından dönen URL'deki tokenları al
+        // URL formatı: fallio://auth/callback#access_token=...&refresh_token=...
+        
+        // Basit hash parsing
+        const hashIndex = result.url.indexOf('#');
+        if (hashIndex > -1) {
+            const hashParams = new URLSearchParams(result.url.substring(hashIndex + 1));
+            const access_token = hashParams.get('access_token');
+            const refresh_token = hashParams.get('refresh_token');
+
+            if (access_token && refresh_token) {
+                console.log('[Auth] Detected tokens in redirect URL, setting session manually...');
+                const { error: setSessionError } = await supabase.auth.setSession({
+                    access_token,
+                    refresh_token,
+                });
+                if (setSessionError) console.error('[Auth] Failed to set session from URL parameters:', setSessionError);
+            }
+        }
       }
     }
     return data;
