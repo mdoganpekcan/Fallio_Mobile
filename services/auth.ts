@@ -16,87 +16,108 @@ export interface RegisterData {
 
 export const authService = {
   async ensureUserRecords(authUser: { id: string; email?: string | null }, extra?: Partial<RegisterData>) {
-    console.log('[Auth] Creating user records via RPC...');
+    console.log('[Auth] Ensuring user records for AuthID:', authUser.id);
 
     const zodiacSign = extra?.birthDate ? calculateZodiacSign(extra.birthDate) : null;
 
-    const { data: rpcData, error: rpcError } = await supabase.rpc('create_user_record', {
-      p_auth_user_id: authUser.id,
-      p_email: authUser.email || '',
-      p_full_name: extra?.fullName || '',
-      p_avatar_url: extra?.avatarUrl || '',
-      p_zodiac_sign: zodiacSign || '',
-      p_birth_date: extra?.birthDate || null,
-      p_gender: extra?.gender || null
-    } as any);
-
-    if (rpcError) {
-      console.log('[Auth] RPC failed or record exists, trying upsert logic. Code:', rpcError.code);
-
-      // Handle duplicate key error (23505)
-      if (rpcError.code === '23505' || 
-          rpcError.message?.includes('duplicate key') || 
-          rpcError.message?.includes('does not exist')) {
-        console.log('[Auth] Duplicate user record detected, syncing existing records...');
-        
-        // 1. users tablosunda email ile bul ve eksik verileri güncelle
-        const userUpdates: any = { 
-          auth_user_id: authUser.id, 
-          updated_at: new Date().toISOString() 
-        };
-        if (extra?.birthDate) userUpdates.birthdate = extra.birthDate;
-        if (extra?.gender) userUpdates.gender = extra.gender;
-        if (extra?.fullName) userUpdates.full_name = extra.fullName;
-
-        await (supabase.from('users' as any) as any)
-          .update(userUpdates)
-          .eq('email', authUser.email);
-
-        // 2. profiles tablosunda Upsert yap
-        const profileData: any = {
-          id: authUser.id,
-          user_id: authUser.id,
-          email: authUser.email,
-        };
-        if (extra?.birthDate) {
-          profileData.birthdate = extra.birthDate;
+    // 1. Check if public user exists linked to this Auth ID
+    let publicUserId: string | null = null;
+    
+    // First try to find by auth_user_id
+    const { data: existingUser } = await (supabase
+        .from('users' as any) as any)
+        .select('id')
+        .eq('auth_user_id', authUser.id)
+        .single();
+    
+    if (existingUser) {
+        publicUserId = existingUser.id;
+        console.log('[Auth] Found existing public user ID:', publicUserId);
+    } else {
+        // Try to find by email if auth_id link is missing (legacy support)
+        if (authUser.email) {
+            const { data: emailUser } = await (supabase
+                .from('users' as any) as any)
+                .select('id')
+                .eq('email', authUser.email)
+                .single();
+            
+            if (emailUser) {
+                publicUserId = emailUser.id;
+                console.log('[Auth] Found existing public user by Email:', publicUserId);
+                // Link it now
+                await (supabase.from('users' as any) as any)
+                    .update({ auth_user_id: authUser.id })
+                    .eq('id', publicUserId);
+            }
         }
-        if (extra?.gender) profileData.gender = extra.gender;
-        if (extra?.fullName) profileData.full_name = extra.fullName;
-        if (extra?.avatarUrl) profileData.avatar_url = extra.avatarUrl;
-        if (zodiacSign) profileData.zodiac_sign = zodiacSign;
-
-        await (supabase.from('profiles' as any) as any)
-          .upsert(profileData, { onConflict: 'id' });
-          
-        return this.getUser();
-      }
-
-      console.error('[Auth] RPC create_user_record failed with unknown error:', rpcError);
-      throw new Error(`Kullanıcı kaydı oluşturulamadı: ${rpcError.message}`);
     }
 
-    const { data: newUser, error: fetchError } = await (supabase
-      .from('profiles' as any) as any)
-      .select('*')
-      .eq('id', (rpcData as any).id)
-      .single();
+    // 2. If no public user found, create one
+    if (!publicUserId) {
+        console.log('[Auth] No public user found, creating new record...');
+        try {
+            // First try RPC if available
+            const { data: rpcData, error: rpcError } = await supabase.rpc('create_user_record', {
+                p_auth_user_id: authUser.id,
+                p_email: authUser.email || '',
+                p_full_name: extra?.fullName || '',
+                p_avatar_url: extra?.avatarUrl || '',
+                p_zodiac_sign: zodiacSign || '',
+                p_birth_date: extra?.birthDate || null,
+                p_gender: extra?.gender || null
+            } as any);
 
-    if (fetchError) {
-      console.log('[Auth] User created but could not be fetched (likely due to RLS/Email Confirmation):', fetchError.message);
-      return {
-        id: (rpcData as any).id,
-        email: authUser.email || '',
-        full_name: extra?.fullName || '',
-        avatar_url: extra?.avatarUrl || null,
-        zodiac_sign: zodiacSign || '',
-        created_at: new Date().toISOString(),
-        birth_date: extra?.birthDate || '',
-        gender: extra?.gender || 'other',
-        updated_at: new Date().toISOString()
-      };
+            if (!rpcError && rpcData) {
+                publicUserId = (rpcData as any).id;
+            } else {
+                console.log('[Auth] RPC failed/missing, falling back to direct INSERT.');
+                // Helper to insert directly
+                const { data: insertedUser, error: insertError } = await (supabase.from('users' as any) as any)
+                    .insert({
+                        auth_user_id: authUser.id,
+                        email: authUser.email,
+                        full_name: extra?.fullName,
+                        zodiac_sign: zodiacSign,
+                        birthdate: extra?.birthDate,
+                        gender: extra?.gender,
+                        avatar_url: extra?.avatarUrl,
+                        status: 'active'
+                    })
+                    .select('id')
+                    .single();
+                
+                if (insertError) throw insertError;
+                publicUserId = insertedUser.id;
+            }
+        } catch (e: any) {
+            console.error('[Auth] Failed to create public user:', e);
+            throw new Error(`Kullanıcı oluşturulamadı: ${e.message}`);
+        }
     }
-    return newUser;
+
+    if (!publicUserId) throw new Error('Public User ID could not be determined.');
+
+    // 3. Ensure Profile Exists (using publicUserId)
+    const profileData: any = {
+        user_id: publicUserId, // Using the correct foreign key
+        email: authUser.email,
+    };
+    // Sync only if provided to avoid overwriting with nulls
+    if (extra?.birthDate) profileData.birthdate = extra.birthDate;
+    if (extra?.gender) profileData.gender = extra.gender;
+    if (extra?.fullName) profileData.full_name = extra.fullName;
+    if (extra?.avatarUrl) profileData.avatar_url = extra.avatarUrl;
+    if (zodiacSign) profileData.zodiac_sign = zodiacSign;
+
+    // We need to upsert. The profiles table has `id` PK (random) and `user_id` unique FK.
+    // We should upsert based on `user_id`. But Supabase upsert requires ON CONFLICT column.
+    // Ensure `user_id` has a unique constraint in DB (Schema says: user_id uuid NOT NULL UNIQUE).
+    await (supabase.from('profiles' as any) as any)
+        .upsert(profileData, { onConflict: 'user_id' });
+
+    // 4. Return full user object
+    return this.getUser();
   },
 
   async signIn(email: string, password: string) {
