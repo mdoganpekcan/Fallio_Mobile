@@ -1,4 +1,5 @@
 import { Alert } from 'react-native';
+import { logger } from './logger';
 import { supabase } from './supabase';
 import { User, calculateZodiacSign } from '@/types';
 import * as WebBrowser from 'expo-web-browser';
@@ -336,7 +337,7 @@ export const authService = {
         try {
             if (!url) return;
             
-            console.log('[Auth] Processing deep link:', url);
+            logger.info('Processing deep link', { url });
             // FIXME: Debug sonrası kaldırılacak
             Alert.alert('Debug: Link Geldi', url.substring(0, 50) + '...'); 
 
@@ -350,11 +351,15 @@ export const authService = {
             
             if (code && typeof code === 'string') {
                 Alert.alert('Debug', 'Code Detected!');
+                logger.info('Detected auth code, exchanging for session...');
+
                 const { data, error } = await supabase.auth.exchangeCodeForSession(code);
                 if (error) {
                     Alert.alert('Debug Error (Code)', error.message);
+                    logger.error('Exchange Code Failed', { error });
                 } else {
                     Alert.alert('Debug Success', 'Code Exchanged!');
+                    logger.info('Session exchanged successfully');
                 }
                 return;
             }
@@ -366,25 +371,30 @@ export const authService = {
                 const refresh_token = hashParams.get('refresh_token');
 
                 if (access_token && refresh_token) {
-                    console.log('[Auth] Setting session from deep link (Tokens)...');
+                    logger.info('Setting session from deep link (Tokens)...');
                     const { error } = await supabase.auth.setSession({
                         access_token,
                         refresh_token,
                     });
                     if (error) {
                         Alert.alert('Debug Error (Token)', error.message);
+                        logger.error('Set Session Failed', { error });
                     }
                     else {
                         Alert.alert('Debug Success', 'Token Session Set!');
+                        logger.info('Session set successfully from tokens');
                     }
                 } else {
                     Alert.alert('Debug Fail', 'Hash var ama token yok');
+                    logger.warn('Hash present but missing tokens', { url });
                 }
             } else {
                 Alert.alert('Debug Fail', 'URL içinde # sembolü yok');
+                logger.warn('No hash or code found', { url });
             }
         } catch (e: any) {
             console.error('[Auth] Deep Link Crash:', e);
+            logger.critical('Deep Link CRASH detected', { error: e.message, stack: e.stack });
             Alert.alert('CRITICAL ERROR', e.message || JSON.stringify(e));
         }
     };
