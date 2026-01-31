@@ -333,52 +333,59 @@ export const authService = {
 
     // URL işleme fonksiyonu
     const handleAuthUrl = async (url: string) => {
-        if (!url) return;
-        
-        console.log('[Auth] Processing deep link:', url);
-        // FIXME: Debug sonrası kaldırılacak
-        Alert.alert('Debug: Link Geldi', url.substring(0, 50) + '...'); 
+        try {
+            if (!url) return;
+            
+            console.log('[Auth] Processing deep link:', url);
+            // FIXME: Debug sonrası kaldırılacak
+            Alert.alert('Debug: Link Geldi', url.substring(0, 50) + '...'); 
 
-        // Parsing logic
-        const parsed = Linking.parse(url);
-        const { queryParams } = parsed;
-        
-        const code = queryParams?.code || new URLSearchParams(url.split('?')[1]).get('code');
-        
-        if (code && typeof code === 'string') {
-             Alert.alert('Debug', 'Code Detected!');
-             const { data, error } = await supabase.auth.exchangeCodeForSession(code);
-             if (error) {
-                 Alert.alert('Debug Error (Code)', error.message);
-             } else {
-                 Alert.alert('Debug Success', 'Code Exchanged!');
-             }
-             return;
-        }
-
-        const hashIndex = url.indexOf('#');
-        if (hashIndex > -1) {
-            const hashParams = new URLSearchParams(url.substring(hashIndex + 1));
-            const access_token = hashParams.get('access_token');
-            const refresh_token = hashParams.get('refresh_token');
-
-            if (access_token && refresh_token) {
-                console.log('[Auth] Setting session from deep link (Tokens)...');
-                const { error } = await supabase.auth.setSession({
-                    access_token,
-                    refresh_token,
-                });
+            // Parsing logic
+            const parsed = Linking.parse(url);
+            const { queryParams } = parsed;
+            
+            // SAFER PARSING: Handle missing '?' safely
+            const queryString = url.includes('?') ? url.split('?')[1] : '';
+            const code = queryParams?.code || new URLSearchParams(queryString).get('code');
+            
+            if (code && typeof code === 'string') {
+                Alert.alert('Debug', 'Code Detected!');
+                const { data, error } = await supabase.auth.exchangeCodeForSession(code);
                 if (error) {
-                    Alert.alert('Debug Error (Token)', error.message);
+                    Alert.alert('Debug Error (Code)', error.message);
+                } else {
+                    Alert.alert('Debug Success', 'Code Exchanged!');
                 }
-                else {
-                    Alert.alert('Debug Success', 'Token Session Set!');
+                return;
+            }
+
+            const hashIndex = url.indexOf('#');
+            if (hashIndex > -1) {
+                const hashParams = new URLSearchParams(url.substring(hashIndex + 1));
+                const access_token = hashParams.get('access_token');
+                const refresh_token = hashParams.get('refresh_token');
+
+                if (access_token && refresh_token) {
+                    console.log('[Auth] Setting session from deep link (Tokens)...');
+                    const { error } = await supabase.auth.setSession({
+                        access_token,
+                        refresh_token,
+                    });
+                    if (error) {
+                        Alert.alert('Debug Error (Token)', error.message);
+                    }
+                    else {
+                        Alert.alert('Debug Success', 'Token Session Set!');
+                    }
+                } else {
+                    Alert.alert('Debug Fail', 'Hash var ama token yok');
                 }
             } else {
-                 Alert.alert('Debug Fail', 'Hash var ama token yok');
+                Alert.alert('Debug Fail', 'URL içinde # sembolü yok');
             }
-        } else {
-             Alert.alert('Debug Fail', 'URL içinde # sembolü yok');
+        } catch (e: any) {
+            console.error('[Auth] Deep Link Crash:', e);
+            Alert.alert('CRITICAL ERROR', e.message || JSON.stringify(e));
         }
     };
 
