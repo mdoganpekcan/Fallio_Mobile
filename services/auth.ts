@@ -1,3 +1,4 @@
+import { Alert } from 'react-native';
 import { supabase } from './supabase';
 import { User, calculateZodiacSign } from '@/types';
 import * as WebBrowser from 'expo-web-browser';
@@ -333,25 +334,24 @@ export const authService = {
     // URL işleme fonksiyonu
     const handleAuthUrl = async (url: string) => {
         if (!url) return;
-        console.log('[Auth] Processing deep link:', url);
         
+        console.log('[Auth] Processing deep link:', url);
+        // FIXME: Debug sonrası kaldırılacak
+        Alert.alert('Debug: Link Geldi', url.substring(0, 50) + '...'); 
+
         // Parsing logic
-        // URL could be fallio://auth/callback?code=...
-        // Expo Linking.parse handles query params automatically
         const parsed = Linking.parse(url);
         const { queryParams } = parsed;
         
-        // Handle both parsed object or manual extraction fallback
         const code = queryParams?.code || new URLSearchParams(url.split('?')[1]).get('code');
         
         if (code && typeof code === 'string') {
-             console.log('[Auth] Detected auth code, exchanging for session...');
+             Alert.alert('Debug', 'Code Detected!');
              const { data, error } = await supabase.auth.exchangeCodeForSession(code);
              if (error) {
-                 console.error('[Auth] Exchange code failed:', error);
-                 // If PKCE fails, try SetSession if tokens are present (legacy fallback)
+                 Alert.alert('Debug Error (Code)', error.message);
              } else {
-                 console.log('[Auth] Session exchanged successfully!');
+                 Alert.alert('Debug Success', 'Code Exchanged!');
              }
              return;
         }
@@ -368,9 +368,17 @@ export const authService = {
                     access_token,
                     refresh_token,
                 });
-                if (error) console.error('[Auth] Set session failed:', error);
-                else console.log('[Auth] Session set successfully!');
+                if (error) {
+                    Alert.alert('Debug Error (Token)', error.message);
+                }
+                else {
+                    Alert.alert('Debug Success', 'Token Session Set!');
+                }
+            } else {
+                 Alert.alert('Debug Fail', 'Hash var ama token yok');
             }
+        } else {
+             Alert.alert('Debug Fail', 'URL içinde # sembolü yok');
         }
     };
 
