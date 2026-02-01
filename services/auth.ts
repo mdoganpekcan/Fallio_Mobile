@@ -410,7 +410,8 @@ export const authService = {
     console.log('[Auth] Sign in with Google via Vercel Callback');
 
     const supabaseRedirectUrl = 'https://fallio-web.vercel.app/auth/callback';
-    const deepLinkUrl = Linking.createURL('/auth/callback') || 'fallio://auth/callback';
+    // FORCE 'fallio://' scheme to avoid development build mismatches
+    const deepLinkUrl = 'fallio://auth/callback';
 
     console.log('[Auth] Supabase Redirect:', supabaseRedirectUrl);
     console.log('[Auth] Deep Link (Expected Return):', deepLinkUrl);
