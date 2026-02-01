@@ -32,6 +32,9 @@ function useProtectedRoute(user: any) {
   useEffect(() => {
     if (!navigationState?.key || !segments.length) return;
 
+    logger.info('[Nav] Check', { segments, user: !!user });
+    console.log('[Nav] Segments:', segments, 'User:', !!user);
+
     const inAuthGroup = segments[0] === 'auth' || segments[0] === 'onboarding';
 
     // Allow access to auth/callback even if not logged in (it handles the login)
@@ -41,6 +44,7 @@ function useProtectedRoute(user: any) {
     if (segments[0] === 'auth' && segments[1] === 'reset-password') return;
 
     if (!user && !inAuthGroup) {
+      console.log('[Nav] Redirecting to Onboarding (No User)');
       router.replace('/onboarding' as any);
     } else if (user) {
       const isProfileComplete = !!user.birthDate && !!user.gender;
@@ -48,9 +52,11 @@ function useProtectedRoute(user: any) {
 
       if (!isProfileComplete) {
         if (!inCompleteProfile) {
+          console.log('[Nav] Redirecting to Complete Profile');
           router.replace('/auth/complete-profile' as any);
         }
       } else if (inAuthGroup) {
+        console.log('[Nav] Redirecting to Tabs (User Logged In)');
         router.replace('/(tabs)' as any);
       }
     }

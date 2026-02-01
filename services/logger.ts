@@ -32,7 +32,11 @@ class LoggerService {
             .from('app_logs' as any)
             .insert(payload)
             .then(({ error }) => {
-                if (error) console.error('[Logger] Failed to upload log:', error);
+                // Silently fail if log upload fails to avoid infinite loops or LogBox spam
+                if (error && __DEV__) {
+                     // Only warn in dev if really needed, but avoid 'error' level
+                     console.warn('[Logger] Upload skipped:', error.message);
+                }
             });
 
     } catch (e) {
