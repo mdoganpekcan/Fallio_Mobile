@@ -70,7 +70,8 @@
           "project": "fallio-mobile",
           "organization": "moiv-interactive"
         }
-      ]
+      ],
+      "expo-tracking-transparency"
     ],
     "experiments": {
       "typedRoutes": true
