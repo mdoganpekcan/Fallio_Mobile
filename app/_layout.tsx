@@ -59,13 +59,23 @@ function useProtectedRoute(user: any) {
 
 function RootLayoutNav() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const router = useRouter();
   const { user, setUser, completeOnboarding, setAppConfig } = useAppStore();
 
   useProtectedRoute(user);
 
   useEffect(() => {
     const initAuth = async () => {
+      // Safety Timeout to ensure Splash Screen doesn't hang forever
+      const safetyTimeout = setTimeout(() => {
+        console.warn('[RootLayout] InitAuth timed out - Forcing Splash Hide');
+        setIsLoading(false);
+        SplashScreen.hideAsync();
+      }, 8000); // 8 seconds max wait
+
       try {
+        logger.info('[RootLayout] Starting initAuth...');
+        
         // 0. Initialize i18n
         await initI18n();
 
@@ -79,7 +89,6 @@ function RootLayoutNav() {
               "Uygulamamız şu anda bakım çalışması nedeniyle hizmet verememektedir. Lütfen daha sonra tekrar deneyiniz.",
               [{ text: "Tamam", onPress: () => { } }]
             );
-            // Opsiyonel: Kullanıcıyı bakım ekranına yönlendir veya etkileşimi kısıtla
           }
         }
 
@@ -92,11 +101,16 @@ function RootLayoutNav() {
         if (currentUser) {
           setUser(currentUser);
         }
+        
+        logger.info('[RootLayout] initAuth completed successfully');
       } catch (error) {
         console.error('[RootLayout] Init auth error:', error);
+        logger.error('Init Auth Failed', { error });
       } finally {
+        clearTimeout(safetyTimeout);
         setIsLoading(false);
-        SplashScreen.hideAsync();
+        // Ensure this runs
+        setTimeout(() => SplashScreen.hideAsync(), 100); 
       }
     };
 

@@ -6,7 +6,11 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_SUPABASE_URL": "https://iljslnljjtfnzkybpsmd.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlsanNsbmxqanRmbnpreWJwc21kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ4MDAwMzksImV4cCI6MjA4MDM3NjAzOX0.y2vkkiCqze0NFRmqfpz5o62bL91u3aq4TKec0T1YUZU"
+      }
     },
     "preview": {
       "distribution": "internal",
