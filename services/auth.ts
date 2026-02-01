@@ -118,8 +118,21 @@ export const authService = {
     await (supabase.from('profiles' as any) as any)
         .upsert(profileData, { onConflict: 'user_id' });
 
-    // 4. Return full user object
-    return this.getUser();
+    // 4. Construct User Object directly to avoid recursion
+    const fullUser: User = {
+      id: publicUserId,
+      email: authUser.email || '',
+      name: extra?.fullName || profileData.full_name || '',
+      photoUrl: extra?.avatarUrl || profileData.avatar_url,
+      birthDate: extra?.birthDate || profileData.birthdate || '',
+      zodiacSign: zodiacSign || profileData.zodiac_sign || '',
+      gender: (extra?.gender || profileData.gender || 'other') as any,
+      credits: 0, // Wallet will load separately
+      isPremium: false,
+      createdAt: new Date().toISOString(),
+    };
+
+    return fullUser;
   },
 
   async signIn(email: string, password: string) {
@@ -220,23 +233,31 @@ export const authService = {
         .eq('id', user.id) // Assuming public user ID matches Auth ID (it should based on ensureUserRecords)
         .single();
       
-      // If public user missing, just return null or minimal user based on Auth
-      // Do NOT recurse ensuring records here to avoid Infinite Loops (406 ANR Fix)
+      // If public user missing, Create it now! (Safe because ensureUserRecords no longer recurses)
       if (userError || !userData) {
-          console.log('[Auth] Public user record retrieval failed/missing');
-          // Fallback: minimal user from Auth metadata if possible
-          return {
-              id: user.id,
-              email: user.email || '',
-              name: user.user_metadata?.full_name || '',
-              photoUrl: user.user_metadata?.avatar_url,
-              birthDate: '',
-              zodiacSign: '',
-              gender: 'other',
-              credits: 0,
-              isPremium: false,
-              createdAt: user.created_at,
-          };
+          console.log('[Auth] Public user record missing. Auto-creating...');
+          try {
+             const newUser = await this.ensureUserRecords(
+                 { id: user.id, email: user.email },
+                 extraData
+             );
+             return newUser;
+          } catch (createError) {
+             console.error('[Auth] Failed to auto-create public user:', createError);
+             // ONLY if creation fails, return minimal fallback to prevent total app crash
+             return {
+                id: user.id,
+                email: user.email || '',
+                name: user.user_metadata?.full_name || '',
+                photoUrl: user.user_metadata?.avatar_url,
+                birthDate: '',
+                zodiacSign: '',
+                gender: 'other',
+                credits: 0,
+                isPremium: false,
+                createdAt: user.created_at,
+            };
+          }
       }
       publicUser = userData;
 
