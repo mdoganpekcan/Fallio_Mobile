@@ -190,10 +190,7 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        {/* Ad Section */}
-        <View style={{ marginBottom: 20, marginHorizontal: 20, alignItems: 'center' }}>
-           <SmartBanner />
-        </View>
+
 
         <TouchableOpacity
           style={styles.premiumCard}
@@ -274,7 +271,13 @@ export default function HomeScreen() {
           </View>
         </View>
       </Modal>
-    </SafeAreaView>
+
+      {/* Sticky Bottom Ad */}
+      <View style={styles.stickyAdContainer}>
+         <SmartBanner />
+      </View>
+
+    </View>
   );
 }
 
@@ -502,5 +505,20 @@ const styles = StyleSheet.create({
     ...Typography.body,
     color: Colors.text,
     lineHeight: 24,
+  },
+  modalText: {
+    ...Typography.body,
+    color: Colors.text,
+    lineHeight: 24,
+  },
+  stickyAdContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    paddingBottom: 4, // Slight padding from very bottom edge if needed, or let SmartBanner handle it
+    backgroundColor: 'transparent', // Or match background if needed
+    zIndex: 1000,
   },
 });
