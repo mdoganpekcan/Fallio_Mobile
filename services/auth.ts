@@ -318,22 +318,7 @@ export const authService = {
     });
   },
 
-  async signInWithGoogle(redirectTo?: string) {
-    console.log('[Auth] Sign in with Google via Vercel Callback');
-
-    // Web tabanlı yönlendirme kullanıyoruz (Vercel)
-    // Web tabanlı yönlendirme (Supabase için)
-    const supabaseRedirectUrl = 'https://fallio-web.vercel.app/auth/callback';
-    
-    // Mobil uygulama şema yönlendirmesi (AuthSession için)
-    // Bu URL, web sayfasının en son yönlendireceği adrestir (fallio://auth/callback)
-    const deepLinkUrl = Linking.createURL('/auth/callback') || 'fallio://auth/callback';
-
-    console.log('[Auth] Supabase Redirect:', supabaseRedirectUrl);
-    console.log('[Auth] Deep Link (Expected Return):', deepLinkUrl);
-
-    // URL işleme fonksiyonu
-    const handleAuthUrl = async (url: string) => {
+  async handleAuthUrl(url: string) {
         try {
             if (!url) return;
             
@@ -397,16 +382,18 @@ export const authService = {
             logger.critical('Deep Link CRASH detected', { error: e.message, stack: e.stack });
             Alert.alert('CRITICAL ERROR', e.message || JSON.stringify(e));
         }
-    };
+  },
+
+  async signInWithGoogle(redirectTo?: string) {
+    console.log('[Auth] Sign in with Google via Vercel Callback');
+
+    const supabaseRedirectUrl = 'https://fallio-web.vercel.app/auth/callback';
+    const deepLinkUrl = Linking.createURL('/auth/callback') || 'fallio://auth/callback';
+
+    console.log('[Auth] Supabase Redirect:', supabaseRedirectUrl);
+    console.log('[Auth] Deep Link (Expected Return):', deepLinkUrl);
 
     try {
-      // 1. Dışarıdan gelen linkleri dinle (Yedek mekanizma)
-      const linkingSubmission = Linking.addEventListener('url', (event) => {
-        if (event.url.includes('auth/callback')) {
-            handleAuthUrl(event.url);
-        }
-      });
-
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -423,15 +410,12 @@ export const authService = {
         const result = await WebBrowser.openAuthSessionAsync(data.url, deepLinkUrl);
         
         // Android'de bazen result.type 'success' dönmeyebilir ama link açılmış olabilir.
+        // Global listener (app/_layout.tsx) zaten URL'i yakalayacak. 
+        // Ancak WebBrowser success dönerse biz de manuel tetikleyelim.
         if (result.type === 'success' && result.url) {
-            await handleAuthUrl(result.url);
+            await this.handleAuthUrl(result.url);
         }
       }
-
-      // Listener'ı temizle (kısa bir gecikme ile, belki olay geç düşer)
-      setTimeout(() => {
-        linkingSubmission.remove();
-      }, 5000);
 
       return data;
     } catch (e) {

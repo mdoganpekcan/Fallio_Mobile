@@ -16,6 +16,8 @@ import { configService } from "@/services/config";
 import { initI18n } from '@/i18n/setup';
 import { AppState } from 'react-native';
 import { adService } from '@/services/ads';
+import * as Linking from 'expo-linking';
+import { logger } from "@/services/logger";
 
 SplashScreen.preventAutoHideAsync();
 WebBrowser.maybeCompleteAuthSession();
@@ -155,8 +157,20 @@ function RootLayoutNav() {
       }
     });
 
+    // ULTRATHINK GLOBAL DEEP LINK LISTENER
+    // This ensures we catch the Auth redirect even if WebBrowser doesn't resolve immediately
+    logger.info('[RootLayout] Mounting Global Deep Link Listener');
+    const linkingSubscription = Linking.addEventListener('url', (event) => {
+        console.log('[RootLayout] Deep Link received:', event.url);
+        logger.info('[RootLayout] Deep Link received', { url: event.url });
+        if (event.url.includes('auth/callback')) {
+            authService.handleAuthUrl(event.url);
+        }
+    });
+
     return () => {
       subscription.remove();
+      linkingSubscription.remove();
     };
   }, []);
 
