@@ -72,9 +72,9 @@ export default function HomeScreen() {
   const displayCredits = wallet?.credits ?? user?.credits ?? 0;
 
   return (
-    <SafeAreaView style={[styles.container, { paddingTop: insets.top }]}>
+    <View style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
       <StatusBar style="light" />
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 20 }}>
         <View style={styles.header}>
           <View style={styles.avatar}>
             <Text style={styles.avatarText}>{user?.name?.[0]?.toUpperCase() || 'F'}</Text>
@@ -86,7 +86,7 @@ export default function HomeScreen() {
         </View>
 
         <View style={styles.creditsContainer}>
-          <View style={styles.creditCard}>
+          <View style={[styles.creditCard, { flex: 1 }]}>
             <View style={styles.creditIconContainer}>
               <Text style={styles.creditIcon}>💎</Text>
             </View>
@@ -97,20 +97,6 @@ export default function HomeScreen() {
                 <Text style={styles.creditAmount}>{wallet?.credits || 0}</Text>
               )}
               <Text style={styles.creditLabel}>{t('tabs.credits')}</Text>
-            </View>
-          </View>
-
-          <View style={[styles.creditCard, { backgroundColor: '#1A1629' }]}>
-            <View style={[styles.creditIconContainer, { backgroundColor: '#2D2747' }]}>
-              <Text style={styles.creditIcon}>✨</Text>
-            </View>
-            <View>
-              {wallet === undefined ? (
-                <Skeleton width={60} height={20} style={{ marginBottom: 4 }} />
-              ) : (
-                <Text style={styles.creditAmount}>{wallet?.diamonds || 0}</Text>
-              )}
-              <Text style={styles.creditLabel}>{t('common.diamonds') || 'Elmas'}</Text>
             </View>
           </View>
         </View>
