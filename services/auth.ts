@@ -205,46 +205,68 @@ export const authService = {
   },
 
   async getUser(extraData?: Partial<RegisterData>): Promise<User | null> {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return null;
-
     try {
-      // Fetch from users table and join profiles to get complete picture
-      // This solves the issue where data might be in users but not caught by profile-only query
-      const { data: userData, error: fetchError } = await (supabase
-        .from('users' as any) as any)
-        .select('*, profiles(*)')
-        .eq('id', user.id)
-        .single();
+      // 1. Get Authenticated User from Supabase Auth
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
 
-      if (fetchError || !userData) {
-        console.log('[Auth] User record not found in public table, checking/creating...');
-        // Fallback to ensure records exist
-        await this.ensureUserRecords({ id: user.id, email: user.email }, extraData);
-        // Retry fetch
-        const { data: retryData } = await (supabase
-          .from('users' as any) as any)
-          .select('*, profiles(*)')
-          .eq('id', user.id)
-          .single();
+      // 2. Try to get Public User Record
+      let publicUser: any = null;
+      let profile: any = null;
+
+      const { data: userData, error: userError } = await (supabase
+        .from('users' as any) as any)
+        .select('*')
+        .eq('id', user.id) // Assuming public user ID matches Auth ID (it should based on ensureUserRecords)
+        .single();
+      
+      // If public user missing, just return null or minimal user based on Auth
+      // Do NOT recurse ensuring records here to avoid Infinite Loops (406 ANR Fix)
+      if (userError || !userData) {
+          console.log('[Auth] Public user record retrieval failed/missing');
+          // Fallback: minimal user from Auth metadata if possible
+          return {
+              id: user.id,
+              email: user.email || '',
+              name: user.user_metadata?.full_name || '',
+              photoUrl: user.user_metadata?.avatar_url,
+              birthDate: '',
+              zodiacSign: '',
+              gender: 'other',
+              credits: 0,
+              isPremium: false,
+              createdAt: user.created_at,
+          };
+      }
+      publicUser = userData;
+
+      // 3. Get Profile (Separate Query for Safety)
+      const { data: profileData } = await (supabase
+        .from('profiles' as any) as any)
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
         
-        if (!retryData) return null;
-        return this.mapUserRecord(retryData);
-      } else if (extraData && Object.keys(extraData).length > 0) {
-        console.log('[Auth] Updating existing profile with extra data...');
-        await this.updateProfile(user.id, extraData);
-        // Re-fetch to get updated data
-        const { data: updatedData } = await (supabase
-          .from('users' as any) as any)
-          .select('*, profiles(*)')
-          .eq('id', user.id)
-          .single();
-        return this.mapUserRecord(updatedData);
+      profile = profileData;
+
+      // 4. Update if extra data provided (One-shot, no recursion)
+      if (extraData && Object.keys(extraData).length > 0) {
+        console.log('[Auth] Updating profile with fresh data...');
+        // We do this asynchronously to not block UI
+        this.updateProfile(user.id, extraData).catch(e => console.warn('Background profile update failed:', e));
+        
+        // Merge locally for immediate return
+        if (profile) {
+            if (extraData.birthDate) profile.birthdate = extraData.birthDate;
+            if (extraData.gender) profile.gender = extraData.gender;
+        }
       }
 
-      return this.mapUserRecord(userData);
+      // 5. Construct User Object
+      return this.mapUserRecord({ ...publicUser, profiles: profile ? [profile] : [] });
+
     } catch (error) {
-      console.error('[Auth] Get user fetch error:', error);
+      console.error('[Auth] Get user critical error:', error);
       return null;
     }
   },
@@ -458,7 +480,7 @@ export const authService = {
       const { error: profileError } = await (supabase
         .from('profiles' as any) as any)
         .update(profileUpdates)
-        .eq('id', userId);
+        .eq('user_id', userId); // Corrected from 'id' to 'user_id'
 
       if (profileError) throw profileError;
     }

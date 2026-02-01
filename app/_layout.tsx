@@ -162,12 +162,14 @@ function RootLayoutNav() {
       console.warn('[RevenueCat] init error:', err)
     );
 
-    // App Resume Ad Logic
-    const subscription = AppState.addEventListener('change', async (nextAppState) => {
+     // App Resume Ad Logic
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
       if (nextAppState === 'active') {
-         // App came to foreground
+         // App came to foreground - Trigger Ad asynchronously without blocking
          console.log('[Ad] App resumed, attempting to show interstitial...');
-         await adService.showInterstitial();
+         adService.showInterstitial().catch(e => {
+             console.warn('[Ad] Resume Ad failed:', e);
+         });
       }
     });
 
