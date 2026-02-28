@@ -223,19 +223,14 @@ export const authService = {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return null;
 
-      // 2. Try to get Public User Record
-      let publicUser: any = null;
-      let profile: any = null;
+      // 2. Fetch full user profile securely via RPC
+      const { data: rpcData, error: rpcError } = await supabase.rpc('get_full_user_profile', {
+        p_auth_user_id: user.id
+      });
 
-      const { data: userData, error: userError } = await (supabase
-        .from('users' as any) as any)
-        .select('*')
-        .eq('id', user.id) // Assuming public user ID matches Auth ID (it should based on ensureUserRecords)
-        .single();
-      
-      // If public user missing, Create it now! (Safe because ensureUserRecords no longer recurses)
-      if (userError || !userData) {
-          console.log('[Auth] Public user record missing. Auto-creating...');
+      // If public user missing (RPC returns null), Auto-create!
+      if (rpcError || !rpcData) {
+          console.log('[Auth] Public user record missing or RPC failed. Auto-creating...', rpcError);
           try {
              const newUser = await this.ensureUserRecords(
                  { id: user.id, email: user.email },
@@ -259,32 +254,35 @@ export const authService = {
             };
           }
       }
-      publicUser = userData;
 
-      // 3. Get Profile (Separate Query for Safety)
-      const { data: profileData } = await (supabase
-        .from('profiles' as any) as any)
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
-        
-      profile = profileData;
+      // Map the JSON structure returned by the RPC
+      const fullUserPayload = rpcData as any;
+      console.log('[Auth] RPC User Profile successfully fetched.');
 
-      // 4. Update if extra data provided (One-shot, no recursion)
+      // 3. Update if extra data provided (One-shot, no recursion)
       if (extraData && Object.keys(extraData).length > 0) {
-        console.log('[Auth] Updating profile with fresh data...');
+        console.log('[Auth] Updating profile with fresh ExtraData...');
         // We do this asynchronously to not block UI
-        this.updateProfile(user.id, extraData).catch(e => console.warn('Background profile update failed:', e));
+        this.updateProfile(fullUserPayload.id, extraData).catch(e => console.warn('Background profile update failed:', e));
         
         // Merge locally for immediate return
-        if (profile) {
-            if (extraData.birthDate) profile.birthdate = extraData.birthDate;
-            if (extraData.gender) profile.gender = extraData.gender;
-        }
+        if (extraData.birthDate) fullUserPayload.birthdate = extraData.birthDate;
+        if (extraData.gender) fullUserPayload.gender = extraData.gender;
       }
 
-      // 5. Construct User Object
-      return this.mapUserRecord({ ...publicUser, profiles: profile ? [profile] : [] });
+      // 5. Construct User Object from RPC format
+      return {
+        id: fullUserPayload.id,
+        email: fullUserPayload.email || user.email || '',
+        name: fullUserPayload.full_name || '',
+        photoUrl: fullUserPayload.avatar_url || undefined,
+        birthDate: fullUserPayload.birthdate || '',
+        zodiacSign: fullUserPayload.zodiac_sign || '',
+        gender: (fullUserPayload.gender || 'other') as any,
+        credits: fullUserPayload.wallet?.credits || 0,
+        isPremium: !!fullUserPayload.active_subscription,
+        createdAt: fullUserPayload.created_at || user.created_at,
+      };
 
     } catch (error) {
       console.error('[Auth] Get user critical error:', error);
