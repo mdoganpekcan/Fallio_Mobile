@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -16,31 +16,22 @@ import { Colors, Spacing, Typography, BorderRadius, Shadows } from '@/constants/
 import { revenueCatService } from '@/services/revenueCat';
 import { PurchasesPackage } from 'react-native-purchases';
 import { useAppStore } from '@/store/useAppStore';
+import { useQuery } from '@tanstack/react-query';
+import { Skeleton } from '@/components/Skeleton';
 
 export default function BuyCreditsScreen() {
   const router = useRouter();
   const { user } = useAppStore();
-  const [packages, setPackages] = useState<PurchasesPackage[]>([]);
-  const [loading, setLoading] = useState(true);
   const [purchasing, setPurchasing] = useState(false);
 
-  useEffect(() => {
-    loadPackages();
-  }, []);
+  // Reuse the shared rc-offerings cache (staleTime: 30 min set in credits.tsx)
+  const { data: offeringsData, isLoading: loading } = useQuery({
+    queryKey: ['rc-offerings'],
+    queryFn: () => revenueCatService.getOfferings(),
+    staleTime: 1000 * 60 * 30,
+  });
 
-  const loadPackages = async () => {
-    try {
-      const offerings = await revenueCatService.getOfferings();
-      if (offerings && offerings.availablePackages.length > 0) {
-        setPackages(offerings.availablePackages);
-      }
-    } catch (error) {
-      console.error('Error loading packages:', error);
-      Alert.alert('Hata', 'Paketler yüklenirken bir sorun oluştu.');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const packages = offeringsData?.availablePackages ?? [];
 
   const handlePurchase = async (pack: PurchasesPackage) => {
     if (purchasing) return;
@@ -98,7 +89,20 @@ export default function BuyCreditsScreen() {
         <Text style={styles.sectionTitle}>Paket Seçin</Text>
 
         {loading ? (
-          <ActivityIndicator size="large" color={Colors.primary} style={{ marginTop: Spacing.xl }} />
+          <View style={styles.packagesGrid}>
+            {[1, 2, 3].map((i) => (
+              <View key={i} style={styles.packageCard}>
+                <View style={[styles.packageGradient, { backgroundColor: 'rgba(255,255,255,0.05)' }]}>
+                  <Skeleton width={56} height={56} borderRadius={28} />
+                  <View style={{ flex: 1, gap: 8 }}>
+                    <Skeleton width="60%" height={18} borderRadius={BorderRadius.sm} />
+                    <Skeleton width="35%" height={14} borderRadius={BorderRadius.sm} />
+                  </View>
+                  <Skeleton width={60} height={22} borderRadius={BorderRadius.sm} />
+                </View>
+              </View>
+            ))}
+          </View>
         ) : packages.length === 0 ? (
           <View style={styles.emptyState}>
             <Text style={styles.emptyText}>Şu anda satışta olan paket bulunmamaktadır.</Text>

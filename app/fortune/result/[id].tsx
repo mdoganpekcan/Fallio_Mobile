@@ -19,7 +19,6 @@ import { fortuneService } from '@/services/fortunes';
 import { fortuneTellerService } from '@/services/fortuneTellers';
 import { getFortuneTypeInfo } from '@/constants/fortuneTypes';
 import { useTranslation } from 'react-i18next';
-
 import { useRef } from 'react';
 import * as Sharing from 'expo-sharing';
 import { captureRef } from 'react-native-view-shot';
@@ -27,6 +26,7 @@ import { useAppStore } from '@/store/useAppStore';
 import { FortuneShareCard } from '@/components/FortuneShareCard';
 import { FortuneAudioPlayer } from '@/components/FortuneAudioPlayer';
 import Markdown from 'react-native-markdown-display';
+import { Skeleton } from '@/components/Skeleton';
 
 export default function FortuneResultScreen() {
   const { t, i18n } = useTranslation();
@@ -68,9 +68,37 @@ export default function FortuneResultScreen() {
   if (isLoading || !fortune) {
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={Colors.primary} />
+        {/* ── Bespoke Fortune Result Skeleton ── */}
+        <View style={styles.header}>
+          <Skeleton width={40} height={40} borderRadius={BorderRadius.full} />
+          <Skeleton width={120} height={20} borderRadius={BorderRadius.sm} />
+          <View style={{ width: 40 }} />
         </View>
+        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+          {/* Teller section */}
+          <View style={[styles.fortuneTellerSection, { alignItems: 'center' }]}>
+            <Skeleton width={80} height={80} borderRadius={BorderRadius.full} style={{ marginBottom: Spacing.md }} />
+            <Skeleton width={150} height={22} borderRadius={BorderRadius.sm} style={{ marginBottom: 8 }} />
+            <Skeleton width={90} height={16} borderRadius={BorderRadius.sm} style={{ marginBottom: 8 }} />
+            <Skeleton width={70} height={14} borderRadius={BorderRadius.sm} />
+          </View>
+          {/* Result card */}
+          <View style={[styles.resultCard, { paddingTop: Spacing.xl }]}>
+            <Skeleton width="100%" height={14} borderRadius={BorderRadius.sm} style={{ marginBottom: 10 }} />
+            <Skeleton width="90%" height={14} borderRadius={BorderRadius.sm} style={{ marginBottom: 10 }} />
+            <Skeleton width="95%" height={14} borderRadius={BorderRadius.sm} style={{ marginBottom: 10 }} />
+            <Skeleton width="80%" height={14} borderRadius={BorderRadius.sm} style={{ marginBottom: 10 }} />
+            <Skeleton width="70%" height={14} borderRadius={BorderRadius.sm} style={{ marginBottom: 10 }} />
+            <Skeleton width="85%" height={14} borderRadius={BorderRadius.sm} />
+          </View>
+          {/* Rating buttons */}
+          <View style={[styles.ratingSection, { marginTop: Spacing.lg }]}>
+            <View style={styles.ratingButtons}>
+              <Skeleton width="48%" height={56} borderRadius={BorderRadius.lg} />
+              <Skeleton width="48%" height={56} borderRadius={BorderRadius.lg} />
+            </View>
+          </View>
+        </ScrollView>
       </SafeAreaView>
     );
   }

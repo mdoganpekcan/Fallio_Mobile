@@ -24,6 +24,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { imageService } from '@/services/image';
 import { SmartBanner } from '@/components/ads/SmartBanner';
+import { Skeleton } from '@/components/Skeleton';
 
 export default function ProfileScreen() {
   const { t } = useTranslation();
@@ -167,10 +168,31 @@ export default function ProfileScreen() {
 
   if (!user || !profile) {
     return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={Colors.primary} />
+      <SafeAreaView style={[styles.container, { paddingTop: insets.top }]}>
+        <StatusBar style="light" />
+        {/* ── Bespoke Profile Skeleton ── */}
+        <View style={styles.header}>
+          <Skeleton width={100} height={22} borderRadius={BorderRadius.sm} />
+          <Skeleton width={40} height={40} borderRadius={BorderRadius.full} />
         </View>
+        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+          {/* Avatar area */}
+          <View style={[styles.profileCard, { alignItems: 'center', paddingVertical: Spacing.lg }]}>
+            <Skeleton width={120} height={120} borderRadius={BorderRadius.full} style={{ marginBottom: Spacing.md }} />
+            <Skeleton width={160} height={22} borderRadius={BorderRadius.sm} style={{ marginBottom: 8 }} />
+            <Skeleton width={100} height={16} borderRadius={BorderRadius.sm} style={{ marginBottom: 8 }} />
+            <Skeleton width={80} height={28} borderRadius={BorderRadius.full} />
+          </View>
+          {/* Menu items */}
+          <View style={styles.menuSection}>
+            {[1, 2, 3, 4, 5].map((i) => (
+              <View key={i} style={[styles.menuItem, { marginBottom: Spacing.md }]}>
+                <Skeleton width={48} height={48} borderRadius={BorderRadius.md} style={{ marginRight: Spacing.md }} />
+                <Skeleton width="55%" height={18} borderRadius={BorderRadius.sm} />
+              </View>
+            ))}
+          </View>
+        </ScrollView>
       </SafeAreaView>
     );
   }

@@ -1,12 +1,20 @@
 import React, { useEffect } from 'react';
-import { View, StyleSheet, Animated, ViewStyle } from 'react-native';
+import { StyleProp, ViewStyle } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withSequence,
+  withTiming,
+  Easing,
+} from 'react-native-reanimated';
 import { Colors } from '@/constants/theme';
 
 interface SkeletonProps {
-  width?: number | string;
-  height?: number | string;
+  width?: number | `${number}%`;
+  height?: number | `${number}%`;
   borderRadius?: number;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
 }
 
 export const Skeleton: React.FC<SkeletonProps> = ({
@@ -15,45 +23,38 @@ export const Skeleton: React.FC<SkeletonProps> = ({
   borderRadius = 4,
   style,
 }) => {
-  const opacity = new Animated.Value(0.3);
+  const opacity = useSharedValue(0.3);
 
   useEffect(() => {
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(opacity, {
-          toValue: 0.7,
-          duration: 800,
-          useNativeDriver: true,
-        }),
-        Animated.timing(opacity, {
-          toValue: 0.3,
-          duration: 800,
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
-  }, [opacity]);
+    opacity.value = withRepeat(
+      withSequence(
+        withTiming(0.75, { duration: 700, easing: Easing.inOut(Easing.ease) }),
+        withTiming(0.3, { duration: 700, easing: Easing.inOut(Easing.ease) }),
+      ),
+      -1,
+      false,
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+  }));
 
   return (
     <Animated.View
       style={[
-        styles.skeleton,
         {
-          width,
-          height,
+          backgroundColor: Colors.cardSecondary,
+          width: width as number | `${number}%`,
+          height: height as number | `${number}%`,
           borderRadius,
-          opacity: opacity as any,
         },
+        animatedStyle,
         style,
       ]}
     />
   );
 };
-
-const styles = StyleSheet.create({
-  skeleton: {
-    backgroundColor: Colors.cardSecondary,
-  },
-});
 
 export default Skeleton;

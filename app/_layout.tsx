@@ -22,7 +22,14 @@ import { logger } from "@/services/logger";
 SplashScreen.preventAutoHideAsync();
 WebBrowser.maybeCompleteAuthSession();
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      // Verileri 5 dakika boyunca "taze" kabul et — gereksiz refetch önlenir
+      staleTime: 1000 * 60 * 5,
+    },
+  },
+});
 
 function useProtectedRoute(user: any) {
   const segments = useSegments();

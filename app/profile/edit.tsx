@@ -19,6 +19,7 @@ import { useAppStore } from '@/store/useAppStore';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { profileService, UpdateProfileData } from '@/services/profiles';
 import { calculateZodiacSign, zodiacSigns } from '@/types';
+import { Skeleton } from '@/components/Skeleton';
 
 const RELATIONSHIP_STATUSES = [
   'İlişkisi Yok',
@@ -165,10 +166,23 @@ export default function EditProfileScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={Colors.primary} />
+      <SafeAreaView style={styles.container} edges={['top']}>
+        {/* ── Bespoke Form Skeleton ── */}
+        <View style={styles.header}>
+          <Skeleton width={36} height={36} borderRadius={BorderRadius.full} />
+          <Skeleton width={140} height={20} borderRadius={BorderRadius.sm} />
+          <Skeleton width={36} height={36} borderRadius={BorderRadius.full} />
         </View>
+        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+          <View style={styles.form}>
+            {[1, 2, 3, 4, 5].map((i) => (
+              <View key={i} style={styles.inputGroup}>
+                <Skeleton width={100} height={14} borderRadius={BorderRadius.sm} style={{ marginBottom: Spacing.xs }} />
+                <Skeleton width="100%" height={48} borderRadius={BorderRadius.md} />
+              </View>
+            ))}
+          </View>
+        </ScrollView>
       </SafeAreaView>
     );
   }

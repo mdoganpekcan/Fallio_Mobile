@@ -34,10 +34,11 @@ export default function CreditsScreen() {
   const [selectedPackage, setSelectedPackage] = React.useState<PurchasesPackage | null>(null);
   const [loadingAd, setLoadingAd] = React.useState(false);
 
-  // RevenueCat Offerings (Ürünler)
+  // RevenueCat Offerings (Ürünler) — statik veri, 30 dakika cache
   const { data: offerings, isLoading: offeringsLoading } = useQuery({
     queryKey: ['rc-offerings'],
     queryFn: () => revenueCatService.getOfferings(),
+    staleTime: 1000 * 60 * 30, // 30 dakika — paket listesi sık değişmez
   });
 
   // RevenueCat Abonelik Durumu
