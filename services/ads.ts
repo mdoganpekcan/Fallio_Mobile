@@ -21,7 +21,7 @@ const APP_OPEN_ID = isDev ? TestIds.APP_OPEN : TestIds.APP_OPEN;
 
 class AdService {
   private interstitial: InterstitialAd | null = null;
-  private appOpen: any = null; // AppOpenAd not exported directly as class sometimes depending on version, generic handle
+  private appOpen = null; // AppOpenAd not exported directly as class sometimes depending on version, generic handle
 
   constructor() {
     this.loadInterstitial();

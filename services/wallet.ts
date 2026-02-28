@@ -7,7 +7,7 @@ type WalletRow = Database["public"]["Tables"]["wallet"]["Row"];
 export const walletService = {
   async getWallet(userId: string) {
     console.log("[Wallet] Fetching wallet for user:", userId);
-    const { data, error }: any = await (supabase.from("wallet" as any) as any)
+    const { data, error } = await (supabase.from("wallet" ) )
       .select("*")
       .eq("user_id", userId)
       .maybeSingle();
@@ -21,14 +21,14 @@ export const walletService = {
       console.log("[Wallet] No wallet, creating default record");
       const welcomeCredits =
         useAppStore.getState().appConfig?.welcome_credits ?? 500;
-      const { data: newWallet, error: createError }: any = await (
-        supabase.from("wallet" as any) as any
+      const { data: newWallet, error: createError } = await (
+        supabase.from("wallet" ) 
       )
         .insert({
           user_id: userId,
           credits: welcomeCredits,
           diamonds: 0,
-        } as any)
+        } )
         .select()
         .single();
 
@@ -37,14 +37,14 @@ export const walletService = {
         throw createError;
       }
       return {
-        credits: (newWallet as any).credits,
-        diamonds: (newWallet as any).diamonds || 0,
+        credits: (newWallet ).credits,
+        diamonds: (newWallet ).diamonds || 0,
       };
     }
 
     return {
-      credits: (data as any).credits,
-      diamonds: (data as any).diamonds || 0,
+      credits: (data ).credits,
+      diamonds: (data ).diamonds || 0,
     };
   },
 
@@ -128,8 +128,8 @@ export const walletService = {
 
   async getDailyFreeUsageCount(userId: string): Promise<number> {
     const today = new Date().toISOString().split("T")[0];
-    const { count, error }: any = await (
-      supabase.from("daily_free_usages" as any) as any
+    const { count, error } = await (
+      supabase.from("daily_free_usages" ) 
     )
       .select("*", { count: "exact", head: true })
       .eq("user_id", userId)
@@ -148,12 +148,12 @@ export const walletService = {
   ): Promise<void> {
     const today = new Date().toISOString().split("T")[0];
     const { error } = await (
-      supabase.from("daily_free_usages" as any) as any
+      supabase.from("daily_free_usages" ) 
     ).insert({
       user_id: userId,
       fortune_type: fortuneType,
       usage_date: today,
-    } as any);
+    } );
 
     if (error) {
       console.error("[Wallet] Record daily usage error:", error);
@@ -162,8 +162,8 @@ export const walletService = {
   },
 
   async getCreditPackages() {
-    const { data, error }: any = await (
-      supabase.from("credit_packages" as any) as any
+    const { data, error } = await (
+      supabase.from("credit_packages" ) 
     )
       .select("id, name, credits, price, active")
       .eq("active", true)
@@ -178,8 +178,8 @@ export const walletService = {
   },
 
   async getSubscriptionPlans() {
-    const { data, error }: any = await (
-      supabase.from("subscriptions" as any) as any
+    const { data, error } = await (
+      supabase.from("subscriptions" ) 
     )
       .select("id, plan_name, cycle, price, perks, status")
       .is("user_id", null)
@@ -194,8 +194,8 @@ export const walletService = {
   },
 
   async getActiveSubscription(userId: string) {
-    const { data, error }: any = await (
-      supabase.from("subscriptions" as any) as any
+    const { data, error } = await (
+      supabase.from("subscriptions" ) 
     )
       .select("*")
       .eq("user_id", userId)

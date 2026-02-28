@@ -40,6 +40,7 @@ export interface Database {
           created_at?: string;
           last_login?: string | null;
         };
+        Relationships: { foreignKeyName: string; columns: string[]; isOneToOne?: boolean; referencedRelation: string; referencedColumns: string[]; }[];
       };
       ai_settings: {
         Row: {
@@ -78,6 +79,7 @@ export interface Database {
           updated_at?: string;
           active_provider?: string | null;
         };
+        Relationships: { foreignKeyName: string; columns: string[]; isOneToOne?: boolean; referencedRelation: string; referencedColumns: string[]; }[];
       };
       app_config: {
         Row: {
@@ -110,6 +112,7 @@ export interface Database {
           fortune_costs?: Json | null;
           updated_at?: string | null;
         };
+        Relationships: { foreignKeyName: string; columns: string[]; isOneToOne?: boolean; referencedRelation: string; referencedColumns: string[]; }[];
       };
       credit_packages: {
         Row: {
@@ -142,6 +145,7 @@ export interface Database {
           ios_product_id?: string | null;
           android_product_id?: string | null;
         };
+        Relationships: { foreignKeyName: string; columns: string[]; isOneToOne?: boolean; referencedRelation: string; referencedColumns: string[]; }[];
       };
       daily_free_usages: {
         Row: {
@@ -165,6 +169,7 @@ export interface Database {
           fortune_type?: string;
           created_at?: string | null;
         };
+        Relationships: { foreignKeyName: string; columns: string[]; isOneToOne?: boolean; referencedRelation: string; referencedColumns: string[]; }[];
       };
       earning_rules: {
         Row: {
@@ -191,6 +196,7 @@ export interface Database {
           active?: boolean;
           created_at?: string;
         };
+        Relationships: { foreignKeyName: string; columns: string[]; isOneToOne?: boolean; referencedRelation: string; referencedColumns: string[]; }[];
       };
       fortune_images: {
         Row: {
@@ -211,6 +217,7 @@ export interface Database {
           url?: string;
           created_at?: string;
         };
+        Relationships: { foreignKeyName: string; columns: string[]; isOneToOne?: boolean; referencedRelation: string; referencedColumns: string[]; }[];
       };
       fortune_tellers: {
         Row: {
@@ -276,6 +283,7 @@ export interface Database {
           description?: string | null;
           price_credits?: number | null;
         };
+        Relationships: { foreignKeyName: string; columns: string[]; isOneToOne?: boolean; referencedRelation: string; referencedColumns: string[]; }[];
       };
       fortunes: {
         Row: {
@@ -320,6 +328,7 @@ export interface Database {
           user_rating?: number | null;
           metadata?: Json | null;
         };
+        Relationships: { foreignKeyName: string; columns: string[]; isOneToOne?: boolean; referencedRelation: string; referencedColumns: string[]; }[];
       };
       horoscopes: {
         Row: {
@@ -358,6 +367,7 @@ export interface Database {
           updated_at?: string;
           language?: string | null;
         };
+        Relationships: { foreignKeyName: string; columns: string[]; isOneToOne?: boolean; referencedRelation: string; referencedColumns: string[]; }[];
       };
       logs: {
         Row: {
@@ -387,6 +397,7 @@ export interface Database {
           metadata?: Json | null;
           created_at?: string;
         };
+        Relationships: { foreignKeyName: string; columns: string[]; isOneToOne?: boolean; referencedRelation: string; referencedColumns: string[]; }[];
       };
       messages: {
         Row: {
@@ -410,6 +421,7 @@ export interface Database {
           body?: string;
           created_at?: string;
         };
+        Relationships: { foreignKeyName: string; columns: string[]; isOneToOne?: boolean; referencedRelation: string; referencedColumns: string[]; }[];
       };
       notifications: {
         Row: {
@@ -445,6 +457,7 @@ export interface Database {
           sent_at?: string | null;
           created_by?: string | null;
         };
+        Relationships: { foreignKeyName: string; columns: string[]; isOneToOne?: boolean; referencedRelation: string; referencedColumns: string[]; }[];
       };
       profiles: {
         Row: {
@@ -486,6 +499,7 @@ export interface Database {
           email?: string | null;
           birthdate?: string | null;
         };
+        Relationships: { foreignKeyName: string; columns: string[]; isOneToOne?: boolean; referencedRelation: string; referencedColumns: string[]; }[];
       };
       settings: {
         Row: {
@@ -521,6 +535,7 @@ export interface Database {
           created_at?: string;
           updated_at?: string;
         };
+        Relationships: { foreignKeyName: string; columns: string[]; isOneToOne?: boolean; referencedRelation: string; referencedColumns: string[]; }[];
       };
       subscriptions: {
         Row: {
@@ -556,6 +571,7 @@ export interface Database {
           started_at?: string;
           expires_at?: string | null;
         };
+        Relationships: { foreignKeyName: string; columns: string[]; isOneToOne?: boolean; referencedRelation: string; referencedColumns: string[]; }[];
       };
       transactions: {
         Row: {
@@ -597,6 +613,7 @@ export interface Database {
           status?: string | null;
           created_at?: string;
         };
+        Relationships: { foreignKeyName: string; columns: string[]; isOneToOne?: boolean; referencedRelation: string; referencedColumns: string[]; }[];
       };
       user_devices: {
         Row: {
@@ -623,6 +640,7 @@ export interface Database {
           is_active?: boolean;
           updated_at?: string;
         };
+        Relationships: { foreignKeyName: string; columns: string[]; isOneToOne?: boolean; referencedRelation: string; referencedColumns: string[]; }[];
       };
       users: {
         Row: {
@@ -667,6 +685,7 @@ export interface Database {
           gender?: string | null;
           updated_at?: string | null;
         };
+        Relationships: { foreignKeyName: string; columns: string[]; isOneToOne?: boolean; referencedRelation: string; referencedColumns: string[]; }[];
       };
       wallet: {
         Row: {
@@ -690,6 +709,7 @@ export interface Database {
           diamonds?: number;
           updated_at?: string;
         };
+        Relationships: { foreignKeyName: string; columns: string[]; isOneToOne?: boolean; referencedRelation: string; referencedColumns: string[]; }[];
       };
     };
     Views: {
@@ -711,8 +731,55 @@ export interface Database {
           is_free: boolean;
         };
       };
+      create_user_record: {
+        Args: { p_auth_user_id: string; p_email: string; p_full_name: string; p_avatar_url: string; p_zodiac_sign: string; p_birth_date: string | null; p_gender: string | null; };
+        Returns: { id: string; };
+      };
+      delete_user_account: {
+        Args: Record<string, never>;
+        Returns: null;
+      };
+      get_full_user_profile: {
+        Args: { p_auth_user_id: string; };
+        Returns: Json;
+      };
+      create_transaction: {
+        Args: { p_user_id: string; p_amount: number; p_transaction_type: string; };
+        Returns: Json;
+      };
+      increment_user_balance: {
+        Args: { p_user_id: string; p_diamonds_qty?: number; p_rate?: number; };
+        Returns: Json;
+      };
+      decrement_user_balance: {
+        Args: { p_user_id: string; p_amount: number; };
+        Returns: Json;
+      };
+      increment_fortune_teller_views: {
+        Args: { p_teller_id: string; };
+        Returns: null;
+      };
+      check_daily_free_usage: {
+        Args: { p_user_id: string; p_fortune_type: string; };
+        Returns: boolean;
+      };
+      handle_credit_transaction: {
+        Args: { p_user_id: string; p_amount: number; p_transaction_type: string; };
+        Returns: Json;
+      };
+      handle_diamond_transaction: {
+        Args: { p_user_id: string; p_amount: number; p_transaction_type: string; };
+        Returns: Json;
+      };
+      exchange_diamonds_for_credits: {
+        Args: { p_user_id: string; p_diamonds_qty: number; p_rate: number; };
+        Returns: Json;
+      };
     };
     Enums: {
+      [_ in never]: never;
+    };
+    CompositeTypes: {
       [_ in never]: never;
     };
   };

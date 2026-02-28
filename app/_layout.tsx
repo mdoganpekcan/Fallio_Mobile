@@ -82,11 +82,17 @@ function RootLayoutNav() {
       try {
         logger.info('[RootLayout] Starting initAuth...');
         
-        // 0. Initialize i18n
+        // 0. Initialize i18n (Must happen first for UI translations)
         await initI18n();
 
-        // 1. Load App Config
-        const config = await configService.getAppConfig();
+        // [OPTIMIZATION]: Parallelize AppConfig (Network), Onboarding (Disk), and User Auth (Network)
+        const [config, hasSeenOnboarding, currentUser] = await Promise.all([
+          configService.getAppConfig(),
+          AsyncStorage.getItem('hasSeenOnboarding'),
+          authService.getUser()
+        ]);
+
+        // 1. Process App Config
         if (config) {
           setAppConfig(config);
           if (config.maintenance_mode) {
@@ -98,17 +104,17 @@ function RootLayoutNav() {
           }
         }
 
-        const hasSeenOnboarding = await AsyncStorage.getItem('hasSeenOnboarding');
+        // 2. Process Onboarding State
         if (hasSeenOnboarding) {
           completeOnboarding();
         }
 
-        const currentUser = await authService.getUser();
+        // 3. Process Authentication State
         if (currentUser) {
           setUser(currentUser);
         }
         
-        logger.info('[RootLayout] initAuth completed successfully');
+        logger.info('[RootLayout] initAuth completed successfully (Parallelized)');
       } catch (error) {
         console.error('[RootLayout] Init auth error:', error);
         logger.error('Init Auth Failed', { error });

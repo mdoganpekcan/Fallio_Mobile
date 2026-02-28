@@ -15,7 +15,7 @@ export const profileService = {
       .from('users')
       .select('*, profiles(*)')
       .eq('id', userId)
-      .single() as any;
+      .single() ;
 
     if (error || !user) {
       console.error('[Profile] Fetch error:', error);
@@ -29,7 +29,7 @@ export const profileService = {
       email: user.email,
       fullName: user.full_name,
       avatarUrl: user.avatar_url || undefined,
-      birthDate: (user as any).birthdate || (profileData as any)?.birthdate,
+      birth_date: (user ).birth_date || (profileData )?.birth_date,
       zodiacSign: user.zodiac_sign,
       gender: user.gender || profileData?.gender,
       city: user.city,
@@ -52,7 +52,7 @@ export const profileService = {
     if (updates.user && Object.keys(updates.user).length > 0) {
       promises.push(
         (supabase
-          .from('users') as any)
+          .from('users') )
           .update(updates.user)
           .eq('id', userId)
       );
@@ -61,7 +61,7 @@ export const profileService = {
     if (updates.profile && Object.keys(updates.profile).length > 0) {
       promises.push(
         (supabase
-          .from('profiles') as any)
+          .from('profiles') )
           .update(updates.profile)
           .eq('user_id', userId)
       );

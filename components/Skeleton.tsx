@@ -42,7 +42,7 @@ export const Skeleton: React.FC<SkeletonProps> = ({
           width,
           height,
           borderRadius,
-          opacity,
+          opacity: opacity as any,
         },
         style,
       ]}

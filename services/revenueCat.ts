@@ -94,7 +94,7 @@ class RevenueCatService {
       const customerInfo = await Purchases.restorePurchases();
       const isPro = typeof customerInfo.entitlements.active[ENTITLEMENT_ID] !== 'undefined';
       return { isPro, customerInfo };
-    } catch (e) {
+    } catch (e: any) {
       console.error('[RevenueCat] Restore error:', e);
       throw e;
     }
@@ -104,7 +104,7 @@ class RevenueCatService {
     try {
       const customerInfo = await Purchases.getCustomerInfo();
       return typeof customerInfo.entitlements.active[ENTITLEMENT_ID] !== 'undefined';
-    } catch (e) {
+    } catch (e: any) {
       console.error('[RevenueCat] Check status error:', e);
       return false;
     }

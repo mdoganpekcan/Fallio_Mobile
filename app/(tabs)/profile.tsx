@@ -233,7 +233,7 @@ export default function ProfileScreen() {
             <Text style={styles.userName}>{profile.fullName}</Text>
             {profile.job ? <Text style={styles.userJob}>{profile.job}</Text> : null}
             {profile.relationshipStatus ? <Text style={styles.userRelation}>{profile.relationshipStatus}</Text> : null}
-            <Text style={styles.userBirthDate}>{formatBirthDate(profile.birthDate)}</Text>
+            <Text style={styles.userBirthDate}>{formatBirthDate(profile.birth_date)}</Text>
             <View style={styles.zodiacBadge}>
               <Text style={styles.zodiacText}>{t('profile.common.zodiac_sign', { sign: profile.zodiacSign })}</Text>
             </View>

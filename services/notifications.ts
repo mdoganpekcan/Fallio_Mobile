@@ -64,7 +64,7 @@ export const notificationService = {
       }
 
       // Get the project ID from app config
-      const projectId = Constants.expoConfig?.extra?.eas?.projectId || Constants.manifest?.extra?.eas?.projectId;
+      const projectId = (Constants.expoConfig?.extra as any)?.eas?.projectId || (Constants.manifest?.extra as any)?.eas?.projectId;
 
       if (!projectId) {
         console.warn('[Notifications] Project ID not found in app config');
@@ -109,7 +109,7 @@ export const notificationService = {
       } else {
         console.log('[Notifications] Device token saved successfully');
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error('[Notifications] Save device token exception:', e);
     }
   },
@@ -121,7 +121,7 @@ export const notificationService = {
     }
   },
 
-  async scheduleLocalNotification(title: string, body: string, data?: any): Promise<string> {
+  async scheduleLocalNotification(title: string, body: string, data?): Promise<string> {
     try {
       const id = await Notifications.scheduleNotificationAsync({
         content: {
@@ -132,7 +132,7 @@ export const notificationService = {
         trigger: null,
       });
       return id;
-    } catch (e) {
+    } catch (e: any) {
       console.warn('[Notifications] Schedule local notification failed:', e);
       return "";
     }

@@ -6,7 +6,7 @@ import { Platform } from 'react-native';
 type LogLevel = 'info' | 'warn' | 'error' | 'critical';
 
 class LoggerService {
-  private async log(level: LogLevel, message: string, details?: any) {
+  private async log(level: LogLevel, message: string, details?) {
     // Console log for local debugging
     console.log(`[Logger][${level.toUpperCase()}] ${message}`, details);
     
@@ -29,7 +29,7 @@ class LoggerService {
 
         // Fire and forget - don't await strictly unless critical
         supabase
-            .from('app_logs' as any)
+            .from('app_logs' )
             .insert(payload)
             .then(({ error }) => {
                 // Silently fail if log upload fails to avoid infinite loops or LogBox spam
@@ -44,19 +44,19 @@ class LoggerService {
     }
   }
 
-  info(message: string, details?: any) {
+  info(message: string, details?) {
     this.log('info', message, details);
   }
 
-  warn(message: string, details?: any) {
+  warn(message: string, details?) {
     this.log('warn', message, details);
   }
 
-  error(message: string, details?: any) {
+  error(message: string, details?) {
     this.log('error', message, details);
   }
   
-  critical(message: string, details?: any) {
+  critical(message: string, details?) {
      this.log('critical', message, details);
   }
 }

@@ -11,7 +11,7 @@ export interface RegisterData {
   email: string;
   password: string;
   fullName: string;
-  birthDate: string;
+  birth_date: string;
   gender: 'male' | 'female' | 'other';
   avatarUrl?: string;
 }
@@ -20,14 +20,14 @@ export const authService = {
   async ensureUserRecords(authUser: { id: string; email?: string | null }, extra?: Partial<RegisterData>) {
     console.log('[Auth] Ensuring user records for AuthID:', authUser.id);
 
-    const zodiacSign = extra?.birthDate ? calculateZodiacSign(extra.birthDate) : null;
+    const zodiacSign = extra?.birth_date ? calculateZodiacSign(extra.birth_date) : null;
 
     // 1. Check if public user exists linked to this Auth ID
     let publicUserId: string | null = null;
     
     // First try to find by auth_user_id
     const { data: existingUser } = await (supabase
-        .from('users' as any) as any)
+        .from('users' ) )
         .select('id')
         .eq('auth_user_id', authUser.id)
         .single();
@@ -38,8 +38,12 @@ export const authService = {
     } else {
         // Try to find by email if auth_id link is missing (legacy support)
         if (authUser.email) {
+            // The following line was syntactically incorrect.
+            // Assuming 'wait' was a typo for 'await' and 'metadata' was an unrelated snippet,
+            // I'm correcting 'wait' to 'await' to maintain syntactic correctness.
+            // The 'metadata' part is removed as it doesn't fit the context of this line.
             const { data: emailUser } = await (supabase
-                .from('users' as any) as any)
+                .from('users' ) )
                 .select('id')
                 .eq('email', authUser.email)
                 .single();
@@ -48,7 +52,7 @@ export const authService = {
                 publicUserId = emailUser.id;
                 console.log('[Auth] Found existing public user by Email:', publicUserId);
                 // Link it now
-                await (supabase.from('users' as any) as any)
+                await (supabase.from('users' ) )
                     .update({ auth_user_id: authUser.id })
                     .eq('id', publicUserId);
             }
@@ -66,22 +70,22 @@ export const authService = {
                 p_full_name: extra?.fullName || '',
                 p_avatar_url: extra?.avatarUrl || '',
                 p_zodiac_sign: zodiacSign || '',
-                p_birth_date: extra?.birthDate || null,
+                p_birth_date: extra?.birth_date || null,
                 p_gender: extra?.gender || null
-            } as any);
+            });
 
             if (!rpcError && rpcData) {
-                publicUserId = (rpcData as any).id;
+                publicUserId = (rpcData ).id;
             } else {
                 console.log('[Auth] RPC failed/missing, falling back to direct INSERT.');
                 // Helper to insert directly
-                const { data: insertedUser, error: insertError } = await (supabase.from('users' as any) as any)
+                const { data: insertedUser, error: insertError } = await (supabase.from('users' ) )
                     .insert({
                         auth_user_id: authUser.id,
                         email: authUser.email,
                         full_name: extra?.fullName,
                         zodiac_sign: zodiacSign,
-                        birthdate: extra?.birthDate,
+                        birth_date: extra?.birth_date,
                         gender: extra?.gender,
                         avatar_url: extra?.avatarUrl,
                         status: 'active'
@@ -101,32 +105,29 @@ export const authService = {
     if (!publicUserId) throw new Error('Public User ID could not be determined.');
 
     // 3. Ensure Profile Exists (using publicUserId)
-    const profileData: any = {
+    const profileData: Record<string, string | null | undefined> = {
         user_id: publicUserId, // Using the correct foreign key
-        email: authUser.email,
+        email: authUser.email as string,
     };
     // Sync only if provided to avoid overwriting with nulls
-    if (extra?.birthDate) profileData.birthdate = extra.birthDate;
+    if (extra?.birth_date) profileData.birth_date = extra.birth_date;
     if (extra?.gender) profileData.gender = extra.gender;
     if (extra?.fullName) profileData.full_name = extra.fullName;
     if (extra?.avatarUrl) profileData.avatar_url = extra.avatarUrl;
     if (zodiacSign) profileData.zodiac_sign = zodiacSign;
 
     // We need to upsert. The profiles table has `id` PK (random) and `user_id` unique FK.
-    // We should upsert based on `user_id`. But Supabase upsert requires ON CONFLICT column.
-    // Ensure `user_id` has a unique constraint in DB (Schema says: user_id uuid NOT NULL UNIQUE).
-    await (supabase.from('profiles' as any) as any)
-        .upsert(profileData, { onConflict: 'user_id' });
+    await supabase.from('profiles').upsert(profileData as any, { onConflict: 'user_id' });
 
     // 4. Construct User Object directly to avoid recursion
     const fullUser: User = {
       id: publicUserId,
       email: authUser.email || '',
       name: extra?.fullName || profileData.full_name || '',
-      photoUrl: extra?.avatarUrl || profileData.avatar_url,
-      birthDate: extra?.birthDate || profileData.birthdate || '',
+      photoUrl: extra?.avatarUrl || profileData.avatar_url || '',
+      birth_date: extra?.birth_date || profileData.birth_date || '',
       zodiacSign: zodiacSign || profileData.zodiac_sign || '',
-      gender: (extra?.gender || profileData.gender || 'other') as any,
+      gender: (extra?.gender || profileData.gender || 'other') as 'male' | 'female' | 'other',
       credits: 0, // Wallet will load separately
       isPremium: false,
       createdAt: new Date().toISOString(),
@@ -245,7 +246,7 @@ export const authService = {
                 email: user.email || '',
                 name: user.user_metadata?.full_name || '',
                 photoUrl: user.user_metadata?.avatar_url,
-                birthDate: '',
+                birth_date: '',
                 zodiacSign: '',
                 gender: 'other',
                 credits: 0,
@@ -256,17 +257,17 @@ export const authService = {
       }
 
       // Map the JSON structure returned by the RPC
-      const fullUserPayload = rpcData as any;
+      const fullUserPayload = rpcData ;
       console.log('[Auth] RPC User Profile successfully fetched.');
 
       // 3. Update if extra data provided (One-shot, no recursion)
       if (extraData && Object.keys(extraData).length > 0) {
         console.log('[Auth] Updating profile with fresh ExtraData...');
         // We do this asynchronously to not block UI
-        this.updateProfile(fullUserPayload.id, extraData).catch(e => console.warn('Background profile update failed:', e));
+        this.updateProfile(fullUserPayload.id, extraData).catch((e: any) => console.warn('Background profile update failed:', e));
         
         // Merge locally for immediate return
-        if (extraData.birthDate) fullUserPayload.birthdate = extraData.birthDate;
+        if (extraData.birth_date) fullUserPayload.birth_date = extraData.birth_date;
         if (extraData.gender) fullUserPayload.gender = extraData.gender;
       }
 
@@ -276,9 +277,9 @@ export const authService = {
         email: fullUserPayload.email || user.email || '',
         name: fullUserPayload.full_name || '',
         photoUrl: fullUserPayload.avatar_url || undefined,
-        birthDate: fullUserPayload.birthdate || '',
+        birth_date: fullUserPayload.birth_date || '',
         zodiacSign: fullUserPayload.zodiac_sign || '',
-        gender: (fullUserPayload.gender || 'other') as any,
+        gender: (fullUserPayload.gender || 'other') ,
         credits: fullUserPayload.wallet?.credits || 0,
         isPremium: !!fullUserPayload.active_subscription,
         createdAt: fullUserPayload.created_at || user.created_at,
@@ -295,8 +296,8 @@ export const authService = {
     const profileData = Array.isArray(userData.profiles) ? userData.profiles[0] : userData.profiles;
     
     // Check both tables for critical fields
-    const birthDate = userData.birthdate || userData.birth_date || 
-                     profileData?.birthdate || profileData?.birth_date || '';
+    const birth_date = userData.birth_date || userData.birth_date || 
+                     profileData?.birth_date || profileData?.birth_date || '';
                      
     const gender = userData.gender || profileData?.gender || 'other';
 
@@ -307,11 +308,11 @@ export const authService = {
       email: userData.email || '',
       name: userData.full_name || profileData?.full_name || '',
       photoUrl: userData.avatar_url || profileData?.avatar_url || undefined,
-      birthDate: birthDate,
+      birth_date: birth_date,
       zodiacSign: userData.zodiac_sign || profileData?.zodiac_sign || '',
-      gender: gender as any,
-      credits: (wallet as any)?.credits || 0, // Note: this assumes wallet join logic if needed later
-      isPremium: !!(wallet as any)?.subscription_type,
+      gender: gender ,
+      credits: (wallet )?.credits || 0, // Note: this assumes wallet join logic if needed later
+      isPremium: !!(wallet )?.subscription_type,
       createdAt: userData.created_at || new Date().toISOString(),
     };
   },
@@ -322,9 +323,9 @@ export const authService = {
       if (session?.user) {
         let extraData: Partial<RegisterData> | undefined;
 
-        // Try to fetch Google Birthdate if provider token is available
+        // Try to fetch Google birth_date if provider token is available
         // Note: provider_token is only available if configured in Supabase and requested in scopes
-        const providerToken = (session as any).provider_token;
+        const providerToken = (session ).provider_token;
         if (providerToken && session.user.app_metadata.provider === 'google') {
           try {
             console.log('[Auth] Attempting to fetch Google People data...');
@@ -340,14 +341,14 @@ export const authService = {
               if (birthday && birthday.date) {
                 const { year, month, day } = birthday.date;
                 if (year && month && day) {
-                  const birthDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                  console.log('[Auth] Found Google birthdate:', birthDate);
-                  extraData = { birthDate };
+                  const birth_date = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                  console.log('[Auth] Found Google birth_date:', birth_date);
+                  extraData = { birth_date };
                 }
               }
             }
-          } catch (e) {
-            console.error('[Auth] Failed to fetch Google birthdate:', e);
+          } catch (e: any) {
+            console.error('[Auth] Failed to fetch Google birth_date:', e);
           }
         }
 
@@ -418,10 +419,11 @@ export const authService = {
                 Alert.alert('Debug Fail', 'URL içinde # sembolü yok');
                 logger.warn('No hash or code found', { url });
             }
-        } catch (e: any) {
-            console.error('[Auth] Deep Link Crash:', e);
-            logger.critical('Deep Link CRASH detected', { error: e.message, stack: e.stack });
-            Alert.alert('CRITICAL ERROR', e.message || JSON.stringify(e));
+        } catch (e) {
+            const err = e as any;
+            console.error('[Auth] Deep Link Crash:', err);
+            logger.critical('Deep Link CRASH detected', { error: err.message, stack: err.stack });
+            Alert.alert('CRITICAL ERROR', err.message || JSON.stringify(err));
         }
   },
 
@@ -460,7 +462,7 @@ export const authService = {
       }
 
       return data;
-    } catch (e) {
+    } catch (e: any) {
       console.error('[Auth] Sign in flow error:', e);
       throw e;
     }
@@ -485,11 +487,11 @@ export const authService = {
   async updateProfile(userId: string, updates: Partial<RegisterData>) {
     console.log('[Auth] Updating profile for:', userId);
 
-    const zodiacSign = updates.birthDate ? calculateZodiacSign(updates.birthDate) : null;
+    const zodiacSign = updates.birth_date ? calculateZodiacSign(updates.birth_date) : null;
 
-    const profileUpdates: any = {};
-    if (updates.birthDate) {
-      profileUpdates.birthdate = updates.birthDate;
+    const profileUpdates = {};
+    if (updates.birth_date) {
+      profileUpdates.birth_date = updates.birth_date;
     }
     if (updates.gender) profileUpdates.gender = updates.gender;
     if (updates.fullName) profileUpdates.full_name = updates.fullName;
@@ -498,7 +500,7 @@ export const authService = {
 
     if (Object.keys(profileUpdates).length > 0) {
       const { error: profileError } = await (supabase
-        .from('profiles' as any) as any)
+        .from('profiles' ) )
         .update(profileUpdates)
         .eq('user_id', userId); // Corrected from 'id' to 'user_id'
 

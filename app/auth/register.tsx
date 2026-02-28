@@ -35,17 +35,17 @@ export default function RegisterScreen() {
   const [fullName, setFullName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  const [birthDate, setBirthDate] = useState<string>('');
+  const [birth_date, setBirthDate] = useState<string>('');
   const [gender, setGender] = useState<Gender | null>(null);
   const [zodiac, setZodiac] = useState<string>('');
 
   const registerMutation = useMutation({
     mutationFn: async () => {
-      if (!fullName || !email || !password || !birthDate || !gender) {
+      if (!fullName || !email || !password || !birth_date || !gender) {
         throw new Error(t('auth.errors.fill_all_fields'));
       }
 
-      const [day, month, year] = birthDate.split('.');
+      const [day, month, year] = birth_date.split('.');
       const isoDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
 
       // 1. Önce avatar olmadan kayıt ol
@@ -53,7 +53,7 @@ export default function RegisterScreen() {
         email,
         password,
         fullName,
-        birthDate: isoDate,
+        birth_date: isoDate,
         gender,
         avatarUrl: undefined, // Yerel dosya yolunu gönderme
       });
@@ -240,7 +240,7 @@ export default function RegisterScreen() {
                 style={styles.input}
                 placeholder={t('auth.date_format')}
                 placeholderTextColor={Colors.textMuted}
-                value={birthDate}
+                value={birth_date}
                 onChangeText={handleBirthDateChange}
                 keyboardType="numeric"
                 maxLength={10}

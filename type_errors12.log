@@ -1,0 +1,99 @@
+﻿app/(tabs)/index.tsx(509,3): error TS1117: An object literal cannot have multiple properties with the same name.
+app/auth/reset-password.tsx(125,19): error TS2339: Property 'h1' does not exist on type '{ readonly title: { readonly fontSize: 28; readonly fontWeight: "700"; readonly lineHeight: 36; }; readonly heading: { readonly fontSize: 24; readonly fontWeight: "700"; readonly lineHeight: 32; }; ... 4 more ...; readonly small: { ...; }; }'.
+app/auth/reset-password.tsx(157,16): error TS2339: Property 'md' does not exist on type '{ readonly small: { readonly shadowColor: "#000"; readonly shadowOffset: { readonly width: 0; readonly height: 2; }; readonly shadowOpacity: 0.1; readonly shadowRadius: 4; readonly elevation: 2; }; readonly medium: { ...; }; readonly large: { ...; }; }'.
+app/auth/reset-password.tsx(169,19): error TS2339: Property 'h3' does not exist on type '{ readonly title: { readonly fontSize: 28; readonly fontWeight: "700"; readonly lineHeight: 36; }; readonly heading: { readonly fontSize: 24; readonly fontWeight: "700"; readonly lineHeight: 32; }; ... 4 more ...; readonly small: { ...; }; }'.
+app/credits/buy.tsx(152,19): error TS2339: Property 'h2' does not exist on type '{ readonly title: { readonly fontSize: 28; readonly fontWeight: "700"; readonly lineHeight: 36; }; readonly heading: { readonly fontSize: 24; readonly fontWeight: "700"; readonly lineHeight: 32; }; ... 4 more ...; readonly small: { ...; }; }'.
+app/credits/buy.tsx(178,19): error TS2339: Property 'h1' does not exist on type '{ readonly title: { readonly fontSize: 28; readonly fontWeight: "700"; readonly lineHeight: 36; }; readonly heading: { readonly fontSize: 24; readonly fontWeight: "700"; readonly lineHeight: 32; }; ... 4 more ...; readonly small: { ...; }; }'.
+app/credits/buy.tsx(182,19): error TS2339: Property 'h3' does not exist on type '{ readonly title: { readonly fontSize: 28; readonly fontWeight: "700"; readonly lineHeight: 36; }; readonly heading: { readonly fontSize: 24; readonly fontWeight: "700"; readonly lineHeight: 32; }; ... 4 more ...; readonly small: { ...; }; }'.
+app/credits/buy.tsx(192,16): error TS2339: Property 'md' does not exist on type '{ readonly small: { readonly shadowColor: "#000"; readonly shadowOffset: { readonly width: 0; readonly height: 2; }; readonly shadowOpacity: 0.1; readonly shadowRadius: 4; readonly elevation: 2; }; readonly medium: { ...; }; readonly large: { ...; }; }'.
+app/credits/buy.tsx(209,19): error TS2339: Property 'h3' does not exist on type '{ readonly title: { readonly fontSize: 28; readonly fontWeight: "700"; readonly lineHeight: 36; }; readonly heading: { readonly fontSize: 24; readonly fontWeight: "700"; readonly lineHeight: 32; }; ... 4 more ...; readonly small: { ...; }; }'.
+app/credits/buy.tsx(214,19): error TS2339: Property 'h3' does not exist on type '{ readonly title: { readonly fontSize: 28; readonly fontWeight: "700"; readonly lineHeight: 36; }; readonly heading: { readonly fontSize: 24; readonly fontWeight: "700"; readonly lineHeight: 32; }; ... 4 more ...; readonly small: { ...; }; }'.
+app/profile/edit.tsx(20,26): error TS2305: Module '"@/services/profiles"' has no exported member 'UpdateProfileData'.
+app/profile/edit.tsx(59,11): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(props: FlatListProps<string>): FlatList<string>', gave the following error.
+    Type 'string[] | { label: string; value: string; }[]' is not assignable to type 'ArrayLike<string> | null | undefined'.
+      Type '{ label: string; value: string; }[]' is not assignable to type 'ArrayLike<string>'.
+        'number' index signatures are incompatible.
+          Type '{ label: string; value: string; }' is not assignable to type 'string'.
+  Overload 2 of 2, '(props: FlatListProps<string>, context: any): FlatList<string>', gave the following error.
+    Type 'string[] | { label: string; value: string; }[]' is not assignable to type 'ArrayLike<string> | null | undefined'.
+      Type '{ label: string; value: string; }[]' is not assignable to type 'ArrayLike<string>'.
+        'number' index signatures are incompatible.
+          Type '{ label: string; value: string; }' is not assignable to type 'string'.
+app/profile/edit.tsx(60,75): error TS2339: Property 'value' does not exist on type 'never'.
+app/profile/edit.tsx(62,66): error TS2339: Property 'label' does not exist on type 'never'.
+app/profile/edit.tsx(63,66): error TS2339: Property 'value' does not exist on type 'never'.
+app/profile/edit.tsx(114,28): error TS2551: Property 'birthDate' does not exist on type '{ id: string; email: string; fullName: string | null; avatarUrl: string | undefined; birth_date: any; zodiacSign: string | null; gender: any; city: string | null; status: string; createdAt: string; ... 4 more ...; preferredTellerId: any; }'. Did you mean 'birth_date'?
+components/FortuneShareCard.tsx(171,19): error TS2339: Property 'captionBold' does not exist on type '{ readonly title: { readonly fontSize: 28; readonly fontWeight: "700"; readonly lineHeight: 36; }; readonly heading: { readonly fontSize: 24; readonly fontWeight: "700"; readonly lineHeight: 32; }; ... 4 more ...; readonly small: { ...; }; }'.
+components/Skeleton.tsx(41,9): error TS2322: Type '{ width: string | number; height: string | number; borderRadius: number; opacity: any; }' is not assignable to type 'false | "" | RegisteredStyle<ViewStyle> | Value | WithAnimatedObject<ViewStyle> | AnimatedInterpolation<string | number> | WithAnimatedArray<...> | readonly (false | ... 6 more ... | undefined)[] | null | undefined'.
+  Types of property 'width' are incompatible.
+    Type 'string | number' is not assignable to type 'number | "auto" | `${number}%` | Value | AnimatedInterpolation<string | number> | WithAnimatedObject<AnimatedNode> | null | undefined'.
+      Type 'string' is not assignable to type 'number | "auto" | `${number}%` | Value | AnimatedInterpolation<string | number> | WithAnimatedObject<AnimatedNode> | null | undefined'.
+services/auth.ts(79,22): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(values: { id?: string | undefined; auth_user_id?: string | null | undefined; email: string; full_name?: string | null | undefined; zodiac_sign?: string | null | undefined; avatar_url?: string | null | undefined; ... 5 more ...; updated_at?: string | ... 1 more ... | undefined; }, options?: { ...; } | undefined): PostgrestFilterBuilder<...>', gave the following error.
+    Type 'string | null | undefined' is not assignable to type 'string'.
+      Type 'undefined' is not assignable to type 'string'.
+  Overload 2 of 2, '(values: { id?: string | undefined; auth_user_id?: string | null | undefined; email: string; full_name?: string | null | undefined; zodiac_sign?: string | null | undefined; avatar_url?: string | null | undefined; ... 5 more ...; updated_at?: string | ... 1 more ... | undefined; }[], options?: { ...; } | undefined): PostgrestFilterBuilder<...>', gave the following error.
+    Object literal may only specify known properties, and 'auth_user_id' does not exist in type '{ id?: string | undefined; auth_user_id?: string | null | undefined; email: string; full_name?: string | null | undefined; zodiac_sign?: string | null | undefined; avatar_url?: string | null | undefined; ... 5 more ...; updated_at?: string | ... 1 more ... | undefined; }[]'.
+services/auth.ts(124,7): error TS2561: Object literal may only specify known properties, but 'birth_date' does not exist in type 'User'. Did you mean to write 'birthDate'?
+services/auth.ts(245,17): error TS2561: Object literal may only specify known properties, but 'birth_date' does not exist in type 'User'. Did you mean to write 'birthDate'?
+services/auth.ts(263,44): error TS2339: Property 'id' does not exist on type 'string | number | true | { [key: string]: Json | undefined; } | Json[]'.
+  Property 'id' does not exist on type 'string'.
+services/auth.ts(266,51): error TS2339: Property 'birth_date' does not exist on type 'string | number | true | { [key: string]: Json | undefined; } | Json[]'.
+  Property 'birth_date' does not exist on type 'string'.
+services/auth.ts(267,47): error TS2339: Property 'gender' does not exist on type 'string | number | true | { [key: string]: Json | undefined; } | Json[]'.
+  Property 'gender' does not exist on type 'string'.
+services/auth.ts(272,29): error TS2339: Property 'id' does not exist on type 'string | number | true | { [key: string]: Json | undefined; } | Json[]'.
+  Property 'id' does not exist on type 'string'.
+services/auth.ts(273,32): error TS2339: Property 'email' does not exist on type 'string | number | true | { [key: string]: Json | undefined; } | Json[]'.
+  Property 'email' does not exist on type 'string'.
+services/auth.ts(274,31): error TS2339: Property 'full_name' does not exist on type 'string | number | true | { [key: string]: Json | undefined; } | Json[]'.
+  Property 'full_name' does not exist on type 'string'.
+services/auth.ts(275,35): error TS2339: Property 'avatar_url' does not exist on type 'string | number | true | { [key: string]: Json | undefined; } | Json[]'.
+  Property 'avatar_url' does not exist on type 'string'.
+services/auth.ts(276,9): error TS2561: Object literal may only specify known properties, but 'birth_date' does not exist in type 'User'. Did you mean to write 'birthDate'?
+services/auth.ts(276,37): error TS2339: Property 'birth_date' does not exist on type 'string | number | true | { [key: string]: Json | undefined; } | Json[]'.
+  Property 'birth_date' does not exist on type 'string'.
+services/auth.ts(277,37): error TS2339: Property 'zodiac_sign' does not exist on type 'string | number | true | { [key: string]: Json | undefined; } | Json[]'.
+  Property 'zodiac_sign' does not exist on type 'string'.
+services/auth.ts(278,34): error TS2339: Property 'gender' does not exist on type 'string | number | true | { [key: string]: Json | undefined; } | Json[]'.
+  Property 'gender' does not exist on type 'string'.
+services/auth.ts(279,34): error TS2339: Property 'wallet' does not exist on type 'string | number | true | { [key: string]: Json | undefined; } | Json[]'.
+  Property 'wallet' does not exist on type 'string'.
+services/auth.ts(280,38): error TS2339: Property 'active_subscription' does not exist on type 'string | number | true | { [key: string]: Json | undefined; } | Json[]'.
+  Property 'active_subscription' does not exist on type 'string'.
+services/auth.ts(281,36): error TS2339: Property 'created_at' does not exist on type 'string | number | true | { [key: string]: Json | undefined; } | Json[]'.
+  Property 'created_at' does not exist on type 'string'.
+services/auth.ts(291,17): error TS7006: Parameter 'userData' implicitly has an 'any' type.
+services/auth.ts(307,7): error TS2561: Object literal may only specify known properties, but 'birth_date' does not exist in type 'User'. Did you mean to write 'birthDate'?
+services/auth.ts(336,32): error TS18046: 'data' is of type 'unknown'.
+services/auth.ts(489,22): error TS2339: Property 'birth_date' does not exist on type '{}'.
+services/auth.ts(491,40): error TS2339: Property 'gender' does not exist on type '{}'.
+services/auth.ts(492,42): error TS2339: Property 'full_name' does not exist on type '{}'.
+services/auth.ts(493,43): error TS2339: Property 'avatar_url' does not exist on type '{}'.
+services/auth.ts(494,36): error TS2339: Property 'zodiac_sign' does not exist on type '{}'.
+services/logger.ts(9,55): error TS7006: Parameter 'details' implicitly has an 'any' type.
+services/logger.ts(32,19): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(relation: "wallet" | "admin_users" | "ai_settings" | "app_config" | "credit_packages" | "daily_free_usages" | "earning_rules" | "fortune_images" | "fortune_tellers" | "fortunes" | ... 9 more ... | "users"): PostgrestQueryBuilder<...>', gave the following error.
+    Argument of type '"app_logs"' is not assignable to parameter of type '"wallet" | "admin_users" | "ai_settings" | "app_config" | "credit_packages" | "daily_free_usages" | "earning_rules" | "fortune_images" | "fortune_tellers" | "fortunes" | "horoscopes" | ... 8 more ... | "users"'.
+  Overload 2 of 2, '(relation: never): PostgrestQueryBuilder<{ PostgrestVersion: "12"; }, { Tables: { admin_users: { Row: { id: string; auth_user_id: string | null; email: string; role: string; display_name: string | null; avatar_url: string | null; created_at: string; last_login: string | null; }; Insert: { ...; }; Update: { ...; }; Relationships: { ...; }[]; }; ... 18 more ...; wallet: { ...; }; }; Views: {}; Functions: { ...; }; Enums: {}; CompositeTypes: {}; }, never, never, never>', gave the following error.
+    Argument of type '"app_logs"' is not assignable to parameter of type 'never'.
+services/logger.ts(33,21): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(values: { id?: string | undefined; auth_user_id?: string | null | undefined; email: string; role?: string | undefined; display_name?: string | null | undefined; avatar_url?: string | null | undefined; created_at?: string | undefined; last_login?: string | ... 1 more ... | undefined; } | ... 18 more ... | { ...; }, options?: { ...; } | undefined): PostgrestFilterBuilder<...>', gave the following error.
+    Argument of type '{ level: LogLevel; message: string; details: string | null; user_id: string | null; platform: "ios" | "android" | "windows" | "macos" | "web"; version: string; metadata: { modelName: string | null; osVersion: string | null; }; }' is not assignable to parameter of type '{ id?: string | undefined; auth_user_id?: string | null | undefined; email: string; role?: string | undefined; display_name?: string | null | undefined; avatar_url?: string | null | undefined; created_at?: string | undefined; last_login?: string | ... 1 more ... | undefined; } | ... 18 more ... | { ...; }'.
+      Property 'push_token' is missing in type '{ level: LogLevel; message: string; details: string | null; user_id: string | null; platform: "ios" | "android" | "windows" | "macos" | "web"; version: string; metadata: { modelName: string | null; osVersion: string | null; }; }' but required in type '{ id?: string | undefined; user_id: string; push_token: string; platform?: string | null | undefined; is_active?: boolean | undefined; updated_at?: string | undefined; }'.
+  Overload 2 of 2, '(values: ({ id?: string | undefined; auth_user_id?: string | null | undefined; email: string; role?: string | undefined; display_name?: string | null | undefined; avatar_url?: string | null | undefined; created_at?: string | undefined; last_login?: string | ... 1 more ... | undefined; } | ... 18 more ... | { ...; })[], options?: { ...; } | undefined): PostgrestFilterBuilder<...>', gave the following error.
+    Argument of type '{ level: LogLevel; message: string; details: string | null; user_id: string | null; platform: "ios" | "android" | "windows" | "macos" | "web"; version: string; metadata: { modelName: string | null; osVersion: string | null; }; }' is not assignable to parameter of type '({ id?: string | undefined; auth_user_id?: string | null | undefined; email: string; role?: string | undefined; display_name?: string | null | undefined; avatar_url?: string | null | undefined; created_at?: string | undefined; last_login?: string | ... 1 more ... | undefined; } | ... 18 more ... | { ...; })[]'.
+      Type '{ level: LogLevel; message: string; details: string | null; user_id: string | null; platform: "ios" | "android" | "windows" | "macos" | "web"; version: string; metadata: { modelName: string | null; osVersion: string | null; }; }' is missing the following properties from type '({ id?: string | undefined; auth_user_id?: string | null | undefined; email: string; role?: string | undefined; display_name?: string | null | undefined; avatar_url?: string | null | undefined; created_at?: string | undefined; last_login?: string | ... 1 more ... | undefined; } | ... 18 more ... | { ...; })[]': length, pop, push, concat, and 35 more.
+services/logger.ts(47,25): error TS7006: Parameter 'details' implicitly has an 'any' type.
+services/logger.ts(51,25): error TS7006: Parameter 'details' implicitly has an 'any' type.
+services/logger.ts(55,26): error TS7006: Parameter 'details' implicitly has an 'any' type.
+services/logger.ts(59,29): error TS7006: Parameter 'details' implicitly has an 'any' type.
+services/notifications.ts(67,102): error TS2339: Property 'extra' does not exist on type 'EmbeddedManifest'.
+services/notifications.ts(124,64): error TS7006: Parameter 'data' implicitly has an 'any' type.
+services/wallet.ts(78,24): error TS7053: Element implicitly has an 'any' type because expression of type '0' can't be used to index type 'string | number | boolean | { [key: string]: Json | undefined; } | Json[]'.
+  Property '0' does not exist on type 'string | number | boolean | { [key: string]: Json | undefined; } | Json[]'.
+services/wallet.ts(100,24): error TS7053: Element implicitly has an 'any' type because expression of type '0' can't be used to index type 'string | number | boolean | { [key: string]: Json | undefined; } | Json[]'.
+  Property '0' does not exist on type 'string | number | boolean | { [key: string]: Json | undefined; } | Json[]'.
+services/wallet.ts(124,43): error TS7053: Element implicitly has an 'any' type because expression of type '0' can't be used to index type 'string | number | boolean | { [key: string]: Json | undefined; } | Json[]'.
+  Property '0' does not exist on type 'string | number | boolean | { [key: string]: Json | undefined; } | Json[]'.

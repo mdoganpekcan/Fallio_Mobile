@@ -30,10 +30,10 @@ export interface CreateFortuneData {
 }
 
 export const fortuneService = {
-  async getUserFortunes(userId: string): Promise<Fortune[]> {
-    console.log('[Fortune] Fetching fortunes for user:', userId);
-    const { data, error }: any = await (supabase
-      .from('fortunes' as any) as any)
+  async getUserFortunes(userId: string, pageParam: number = 0, limit: number = 10): Promise<Fortune[]> {
+    console.log('[Fortune] Fetching fortunes for user:', userId, 'page:', pageParam);
+    const { data, error } = await (supabase
+      .from('fortunes' ) )
       .select(`
         *,
         fortune_tellers (
@@ -50,7 +50,8 @@ export const fortuneService = {
         fortune_images (url)
       `)
       .eq('user_id', userId)
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .range(pageParam * limit, (pageParam + 1) * limit - 1);
 
     if (error) {
       console.error('[Fortune] Fetch error:', error);
@@ -64,7 +65,7 @@ export const fortuneService = {
       fortuneTellerName: item.fortune_tellers?.name,
       fortuneTellerAvatar: item.fortune_tellers?.avatar_url || undefined,
       type: item.type as FortuneType,
-      status: item.status as any,
+      status: item.status as 'pending' | 'completed',
       images: item.fortune_images?.map((img) => img.url) || [],
       note: item.user_note || undefined,
       result: item.response || undefined,
@@ -72,7 +73,7 @@ export const fortuneService = {
       completedAt: item.completed_at || undefined,
       isRead: item.is_read ?? false,
       userRating: (item.user_rating as 1 | -1) ?? null,
-      metadata: item.metadata as any,
+      metadata: (item.metadata || {}) as Record<string, any>,
     }));
   },
 
@@ -88,16 +89,16 @@ export const fortuneService = {
       throw userError || new Error('Oturum bulunamadı');
     }
 
-    const { data: fortune, error }: any = await (supabase
-      .from('fortunes' as any) as any)
+    const { data: fortune, error } = await (supabase
+      .from('fortunes' ) )
       .insert({
         user_id: user.id,
-        teller_id: data.fortuneTellerId,
+        teller_id: data.fortuneTellerId || null,
         type: data.type,
-        user_note: data.note,
+        user_note: data.note || null,
         status: 'pending',
-        metadata: data.metadata || {},
-      } as any)
+        metadata: (data.metadata || {}) as typeof data.metadata,
+      } )
       .select()
       .single();
 
@@ -109,33 +110,33 @@ export const fortuneService = {
     if (data.images?.length) {
       for (const uri of data.images) {
         const publicUrl = await this.uploadImage(user.id, uri, data.type);
-        await (supabase.from('fortune_images' as any) as any).insert({
+        await (supabase.from('fortune_images' ) ).insert({
           fortune_id: (fortune as any).id,
           url: publicUrl,
-        } as any);
+        } );
       }
     }
 
-    console.log('[Fortune] Created successfully:', (fortune as any).id);
+    console.log('[Fortune] Created successfully:', (fortune ).id);
 
     return {
-      id: (fortune as any).id,
-      userId: (fortune as any).user_id,
-      fortuneTellerId: (fortune as any).teller_id || undefined,
-      type: (fortune as any).type as FortuneType,
-      status: (fortune as any).status as any,
+      id: (fortune as { id: string }).id,
+      userId: (fortune as { user_id: string }).user_id,
+      fortuneTellerId: (fortune as { teller_id: string | null }).teller_id || undefined,
+      type: (fortune as { type: string }).type as FortuneType,
+      status: (fortune as { status: string }).status as 'pending' | 'completed',
       images: data.images || [],
-      note: (fortune as any).user_note || undefined,
-      createdAt: (fortune as any).created_at,
+      note: (fortune as { user_note: string | null }).user_note || undefined,
+      createdAt: (fortune as { created_at: string }).created_at,
       isRead: false,
-      metadata: (fortune as any).metadata as any,
+      metadata: ((fortune as { metadata: any }).metadata || {}) as Record<string, any>,
     };
   },
 
   async markAsRead(fortuneId: string): Promise<void> {
     const { error } = await (supabase
-      .from('fortunes' as any) as any)
-      .update({ is_read: true } as any)
+      .from('fortunes' ) )
+      .update({ is_read: true } )
       .eq('id', fortuneId);
     if (error) {
       console.error('[Fortune] Mark as read error:', error);
@@ -155,11 +156,11 @@ export const fortuneService = {
         uri,
         name: fileName,
         type: `image/${fileExt === 'jpg' ? 'jpeg' : fileExt}`,
-      } as any);
+      } );
 
       const { data, error } = await supabase.storage
         .from('fortune-images')
-        .upload(fileName, formData as any, {
+        .upload(fileName, formData , {
           contentType: `image/${fileExt === 'jpg' ? 'jpeg' : fileExt}`,
         });
 
@@ -181,8 +182,8 @@ export const fortuneService = {
   },
 
   async getFortuneById(fortuneId: string): Promise<Fortune | null> {
-    const { data, error }: any = await (supabase
-      .from('fortunes' as any) as any)
+    const { data, error } = await (supabase
+      .from('fortunes' ) )
       .select(`
         *,
         fortune_tellers (
@@ -214,7 +215,7 @@ export const fortuneService = {
       fortuneTellerName: item.fortune_tellers?.name,
       fortuneTellerAvatar: item.fortune_tellers?.avatar_url || undefined,
       type: item.type as FortuneType,
-      status: item.status as any,
+      status: item.status as 'pending' | 'completed',
       images: item.fortune_images?.map((img) => img.url) || [],
       note: item.user_note || undefined,
       result: item.response || undefined,
@@ -222,14 +223,14 @@ export const fortuneService = {
       completedAt: item.completed_at || undefined,
       isRead: item.is_read ?? false,
       userRating: (item.user_rating as 1 | -1) ?? null,
-      metadata: item.metadata as any,
+      metadata: (item.metadata || {}) as Record<string, any>,
     };
   },
 
   async rateFortuneResponse(fortuneId: string, rating: 1 | -1): Promise<void> {
     const { error } = await (supabase
-      .from('fortunes' as any) as any)
-      .update({ user_rating: rating } as any)
+      .from('fortunes' ) )
+      .update({ user_rating: rating } )
       .eq('id', fortuneId);
     if (error) {
       console.error('[Fortune] Rating update error:', error);
@@ -254,14 +255,14 @@ export const fortuneService = {
       p_note: data.note,
       p_metadata: { ...data.metadata, language: getLocales()[0]?.languageCode ?? 'tr' },
       p_images: data.images || []
-    } as any);
+    } );
 
     if (error) {
       console.error('[Fortune] Secure creation error:', error);
       throw error;
     }
 
-    const res = result as any;
+    const res = result as { id: string; is_free: boolean; cost: number };
 
     return {
       id: res.id,
