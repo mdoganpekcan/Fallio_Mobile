@@ -30,8 +30,10 @@ export interface CreateFortuneData {
 }
 
 export const fortuneService = {
-  async getUserFortunes(userId: string, pageParam: number = 0, limit: number = 10): Promise<Fortune[]> {
-    console.log('[Fortune] Fetching fortunes for user:', userId, 'page:', pageParam);
+  async getUserFortunes(userId: string, page: number = 0, pageSize: number = 15): Promise<Fortune[]> {
+    console.log('[Fortune] Fetching fortunes for user:', userId, 'page:', page);
+    const from = page * pageSize;
+    const to = (page + 1) * pageSize - 1;
     const { data, error } = await (supabase
       .from('fortunes' ) )
       .select(`
@@ -51,7 +53,7 @@ export const fortuneService = {
       `)
       .eq('user_id', userId)
       .order('created_at', { ascending: false })
-      .range(pageParam * limit, (pageParam + 1) * limit - 1);
+      .range(from, to);
 
     if (error) {
       console.error('[Fortune] Fetch error:', error);

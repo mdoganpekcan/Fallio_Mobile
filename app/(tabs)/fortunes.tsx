@@ -1,24 +1,22 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
-  FlatList,
+  ScrollView,
   TouchableOpacity,
   SafeAreaView,
   ActivityIndicator,
-  RefreshControl,
 } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { Clock, ChevronRight } from 'lucide-react-native';
 import { Colors, Spacing, Typography, BorderRadius } from '@/constants/theme';
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { fortuneService } from '@/services/fortunes';
 import { useAppStore } from '@/store/useAppStore';
 import { getFortuneTypeInfo } from '@/constants/fortuneTypes';
 import { useTranslation } from 'react-i18next';
 import { Skeleton } from '@/components/Skeleton';
-import { Fortune } from '@/types';
 
 type FortuneFilter = 'all' | 'unread';
 
@@ -27,45 +25,26 @@ export default function FortunesScreen() {
   const router = useRouter();
   const user = useAppStore((state) => state.user);
   const [filter, setFilter] = useState<FortuneFilter>('all');
-  const [refreshing, setRefreshing] = useState(false);
 
-  const {
-    data,
-    isLoading,
-    refetch,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useInfiniteQuery({
+  const { data: fortunes = [], isLoading, refetch } = useQuery({
     queryKey: ['fortunes', user?.id],
-    queryFn: ({ pageParam = 0 }) => user ? fortuneService.getUserFortunes(user.id, pageParam as number, 10) : Promise.resolve([]),
-    initialPageParam: 0,
-    getNextPageParam: (lastPage, allPages) => {
-      return lastPage.length === 10 ? allPages.length : undefined;
-    },
+    queryFn: () => user ? fortuneService.getUserFortunes(user.id) : Promise.resolve([]),
     enabled: !!user,
   });
 
   useFocusEffect(
-    useCallback(() => {
+    React.useCallback(() => {
       if (user) {
         refetch();
       }
     }, [user, refetch])
   );
 
-  const onRefresh = useCallback(async () => {
-    setRefreshing(true);
-    await refetch();
-    setRefreshing(false);
-  }, [refetch]);
-
-  const fortunes = data?.pages.flat() || [];
   const filters: FortuneFilter[] = ['all', 'unread'];
 
   const filteredFortunes = filter === 'all' 
     ? fortunes
-    : fortunes.filter((f: Fortune) => f.status === 'pending');
+    : fortunes.filter(f => f.status === 'pending');
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -73,69 +52,9 @@ export default function FortunesScreen() {
     return date.toLocaleDateString('tr-TR', options);
   };
 
-  const getFortuneTellerName = (fortune: Fortune) => {
+  const getFortuneTellerName = (fortune: typeof fortunes[0]) => {
     return fortune.fortuneTellerName || t('fortunes.teller');
   };
-
-  const renderFortuneItem = ({ item: fortune }: { item: Fortune }) => {
-    const fortuneInfo = getFortuneTypeInfo(fortune.type as any);
-    return (
-      <TouchableOpacity
-        style={styles.fortuneItem}
-        onPress={() => {
-          if (fortune.status === 'completed') {
-            router.push(`/fortune/result/${fortune.id}` as any);
-          }
-        }}
-      >
-        <View style={styles.fortuneIconContainer}>
-          <Text style={styles.fortuneIcon}>{fortuneInfo.icon}</Text>
-        </View>
-
-        <View style={styles.fortuneInfo}>
-          <Text style={styles.fortuneName}>{getFortuneTellerName(fortune)}</Text>
-          <Text style={styles.fortuneDate}>{formatDate(fortune.createdAt)}</Text>
-          {fortune.status === 'pending' && (
-            <Text style={styles.statusText}>{t('fortunes.status.pending')}</Text>
-          )}
-        </View>
-
-        <View style={styles.fortuneActions}>
-          {!fortune.isRead && fortune.status === 'completed' && (
-            <View style={styles.unreadBadge} />
-          )}
-          <ChevronRight size={20} color={Colors.textSecondary} />
-        </View>
-      </TouchableOpacity>
-    );
-  };
-
-  const renderSkeleton = () => (
-    <View style={styles.scrollView}>
-      {[1, 2, 3, 4, 5, 6].map((i) => (
-        <View key={i} style={styles.fortuneItem}>
-          <Skeleton width={56} height={56} borderRadius={BorderRadius.md} style={{ marginRight: Spacing.md }} />
-          <View style={{ flex: 1, gap: 8 }}>
-            <Skeleton width="50%" height={18} />
-            <Skeleton width="30%" height={14} />
-          </View>
-          <Skeleton width={20} height={20} borderRadius={10} />
-        </View>
-      ))}
-    </View>
-  );
-
-  const renderEmptyState = () => (
-    <View style={styles.emptyState}>
-      <View style={styles.emptyIconContainer}>
-        <Clock size={64} color={Colors.textMuted} />
-      </View>
-      <Text style={styles.emptyTitle}>{t('fortunes.empty.title')}</Text>
-      <Text style={styles.emptyText}>
-        {t('fortunes.empty.description')}
-      </Text>
-    </View>
-  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -166,37 +85,69 @@ export default function FortunesScreen() {
         ))}
       </View>
 
-      {isLoading && filter === 'all' && fortunes.length === 0 ? (
-        renderSkeleton()
-      ) : (
-        <FlatList
-          data={filteredFortunes}
-          keyExtractor={(item) => item.id}
-          renderItem={renderFortuneItem}
-          contentContainerStyle={styles.scrollView}
-          showsVerticalScrollIndicator={false}
-          ListEmptyComponent={renderEmptyState}
-          onEndReached={() => {
-            if (hasNextPage) {
-              fetchNextPage();
-            }
-          }}
-          onEndReachedThreshold={0.5}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-              tintColor={Colors.primary}
-            />
-          }
-          ListFooterComponent={
-            isFetchingNextPage ? (
-              <View style={{ padding: Spacing.md, alignItems: 'center' }}>
-                <ActivityIndicator size="small" color={Colors.primary} />
+      {isLoading ? (
+        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <View key={i} style={styles.fortuneItem}>
+              <Skeleton width={56} height={56} borderRadius={BorderRadius.md} style={{ marginRight: Spacing.md }} />
+              <View style={{ flex: 1, gap: 8 }}>
+                <Skeleton width="50%" height={18} />
+                <Skeleton width="30%" height={14} />
               </View>
-            ) : <View style={{ height: 32 }} />
-          }
-        />
+              <Skeleton width={20} height={20} borderRadius={10} />
+            </View>
+          ))}
+        </ScrollView>
+      ) : (
+        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+          {filteredFortunes.length === 0 ? (
+            <View style={styles.emptyState}>
+              <View style={styles.emptyIconContainer}>
+                <Clock size={64} color={Colors.textMuted} />
+              </View>
+              <Text style={styles.emptyTitle}>{t('fortunes.empty.title')}</Text>
+              <Text style={styles.emptyText}>
+                {t('fortunes.empty.description')}
+              </Text>
+            </View>
+          ) : (
+            filteredFortunes.map((fortune) => {
+              const fortuneInfo = getFortuneTypeInfo(fortune.type as any);
+              return (
+                <TouchableOpacity
+                  key={fortune.id}
+                  style={styles.fortuneItem}
+                  onPress={() => {
+                    if (fortune.status === 'completed') {
+                      router.push(`/fortune/result/${fortune.id}` as any);
+                    }
+                  }}
+                >
+                  <View style={styles.fortuneIconContainer}>
+                    <Text style={styles.fortuneIcon}>{fortuneInfo.icon}</Text>
+                  </View>
+
+                  <View style={styles.fortuneInfo}>
+                    <Text style={styles.fortuneName}>{getFortuneTellerName(fortune)}</Text>
+                    <Text style={styles.fortuneDate}>{formatDate(fortune.createdAt)}</Text>
+                    {fortune.status === 'pending' && (
+                      <Text style={styles.statusText}>{t('fortunes.status.pending')}</Text>
+                    )}
+                  </View>
+
+                  <View style={styles.fortuneActions}>
+                    {!fortune.isRead && fortune.status === 'completed' && (
+                      <View style={styles.unreadBadge} />
+                    )}
+                    <ChevronRight size={20} color={Colors.textSecondary} />
+                  </View>
+                </TouchableOpacity>
+              );
+            })
+          )}
+
+          <View style={{ height: 32 }} />
+        </ScrollView>
       )}
     </SafeAreaView>
   );
@@ -217,6 +168,11 @@ const styles = StyleSheet.create({
   headerTitle: {
     ...Typography.heading,
     color: Colors.text,
+  },
+  loadingContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   filterContainer: {
     flexDirection: 'row',
@@ -241,6 +197,7 @@ const styles = StyleSheet.create({
     color: Colors.text,
   },
   scrollView: {
+    flex: 1,
     paddingHorizontal: Spacing.lg,
   },
   fortuneItem: {
