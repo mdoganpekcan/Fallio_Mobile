@@ -244,7 +244,13 @@
       "error": "Hata",
       "purchaseFailed": "Satın alma başarısız.",
       "adLoading": "Reklam şu anda yükleniyor, lütfen biraz bekleyin.",
-      "adError": "Reklam gösterilirken bir sorun oluştu."
+      "adError": "Reklam gösterilirken bir sorun oluştu.",
+      "noPurchasesToRestore": "Geri yüklenecek satın alma bulunamadı."
+    },
+    "restore": {
+      "title": "Satın Alımları Geri Yükle",
+      "description": "Daha önce yaptığınız satın alımları bu cihaza geri yükleyebilirsiniz.",
+      "button": "Satın Alımları Geri Yükle"
     }
   },
   "settings": {

@@ -24,7 +24,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack, useRouter, useSegments, useRootNavigationState } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import * as WebBrowser from "expo-web-browser";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { StatusBar } from "expo-status-bar";
 import { View, ActivityIndicator, Alert } from "react-native";
@@ -40,6 +40,7 @@ import { AppState } from 'react-native';
 import { adService } from '@/services/ads';
 import * as Linking from 'expo-linking';
 import { logger } from "@/services/logger";
+import * as Notifications from 'expo-notifications';
 
 SplashScreen.preventAutoHideAsync();
 WebBrowser.maybeCompleteAuthSession();
@@ -96,6 +97,8 @@ function RootLayoutNav() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const router = useRouter();
   const { user, setUser, completeOnboarding, setAppConfig } = useAppStore();
+  const lastNotificationResponse = Notifications.useLastNotificationResponse();
+  const processedNotificationIds = useRef<Set<string>>(new Set());
 
   useProtectedRoute(user);
 
@@ -192,19 +195,33 @@ function RootLayoutNav() {
   useEffect(() => {
     if (isLoading) return;
 
-    // Handle notification responses (when user clicks on a notification)
-    const responseListener = notificationService.addNotificationResponseReceivedListener(response => {
+    const handleNotificationPayload = (response: Notifications.NotificationResponse) => {
+      const notificationId = response.notification.request.identifier;
+      if (processedNotificationIds.current.has(notificationId)) {
+        console.log('[Notifications] Already processed notification:', notificationId);
+        return;
+      }
+
+      processedNotificationIds.current.add(notificationId);
       const data = response.notification.request.content.data;
       if (data?.url) {
         console.log('[Notifications] Deep linking to:', data.url);
         router.push(data.url as any);
       }
-    });
+    };
+
+    // 1. Check for cold-start notification (app was killed)
+    if (lastNotificationResponse) {
+      handleNotificationPayload(lastNotificationResponse);
+    }
+
+    // 2. Listen for push notification clicks while app is in background/foreground
+    const responseListener = notificationService.addNotificationResponseReceivedListener(handleNotificationPayload);
 
     return () => {
       responseListener.remove();
     };
-  }, [isLoading]);
+  }, [isLoading, lastNotificationResponse, router]);
 
   useEffect(() => {
     // Initialize RevenueCat on app launch (anonymous)

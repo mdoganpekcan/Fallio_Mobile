@@ -34,6 +34,22 @@ export default function CreditsScreen() {
   const [selectedPackage, setSelectedPackage] = React.useState<PurchasesPackage | null>(null);
   const [loadingAd, setLoadingAd] = React.useState(false);
 
+  // Restore Purchases (geri yükleme)
+  const restoreMutation = useMutation({
+    mutationFn: () => revenueCatService.restorePurchases(),
+    onSuccess: ({ isPro }) => {
+      queryClient.invalidateQueries({ queryKey: ['rc-status'] });
+      if (isPro) {
+        Alert.alert(t('credits.messages.success'), t('credits.messages.premiumActivated'));
+      } else {
+        Alert.alert(t('common.info'), t('credits.messages.noPurchasesToRestore'));
+      }
+    },
+    onError: () => {
+      Alert.alert(t('credits.messages.error'), t('credits.messages.purchaseFailed'));
+    },
+  });
+
   // RevenueCat Offerings (Ürünler) — statik veri, 30 dakika cache
   const { data: offerings, isLoading: offeringsLoading } = useQuery({
     queryKey: ['rc-offerings'],
@@ -255,6 +271,29 @@ export default function CreditsScreen() {
             </View>
           )}
         </View>
+        </View>
+
+        {/* Satın Alımları Geri Yükleme */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>{t('credits.restore.title')}</Text>
+          <Text style={styles.sectionDescription}>
+            {t('credits.restore.description')}
+          </Text>
+          <TouchableOpacity
+            style={styles.restoreButton}
+            onPress={() => restoreMutation.mutate()}
+            disabled={restoreMutation.isPending}
+            accessibilityLabel={t('credits.restore.button')}
+            accessibilityRole="button"
+          >
+            {restoreMutation.isPending ? (
+              <ActivityIndicator color={Colors.primary} />
+            ) : (
+              <Text style={styles.restoreButtonText}>{t('credits.restore.button')}</Text>
+            )}
+          </TouchableOpacity>
+        </View>
+
       </ScrollView>
     </SafeAreaView>
   );
@@ -439,5 +478,20 @@ const styles = StyleSheet.create({
   adButtonSubtitle: {
     ...Typography.caption,
     color: '#E0E7FF',
+  },
+  restoreButton: {
+    marginTop: Spacing.sm,
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    borderRadius: BorderRadius.sm,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 44,
+  },
+  restoreButtonText: {
+    ...Typography.body,
+    color: Colors.textSecondary,
   },
 });

@@ -244,7 +244,13 @@
       "error": "Erro",
       "purchaseFailed": "A compra falhou.",
       "adLoading": "O anúncio está carregando, por favor aguarde um momento.",
-      "adError": "Ocorreu um erro ao mostrar o anúncio."
+      "adError": "Ocorreu um erro ao mostrar o anúncio.",
+      "noPurchasesToRestore": "Nenhuma compra anterior encontrada para restaurar."
+    },
+    "restore": {
+      "title": "Restaurar Compras",
+      "description": "Você pode restaurar suas compras anteriores neste dispositivo.",
+      "button": "Restaurar Compras"
     }
   },
   "settings": {

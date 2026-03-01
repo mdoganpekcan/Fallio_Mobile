@@ -244,7 +244,13 @@
       "error": "Error",
       "purchaseFailed": "Purchase failed.",
       "adLoading": "Ad is loading, please wait a moment.",
-      "adError": "An error occurred while showing the ad."
+      "adError": "An error occurred while showing the ad.",
+      "noPurchasesToRestore": "No previous purchases found to restore."
+    },
+    "restore": {
+      "title": "Restore Purchases",
+      "description": "You can restore your previous purchases on this device.",
+      "button": "Restore Purchases"
     }
   },
   "settings": {
