@@ -33,6 +33,7 @@ export default function ProfileScreen() {
   const user = useAppStore((state) => state.user);
   const logout = useAppStore((state) => state.logout);
   const [isUploading, setIsUploading] = useState<boolean>(false);
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const insets = useSafeAreaInsets();
 
   const { data: profile } = useQuery({
@@ -109,6 +110,7 @@ export default function ProfileScreen() {
   };
 
   const handleDeleteAccount = async () => {
+    if (isDeleting) return; // double-tap guard
     Alert.alert(
       t('profile.alerts.delete_account_title'),
       t('profile.alerts.delete_account_message'),
@@ -118,14 +120,22 @@ export default function ProfileScreen() {
           text: t('profile.alerts.delete_account_confirm'),
           style: 'destructive',
           onPress: async () => {
+            setIsDeleting(true);
             try {
               await authService.deleteAccount();
+              // RPC succeeded — now clean up local state and navigate away
               logout();
               router.replace('/auth/login' as any);
             } catch (error) {
-              console.error(error);
-              Alert.alert(t('auth.errors.error_title'), t('profile.alerts.delete_account_error'));
+              console.error('[Profile] Delete account failed:', error);
+              setIsDeleting(false);
+              Alert.alert(
+                t('auth.errors.error_title'),
+                t('profile.alerts.delete_account_error'),
+              );
             }
+            // Note: setIsDeleting(false) intentionally omitted on success path
+            // because the screen is unmounted and state no longer matters
           },
         },
       ]
@@ -303,8 +313,16 @@ export default function ProfileScreen() {
           <Text style={styles.logoutButtonText}>{t('profile.actions.logout')}</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.deleteAccountButton} onPress={handleDeleteAccount}>
-          <Text style={styles.deleteAccountText}>{t('profile.actions.delete_account')}</Text>
+        <TouchableOpacity
+          style={[styles.deleteAccountButton, isDeleting && { opacity: 0.5 }]}
+          onPress={handleDeleteAccount}
+          disabled={isDeleting}
+        >
+          {isDeleting ? (
+            <ActivityIndicator size="small" color={Colors.error} />
+          ) : (
+            <Text style={styles.deleteAccountText}>{t('profile.actions.delete_account')}</Text>
+          )}
         </TouchableOpacity>
 
         <View style={{ height: 32 }} />
