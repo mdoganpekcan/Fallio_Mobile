@@ -1,3 +1,25 @@
+// ─── SENTRY: Must be initialized before any other import ───────────────────
+import * as Sentry from '@sentry/react-native';
+
+Sentry.init({
+  dsn: 'https://05f9ece7068e9c3b70e31102a419019f@o4510608881025024.ingest.de.sentry.io/4510608892035152',
+
+  // Tag environment so dev/prod issues are clearly separated in the dashboard
+  environment: __DEV__ ? 'development' : 'production',
+
+  // Sample 100% of traces in dev, 20% in production to stay within quotas
+  tracesSampleRate: __DEV__ ? 1.0 : 0.2,
+
+  // Automatically track user sessions (crash-free sessions metric)
+  enableAutoSessionTracking: true,
+
+  // Attach JS stack trace to every message-level event
+  attachStacktrace: true,
+
+  debug: false,
+});
+// ─────────────────────────────────────────────────────────────────────────────
+
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack, useRouter, useSegments, useRootNavigationState } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
@@ -119,6 +141,8 @@ function RootLayoutNav() {
         // 3. Process Authentication State
         if (currentUser) {
           setUser(currentUser);
+          // Bind user identity to Sentry so every subsequent event is tagged
+          Sentry.setUser({ id: currentUser.id, email: currentUser.email });
         }
         
         logger.info('[RootLayout] initAuth completed successfully (Parallelized)');
@@ -137,6 +161,13 @@ function RootLayoutNav() {
 
     const { data: { subscription } } = authService.onAuthStateChange((user) => {
       setUser(user);
+      if (user) {
+        // Keep Sentry user context in sync with auth state changes
+        Sentry.setUser({ id: user.id, email: user.email });
+      } else {
+        // Clear user context on logout — no PII leak after sign-out
+        Sentry.setUser(null);
+      }
     });
 
     return () => {
@@ -301,13 +332,6 @@ function RootLayoutNav() {
     </>
   );
 }
-
-import * as Sentry from '@sentry/react-native';
-
-Sentry.init({
-  dsn: 'https://05f9ece7068e9c3b70e31102a419019f@o4510608881025024.ingest.de.sentry.io/4510608892035152',
-  debug: false,
-});
 
 function RootLayout() {
   return (
